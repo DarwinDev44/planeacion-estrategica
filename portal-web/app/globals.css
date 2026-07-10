@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-accent: var(--brand-accent);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+  Tokens institucionales — Universidad de Cundinamarca (Manual ECOM002V_18)
+  Ver docs/03-design-system-dashboards.md para la justificación y validación
+  CVD/contraste de cada valor. No modificar sin volver a correr el validador.
+*/
+:root {
+  --background: #fafaf8;
+  --foreground: #1a1a18;
+  --card: #ffffff;
+  --card-foreground: #1a1a18;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a18;
+
+  --primary: #007b3e; /* verde institucional, PANTONE 3536 C */
+  --primary-foreground: #ffffff;
+  --secondary: #eaf5ee; /* tinte muy claro del verde institucional */
+  --secondary-foreground: #00482b;
+  --muted: #f1f1ee;
+  --muted-foreground: #7c7c76;
+  --accent: #eaf5ee;
+  --accent-foreground: #00482b;
+
+  --destructive: #d03b3b;
+  --success: #00a99d; /* PANTONE 7716 C */
+  --warning: #f7931e; /* PANTONE 144 C */
+  --brand-gold: #daaa00; /* PANTONE 110 C */
+  --brand-accent: #79c000; /* PANTONE 3561 C */
+
+  --border: rgba(20, 20, 18, 0.1);
+  --input: rgba(20, 20, 18, 0.14);
+  --ring: #007b3e;
+
+  /* Paleta categórica validada — dimensión Rol (docs/03, §1.3) */
+  --chart-1: #0e8f52; /* Estudiante */
+  --chart-2: #e8720c; /* Graduado */
+  --chart-3: #00a99d; /* Gestores del Conocimiento y el Aprendizaje */
+  --chart-4: #d9a400; /* Ops-Apa */
+  --chart-5: #2f5c99; /* Administrativo */
+
+  --radius: 0.625rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a18;
+  --sidebar-primary: #007b3e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eaf5ee;
+  --sidebar-accent-foreground: #00482b;
+  --sidebar-border: rgba(20, 20, 18, 0.1);
+  --sidebar-ring: #007b3e;
+}
+
+.dark {
+  --background: #0d1a13;
+  --foreground: #f3f3f0;
+  --card: #132a1e;
+  --card-foreground: #f3f3f0;
+  --popover: #132a1e;
+  --popover-foreground: #f3f3f0;
+
+  --primary: #2cae72;
+  --primary-foreground: #0d1a13;
+  --secondary: #1a3526;
+  --secondary-foreground: #eaf5ee;
+  --muted: #1a3526;
+  --muted-foreground: #8b8b84;
+  --accent: #1a3526;
+  --accent-foreground: #eaf5ee;
+
+  --destructive: #e05a5a;
+  --success: #1ca79b;
+  --warning: #e8b92e;
+  --brand-gold: #e8b92e;
+  --brand-accent: #79c000;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #2cae72;
+
+  /* Paleta categórica validada, modo oscuro — dimensión Rol */
+  --chart-1: #2cae72;
+  --chart-2: #c96a28;
+  --chart-3: #1ca79b;
+  --chart-4: #a6821e;
+  --chart-5: #5578be;
+
+  --sidebar: #132a1e;
+  --sidebar-foreground: #f3f3f0;
+  --sidebar-primary: #2cae72;
+  --sidebar-primary-foreground: #0d1a13;
+  --sidebar-accent: #1a3526;
+  --sidebar-accent-foreground: #eaf5ee;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #2cae72;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
