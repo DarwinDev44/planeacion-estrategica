@@ -3,118 +3,98 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { Home, Menu } from "lucide-react";
+import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { NAVEGACION } from "@/constants/navegacion";
-import { cn } from "@/lib/utils";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-30 bg-primary text-primary-foreground shadow-sm">
-        <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-3 px-4 lg:px-8">
-          <Link href="/" className="flex shrink-0 items-center gap-3">
-            <Image
-              src="/assets/logos/imagotipo-horizontal-blanco.png"
-              alt="Universidad de Cundinamarca"
-              width={150}
-              height={36}
-              priority
-              className="h-7 w-auto lg:h-8"
-            />
+    <div className="mx-auto flex min-h-screen w-full max-w-[1800px]">
+      {/* Sidebar desktop */}
+      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-border bg-sidebar py-5 lg:flex">
+        <Logo className="px-5 pb-6" />
+        <SidebarNav />
+        <div className="mt-auto flex flex-col gap-2 px-5 pt-6">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+          >
+            <ArrowLeft className="size-3.5" />
+            Volver al inicio
           </Link>
-          <div className="hidden h-7 w-px bg-white/25 xl:block" />
-          <p className="hidden text-sm font-semibold tracking-wide text-white/95 xl:block">
-            Participación, tu voz es fundamental
+          <p className="text-xs text-muted-foreground">
+            Encuesta institucional
+            <br />
+            24 feb – 24 jun 2026
           </p>
+        </div>
+      </aside>
 
-          <nav
-            className="ml-auto hidden items-center gap-1 lg:flex"
-            aria-label="Navegación entre temas del reporte"
-          >
-            {NAVEGACION.map((item) => {
-              const activo = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={activo ? "page" : undefined}
-                  className={cn(
-                    "rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors",
-                    activo
-                      ? "bg-white text-primary shadow-sm"
-                      : "text-white/85 hover:bg-white/10 hover:text-white"
-                  )}
-                >
-                  {item.etiqueta}
-                </Link>
-              );
-            })}
-          </nav>
+      {/* Sidebar mobile (Sheet, no bloqueante — cumple la regla del manual) */}
+      <Sheet open={menuAbierto} onOpenChange={setMenuAbierto}>
+        <SheetContent side="left" className="w-72 p-0">
+          <SheetHeader className="p-5 pb-2">
+            <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+            <Logo />
+          </SheetHeader>
+          <div className="py-4">
+            <SidebarNav onNavigate={() => setMenuAbierto(false)} />
+          </div>
+          <div className="px-8 pt-2">
+            <Link
+              href="/"
+              onClick={() => setMenuAbierto(false)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+            >
+              <ArrowLeft className="size-3.5" />
+              Volver al inicio
+            </Link>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-          <Button
-            render={<Link href="/" aria-label="Volver al inicio" title="Inicio" />}
-            nativeButton={false}
-            variant="ghost"
-            size="icon"
-            className="hidden text-white hover:bg-white/10 hover:text-white lg:inline-flex"
-          >
-            <Home className="size-5" />
-          </Button>
-
+      <div className="flex min-h-screen flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-8">
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto text-white hover:bg-white/10 hover:text-white lg:hidden"
+            className="lg:hidden"
             aria-label="Abrir menú de navegación"
             onClick={() => setMenuAbierto(true)}
           >
             <Menu className="size-5" />
           </Button>
-        </div>
-      </header>
+          <div className="lg:hidden">
+            <Logo compact />
+          </div>
+          <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="hidden sm:inline">Universidad de Cundinamarca</span>
+          </div>
+        </header>
 
-      <Sheet open={menuAbierto} onOpenChange={setMenuAbierto}>
-        <SheetContent side="right" className="w-72">
-          <SheetHeader className="text-left">
-            <SheetTitle>Participación, tu voz es fundamental</SheetTitle>
-          </SheetHeader>
-          <nav className="flex flex-col gap-1 p-4 pt-0" aria-label="Navegación">
-            {NAVEGACION.map((item) => {
-              const activo = pathname === item.href;
-              const Icono = item.icono;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuAbierto(false)}
-                  aria-current={activo ? "page" : undefined}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                    activo
-                      ? "bg-primary text-primary-foreground"
-                      : "text-foreground/80 hover:bg-accent hover:text-accent-foreground"
-                  )}
-                >
-                  <Icono className="size-4 shrink-0" aria-hidden />
-                  {item.etiqueta}
-                </Link>
-              );
-            })}
-          </nav>
-        </SheetContent>
-      </Sheet>
-
-      <main className="mx-auto w-full max-w-[1800px] flex-1 px-4 py-5 lg:px-8 lg:py-6">{children}</main>
-
-      <footer className="border-t border-border px-4 py-3 text-center text-[11px] text-muted-foreground lg:px-8">
-        www.ucundinamarca.edu.co · Vigilada MinEducación
-      </footer>
+        <main className="flex-1 px-4 py-5 lg:px-8 lg:py-6">{children}</main>
+      </div>
     </div>
+  );
+}
+
+function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
+  return (
+    <Link href="/" className={className}>
+      <Image
+        src="/assets/logos/imagotipo-horizontal-color.png"
+        alt="Universidad de Cundinamarca"
+        width={compact ? 140 : 170}
+        height={compact ? 33 : 40}
+        priority
+        className="h-auto w-auto"
+      />
+      <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
+        Participación, tu voz es fundamental
+      </p>
+    </Link>
   );
 }

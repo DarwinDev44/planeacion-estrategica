@@ -10,25 +10,25 @@ export interface ItemNavegacion {
 
 export const NAVEGACION: ItemNavegacion[] = [
   {
-    href: "/",
+    href: "/encuesta",
     etiqueta: "Resumen ejecutivo",
     descripcion: "Panorama general de la participación",
     icono: LayoutDashboard,
   },
   {
-    href: "/participacion",
+    href: "/encuesta/participacion",
     etiqueta: "Quién participó",
     descripcion: "Rol, sede, facultad y programa",
     icono: Users,
   },
   {
-    href: "/vision-estrategica",
+    href: "/encuesta/vision-estrategica",
     etiqueta: "Visión estratégica",
     descripcion: "Las 4 preguntas que orientan el plan",
     icono: Compass,
   },
   {
-    href: "/exploracion",
+    href: "/encuesta/exploracion",
     etiqueta: "Exploración",
     descripcion: "Tabla dinámica y exportación",
     icono: Table2,
