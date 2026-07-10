@@ -16,14 +16,14 @@ function calcularTicksEje(valores: number[], pasos = 4): number[] {
   return Array.from({ length: pasos + 1 }, (_, i) => i * paso).filter((t) => t <= techo);
 }
 
-export function TimeSeriesChart({ datos }: { datos: PuntoSerieTiempo[] }) {
+export function TimeSeriesChart({ datos, compacto = false }: { datos: PuntoSerieTiempo[]; compacto?: boolean }) {
   const ticks = calcularTicksEje(datos.map((d) => d.conteo));
   const techo = ticks[ticks.length - 1];
 
   return (
-    <div className="h-[280px] w-full">
+    <div className={compacto ? "h-[190px] w-full" : "h-[280px] w-full"}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={datos} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+        <AreaChart data={datos} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="serieTiempoFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.35} />
@@ -33,23 +33,23 @@ export function TimeSeriesChart({ datos }: { datos: PuntoSerieTiempo[] }) {
           <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis
             dataKey="fecha"
-            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+            tick={{ fontSize: compacto ? 10 : 11, fill: "var(--muted-foreground)" }}
             tickLine={false}
             axisLine={{ stroke: "var(--border)" }}
             tickFormatter={(v: string) => formatFecha(v).replace(".", "")}
             interval="preserveStartEnd"
-            minTickGap={40}
+            minTickGap={compacto ? 60 : 40}
           />
           <YAxis
             type="number"
             domain={[0, techo]}
-            ticks={ticks}
+            ticks={compacto ? [0, techo] : ticks}
             allowDecimals={false}
             tickFormatter={(v: number) => formatNumero(v)}
-            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+            tick={{ fontSize: compacto ? 10 : 11, fill: "var(--muted-foreground)" }}
             tickLine={false}
             axisLine={false}
-            width={56}
+            width={compacto ? 40 : 56}
           />
           <Tooltip
             content={({ active, payload }) => {

@@ -195,6 +195,51 @@ export function getMatrizCruce(preguntaA: PreguntaId, preguntaB: PreguntaId, top
   return { topB, filas };
 }
 
+export function getSerieTiempoFiltrada(filtros: FiltrosEncuesta): { fecha: string; conteo: number }[] {
+  const map = new Map<string, number>();
+  for (const p of getPersonasFiltradas(filtros)) {
+    const dia = p.fechaInicio.slice(0, 10);
+    map.set(dia, (map.get(dia) ?? 0) + 1);
+  }
+  return [...map.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([fecha, conteo]) => ({ fecha, conteo }));
+}
+
+export function getKpisFiltrados(filtros: FiltrosEncuesta) {
+  const personas = getPersonasFiltradas(filtros);
+  const rolesPorPersona = construirMapaRolesPorPersona();
+  const ids = new Set(personas.map((p) => p.id));
+  let totalAsignacionesRol = 0;
+  let personasConMultiRol = 0;
+  for (const [id, roles] of rolesPorPersona) {
+    if (!ids.has(id)) continue;
+    totalAsignacionesRol += roles.size;
+    if (roles.size > 1) personasConMultiRol += 1;
+  }
+  return {
+    totalParticipantes: personas.length,
+    totalAsignacionesRol,
+    sedesConParticipacion: new Set(personas.map((p) => p.sede).filter(Boolean)).size,
+    programasRepresentados: new Set(personas.map((p) => p.programaOArea).filter(Boolean)).size,
+    personasConMultiRol,
+  };
+}
+
+/** Bundle único para las vistas interactivas (evita N round-trips al cambiar filtros). */
+export function getResumenFiltrado(filtros: FiltrosEncuesta) {
+  return {
+    kpis: getKpisFiltrados(filtros),
+    distribucionRol: getDistribucionRolFiltrada(filtros),
+    distribucionSede: getDistribucionSedeFiltrada(filtros),
+    rankingPreguntas: {
+      P1: getRankingPreguntaFiltrado("P1", filtros),
+      P2: getRankingPreguntaFiltrado("P2", filtros),
+      P3: getRankingPreguntaFiltrado("P3", filtros),
+      P4: getRankingPreguntaFiltrado("P4", filtros),
+    },
+    serieTiempo: getSerieTiempoFiltrada(filtros),
+  };
+}
+
 export function getFacultadesDisponibles(): string[] {
   const set = new Set<string>();
   for (const p of getPersonasRaw()) if (p.facultad) set.add(p.facultad);

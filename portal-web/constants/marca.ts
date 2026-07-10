@@ -47,3 +47,22 @@ export const SEDES_ORDENADAS: Sede[] = [
   "Zipaquirá",
   "Bogotá",
 ];
+
+export const ROLES_ORDENADOS: Rol[] = [
+  "Estudiante",
+  "Graduado",
+  "Gestores del Conocimiento y el Aprendizaje",
+  "Administrativo",
+  "Ops-Apa",
+];
+
+export const FACULTADES_ORDENADAS: string[] = [
+  "Ingeniería",
+  "Ciencias administrativas y contables",
+  "Ciencias agropecuarias",
+  "Ciencias del deporte y la educación física",
+  "Ciencias de la salud",
+  "Ciencias sociales, humanidades y ciencias políticas",
+  "Instituto de posgrados",
+  "Educación",
+];
