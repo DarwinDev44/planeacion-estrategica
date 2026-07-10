@@ -17,9 +17,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Logo className="px-5 pb-6" />
         <SidebarNav />
         <div className="mt-auto px-5 pt-6 text-xs text-muted-foreground">
-          Encuesta institucional
+          Comité de Apoyo Institucional
           <br />
-          24 feb – 24 jun 2026
+          Corte: 9 jul 2026
         </div>
       </aside>
 
@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-8">
           <Button
             variant="ghost"
@@ -73,7 +73,7 @@ function Logo({ className, compact = false }: { className?: string; compact?: bo
         className="h-auto w-auto"
       />
       <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
-        Participación, tu voz es fundamental
+        Seguimiento participación actividades
       </p>
     </div>
   );
