@@ -19,13 +19,10 @@ const ICONO_TABLA: Record<TablaMetaId, LucideIcon> = {
   graduados: GraduationCap,
 };
 
-// Semáforo de cumplimiento — reutiliza los tokens de estado ya validados del
-// sistema de diseño (success/warning/destructive), no colores inventados.
-function colorPorcentaje(pct: number): string {
-  if (pct >= 80) return "var(--success)";
-  if (pct >= 50) return "var(--warning)";
-  return "var(--destructive)";
-}
+const ETIQUETA_PARTICIPACION = {
+  no: "No",
+  si: "Sí",
+} as const;
 
 export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
   const [busqueda, setBusqueda] = useState("");
@@ -91,12 +88,12 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
               <TableRow className="border-none hover:bg-primary">
                 <TableHead className="text-[11px] text-primary-foreground">{tabla.columnaEtiqueta}</TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground uppercase">
-                  {primeraCol}
+                  {ETIQUETA_PARTICIPACION[primeraCol]}
                 </TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground uppercase">
-                  {segundaCol}
+                  {ETIQUETA_PARTICIPACION[segundaCol]}
                 </TableHead>
-                <TableHead className="text-right text-[11px] text-primary-foreground">Total general</TableHead>
+                <TableHead className="text-right text-[11px] text-primary-foreground">Total</TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground">Porcentaje</TableHead>
               </TableRow>
             </TableHeader>
@@ -118,16 +115,8 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
                   <TableCell className="text-right text-[12px] font-semibold tabular-nums">
                     {formatNumero(f.total)}
                   </TableCell>
-                  <TableCell className="text-right text-[12px] tabular-nums">
-                    <span
-                      className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums"
-                      style={{
-                        color: colorPorcentaje(f.porcentaje),
-                        backgroundColor: `color-mix(in srgb, ${colorPorcentaje(f.porcentaje)} 14%, transparent)`,
-                      }}
-                    >
-                      {formatPorcentajeMetas(f.porcentaje)}
-                    </span>
+                  <TableCell className="text-right text-[12px] font-semibold tabular-nums">
+                    {formatPorcentajeMetas(f.porcentaje)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -152,16 +141,8 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
                   <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
                     {formatNumero(totales.total)}
                   </TableCell>
-                  <TableCell className="text-right text-[12px] tabular-nums">
-                    <span
-                      className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums"
-                      style={{
-                        color: colorPorcentaje(totales.porcentaje),
-                        backgroundColor: `color-mix(in srgb, ${colorPorcentaje(totales.porcentaje)} 18%, transparent)`,
-                      }}
-                    >
-                      {formatPorcentajeMetas(totales.porcentaje)}
-                    </span>
+                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-foreground">
+                    {formatPorcentajeMetas(totales.porcentaje)}
                   </TableCell>
                 </TableRow>
               </TableFooter>
