@@ -8,26 +8,9 @@ interface KpiCardProps {
   detalle?: string;
   icono: LucideIcon;
   className?: string;
-  compacto?: boolean;
 }
 
-export function KpiCard({ etiqueta, valor, detalle, icono: Icono, className, compacto = false }: KpiCardProps) {
-  if (compacto) {
-    return (
-      <Card className={cn("border-border/70 gap-0 py-0", className)}>
-        <CardContent className="flex items-center gap-2.5 px-3.5 py-2.5">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
-            <Icono className="size-4" aria-hidden />
-          </span>
-          <div className="flex min-w-0 flex-col">
-            <span className="truncate text-[11px] font-medium text-muted-foreground">{etiqueta}</span>
-            <span className="font-heading text-xl font-bold tabular-nums leading-tight">{valor}</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export function KpiCard({ etiqueta, valor, detalle, icono: Icono, className }: KpiCardProps) {
   return (
     <Card className={cn("border-border/70", className)}>
       <CardContent className="flex items-start justify-between gap-3 px-5 py-4">

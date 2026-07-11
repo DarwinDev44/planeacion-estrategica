@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -12,9 +12,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[1800px]">
+    <div className="mx-auto flex min-h-screen w-full max-w-[1600px]">
       {/* Sidebar desktop */}
-      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-border bg-sidebar py-5 lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-sidebar py-5 lg:flex">
         <Logo className="px-5 pb-6" />
         <SidebarNav />
         <div className="mt-auto flex flex-col gap-2 px-5 pt-6">
@@ -26,9 +26,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             Volver al inicio
           </Link>
           <p className="text-xs text-muted-foreground">
-            Encuesta institucional
+            Comité de Apoyo Institucional
             <br />
-            24 feb – 24 jun 2026
+            Corte: 9 jul 2026
           </p>
         </div>
       </aside>
@@ -56,8 +56,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      <div className="flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-8">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:px-8">
           <Button
             variant="ghost"
             size="icon"
@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-5 lg:px-8 lg:py-6">{children}</main>
+        <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">{children}</main>
       </div>
     </div>
   );
@@ -93,7 +93,7 @@ function Logo({ className, compact = false }: { className?: string; compact?: bo
         className="h-auto w-auto"
       />
       <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
-        Participación, tu voz es fundamental
+        Seguimiento participación actividades
       </p>
     </Link>
   );
