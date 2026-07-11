@@ -4,6 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  Fuerza el layout de escritorio en cualquier dispositivo. La clase
+  `forzar-escritorio` la agrega app/layout.tsx por JS solo cuando la pantalla
+  física es < 1280px (ver el comentario ahí sobre por qué es una clase y no un
+  media query de ancho). Sin esa clase (pantallas >= 1280, o navegadores de
+  escritorio que ignoran el <meta viewport>), #app-frame queda sin estilos:
+  el sitio se comporta exactamente igual que hoy (fluido, hasta
+  max-w-[1600px] en AppShell).
+*/
+html.forzar-escritorio #app-frame {
+  width: 1280px;
+  zoom: var(--escala-escritorio, 1);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

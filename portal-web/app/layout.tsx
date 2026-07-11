@@ -4,27 +4,63 @@ import { Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/layout/app-providers";
 
-// Ancho de layout fijo (px) al que se fuerza toda la interfaz. Debe ser >= al
-// breakpoint más alto usado en la app (xl = 1280) para que todo resuelva a su
-// estado de escritorio.
+// Debe ser >= al breakpoint Tailwind más alto usado en la app (xl = 1280px),
+// para que sm/md/lg/xl siempre resuelvan a su estado desktop.
 const ANCHO_ESCRITORIO = 1280;
 
-// En móvil, el meta viewport que emite Next trae `initial-scale=1`, lo que
-// mostraría la maqueta de 1280px a escala 1:1 (recortada, con scroll). Este
-// script se ejecuta antes de pintar y recalcula la escala inicial para que la
-// composición de escritorio completa se encaje exactamente al ancho del
-// dispositivo. En escritorio no aplica: los navegadores de escritorio ignoran
-// el meta viewport, y la condición `screen.width < ANCHO` los excluye.
-const AJUSTE_VIEWPORT_ESCRITORIO = `(() => {
-  try {
-    var anchoDispositivo = window.screen && window.screen.width;
-    if (!anchoDispositivo || anchoDispositivo >= ${ANCHO_ESCRITORIO}) return;
-    var escala = anchoDispositivo / ${ANCHO_ESCRITORIO};
-    var contenido = 'width=${ANCHO_ESCRITORIO}, initial-scale=' + escala;
-    var meta = document.querySelector('meta[name="viewport"]');
-    if (!meta) { meta = document.createElement('meta'); meta.name = 'viewport'; document.head.appendChild(meta); }
-    meta.setAttribute('content', contenido);
-  } catch (e) {}
+/**
+ * El <meta viewport> se fija SIEMPRE en 1280 (no `device-width`). Esto es
+ * necesario, no cosmético: si se declarara `width=device-width` y luego
+ * #app-frame tuviera `width:1280px` vía CSS, el navegador expandiría por su
+ * cuenta el viewport para contener ese ancho — y entonces `window.innerWidth`
+ * dejaría de reflejar el ancho real del dispositivo, invalidando cualquier
+ * cálculo de escala hecho a partir de él (se probó y reprodujo este ciclo).
+ * Fijar 1280 de entrada evita esa ambigüedad: el viewport siempre es 1280 en
+ * móvil, sin importar el contenido.
+ */
+export const viewport: Viewport = {
+  width: ANCHO_ESCRITORIO,
+  initialScale: 1,
+};
+
+/**
+ * Con el viewport ya anclado en 1280, `window.innerWidth` dejó de servir para
+ * saber el ancho real del dispositivo (siempre da 1280). Se usa
+ * `window.screen.width` en su lugar: es una propiedad de la pantalla física,
+ * ajena a cualquier <meta viewport> o CSS de la página.
+ *
+ * Con esa medida se decide si el dispositivo es "móvil" (pantalla < 1280) y,
+ * de serlo, se agrega la clase `forzar-escritorio` a <html> y se publica
+ * `--escala-escritorio` (pantalla / 1280) como variable CSS. La regla
+ * correspondiente en globals.css usa esa clase (no un media query — un media
+ * query sobre el ancho del viewport caería en el mismo ciclo de arriba, ya
+ * que el viewport está fijo en 1280) para poner #app-frame en
+ * `width:1280px; zoom: var(--escala-escritorio)`.
+ *
+ * Se eligió `zoom` (no `transform: scale`) porque además de escalar
+ * visualmente, `zoom` SÍ reduce el alto realmente ocupado en el documento
+ * (transform no lo hace, dejaría un hueco en blanco debajo) y porque, al ser
+ * una propiedad CSS que se reevalúa igual que cualquier otra en cada
+ * resize/rotación, no depende de que el motor del navegador reinterprete el
+ * <meta viewport> después de ya haber pintado — que es donde fallaba el
+ * enfoque anterior (mutar `initial-scale` por JS tras la carga) de forma
+ * intermitente en componentes que se remiden a sí mismos con ResizeObserver,
+ * como los gráficos de recharts (`ResponsiveContainer`): al medir su
+ * contenedor, siguen viendo el ancho real de 1280px — solo cambia la escala
+ * con la que se pinta todo el conjunto — así que su layout interno ya no
+ * varía entre dispositivos.
+ */
+const ESCALA_ESCRITORIO = `(() => {
+  function actualizar() {
+    var anchoPantalla = window.screen && window.screen.width;
+    var esMovil = anchoPantalla > 0 && anchoPantalla < ${ANCHO_ESCRITORIO};
+    document.documentElement.classList.toggle('forzar-escritorio', esMovil);
+    var escala = esMovil ? anchoPantalla / ${ANCHO_ESCRITORIO} : 1;
+    document.documentElement.style.setProperty('--escala-escritorio', String(escala));
+  }
+  actualizar();
+  window.addEventListener('resize', actualizar);
+  window.addEventListener('orientationchange', actualizar);
 })();`;
 
 const montserrat = Montserrat({
@@ -47,18 +83,6 @@ export const metadata: Metadata = {
     "Portal de visualización estratégica institucional: explora los resultados del diagnóstico de participación para la construcción del Plan Estratégico de la Universidad de Cundinamarca.",
 };
 
-/**
- * Viewport de ancho fijo para que TODOS los dispositivos rendericen exactamente
- * la misma interfaz de escritorio. Al declarar un ancho de layout fijo, los
- * breakpoints de Tailwind (sm/md/lg/xl) siempre resuelven a su estado desktop;
- * el script `AJUSTE_VIEWPORT_ESCRITORIO` completa el efecto encajando esa
- * maqueta al ancho real del dispositivo en móvil.
- */
-export const viewport: Viewport = {
-  width: ANCHO_ESCRITORIO,
-  initialScale: 1,
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -71,10 +95,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Script id="ajuste-viewport-escritorio" strategy="beforeInteractive">
-          {AJUSTE_VIEWPORT_ESCRITORIO}
+        <Script id="escala-escritorio" strategy="beforeInteractive">
+          {ESCALA_ESCRITORIO}
         </Script>
-        <AppProviders>{children}</AppProviders>
+        <div id="app-frame">
+          <AppProviders>{children}</AppProviders>
+        </div>
       </body>
     </html>
   );
