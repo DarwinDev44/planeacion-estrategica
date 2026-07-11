@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 interface TemaPlan {
   titulo: string;
-  descripcion: string;
+  descripcion?: string;
   icono: typeof Users2;
   href: string | null;
 }
@@ -16,19 +16,17 @@ interface TemaPlan {
 const TEMAS: TemaPlan[] = [
   {
     titulo: "Participación, tu voz es fundamental",
-    descripcion: "Resultados de la encuesta institucional: quién participó y qué prioriza la comunidad",
+    descripcion: "Participación: tu encuesta, tu voz es fundamental",
     icono: Users2,
     href: "/encuesta",
   },
   {
     titulo: "Valoración momentos",
-    descripcion: "Seguimiento al avance de los momentos de construcción del plan",
     icono: Target,
     href: "/seguimiento",
   },
   {
     titulo: "Accesos a CAI Planeación estratégica 2027 – 2037",
-    descripcion: "Comité de Apoyo Institucional: documentos y espacios de trabajo",
     icono: Sparkles,
     href: "/accesos-cai",
   },
@@ -101,8 +99,8 @@ export function LandingClient() {
                 2027 – 2037
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80 lg:text-base">
-                Un espacio para construir juntos el rumbo de la universidad: explora la participación de
-                la comunidad y el avance de cada módulo del plan.
+                Analítica de datos del Plan Estratégico: cifras y avances en tiempo real de la
+                construcción colectiva de la universidad.
               </p>
             </motion.div>
 
@@ -172,13 +170,15 @@ function TemaBoton({ tema }: { tema: TemaPlan }) {
       >
         <Icono className="size-5" aria-hidden />
       </span>
-      <span className="flex min-w-0 flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 flex-col justify-center">
         <span className={cn("text-sm font-semibold", disponible ? "text-white" : "text-white/70")}>
           {tema.titulo}
         </span>
-        <span className={cn("text-xs leading-snug", disponible ? "text-white/75" : "text-white/45")}>
-          {tema.descripcion}
-        </span>
+        {tema.descripcion ? (
+          <span className={cn("text-xs leading-snug", disponible ? "text-white/75" : "text-white/45")}>
+            {tema.descripcion}
+          </span>
+        ) : null}
       </span>
       {disponible ? (
         <ArrowRight className="size-4 shrink-0 text-white/70 transition-transform group-hover:translate-x-0.5" />
