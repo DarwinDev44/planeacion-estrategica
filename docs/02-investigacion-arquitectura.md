@@ -73,56 +73,52 @@ persona_respuesta (grano: 1 fila = 1 persona = 1 encuesta)
 
 **Tremor** (listado en el stack original) fue retirado: la versión publicada (`@tremor/react` 3.18.7) exige React `^18`, incompatible con **React 19** — requisito explícito y no negociable del stack. Se reemplazó por **Recharts 3 + los primitivos `chart.tsx` de shadcn/ui**, que sí soportan React 19 y permiten aplicar directamente la paleta institucional validada (ver `03-design-system-dashboards.md`) sin pelear contra el sistema de theming propio de Tremor. Ninguna otra pieza del stack requerido cambió.
 
-### 3.1 Estrategia de datos — Single Source of Truth
+### 3.1 Estrategia de datos
 
-**Los dos archivos `.xlsx` son la única fuente autorizada de información** (`portal-web/data/source/participacion.xlsx` e `idxroles.xlsx`, comitteados al repo). No existe ningún JSON estático generado a mano ni ningún dato duplicado dentro del proyecto: la aplicación lee y transforma el Excel **en vivo, en cada request**, con una caché en memoria que se invalida automáticamente cuando cambia el archivo:
+El dataset es un **snapshot cerrado** (encuesta finalizada el 24 jun 2026), no un sistema transaccional en vivo. Se opta por una arquitectura de **datos estáticos pre-agregados en build-time**, sin base de datos:
 
 ```
-Excel (.xlsx, en data/source/)
-  →  ExcelEncuestaDataSource (lee + transforma en memoria, cachea por mtime del archivo)
-  →  repositories/encuestaRepository.ts (única capa de acceso a datos de toda la app)
-  →  Server Components / Route Handlers
+Excel (.xlsx)  →  script ETL (Node, en /scripts)  →  JSON normalizado y agregados pre-calculados (/data)  →  Server Components leen /data en build/request time
 ```
 
-- **`repositories/datasource/excel-data-source.ts`**: implementa `EncuestaDataSource`. En cada llamada compara `fs.statSync(archivo).mtimeMs` contra la última lectura; si el archivo cambió (alguien lo editó y guardó), vuelve a parsearlo — si no, devuelve el resultado cacheado en memoria. **No hay paso manual**: guardar el Excel es suficiente para que el sitio muestre los datos nuevos en la siguiente petición, sin reiniciar el servidor ni ejecutar ningún script. Verificado en desarrollo: modificar 500 filas del Excel y refrescar el navegador, sin tocar el servidor, actualizó los conteos correctamente; restaurar el archivo original los devolvió a su valor previo.
-- **`repositories/datasource/types.ts`**: define la interfaz `EncuestaDataSource` (`getPersonas()`, `getRolesAsignados()`, `getRespuestas()`). `encuestaRepository.ts` —y por lo tanto **toda la aplicación**— depende únicamente de esta interfaz, nunca de Excel directamente. Migrar a PostgreSQL, MySQL, SQL Server o una API REST en el futuro significa escribir una nueva clase que implemente `EncuestaDataSource` (p. ej. `SqlEncuestaDataSource`) y cambiar una sola línea en `repositories/datasource/index.ts`; ningún componente, página ni hook necesita modificarse.
-- Los Server Components consultan `repositories/encuestaRepository.ts` — **nunca** el cliente descarga las 10.448 filas crudas; cada vista pide solo el agregado que necesita.
-- Filtros interactivos (rol, sede, facultad) se resuelven mediante el **Route Handler** `app/api/filtros/route.ts`, que agrega sobre los datos ya cargados en el servidor y devuelve solo el resultado agregado — el cross-filtering no mueve datos crudos al navegador.
-- `next.config.ts` declara `outputFileTracingIncludes` para que los `.xlsx` viajen dentro del bundle serverless al desplegar (p. ej. en Vercel), donde el file-tracing automático no los detectaría por no ser código.
-- Rendimiento: parsear ~10.448 filas × 53 columnas toma un tiempo despreciable (por debajo de lo perceptible en una request), y solo ocurre cuando el archivo realmente cambió — el resto de las peticiones sirven desde la caché en memoria del proceso.
+- `scripts/etl.ts`: lee los 2 `.xlsx`, hace el *unpivot* de los 4 bloques Sede/Facultad/Programa y de las 4 preguntas multi-selección, normaliza fechas, y escribe JSON tipado en `data/`.
+- Los Server Components consultan los JSON vía la capa `repositories/` — **nunca** el cliente descarga las 10.448 filas crudas; cada vista pide solo el agregado que necesita.
+- Filtros interactivos (rol, sede, facultad, programa, rango de fecha) se resuelven mediante **Route Handlers** (`app/api/.../route.ts`) que agregan sobre los JSON en el servidor y devuelven solo el resultado agregado — así el cross-filtering no mueve datos crudos al navegador.
+- Diseño pensado para escalar: si en el futuro los datos migran a una base de datos real (nuevas encuestas, actualización periódica), solo cambia la implementación interna de `repositories/`, no los componentes ni los hooks que los consumen (Dependency Inversion).
 
 ### 3.2 Estructura de carpetas
 
 ```
 app/
   (dashboard)/
-    layout.tsx              # AppShell: navbar superior + pestañas + botón inicio
+    layout.tsx              # Sidebar + Navbar + Breadcrumbs
     page.tsx                # Dashboard ejecutivo (home)
-    participacion/page.tsx  # Quién participó (rol, sede, facultad)
+    participacion/page.tsx  # Quién participó (rol, sede, facultad, programa)
     vision-estrategica/page.tsx  # Las 4 preguntas + cruce + panel "Otro"
     exploracion/page.tsx    # Tabla dinámica / drill-down libre + export
   api/
     filtros/route.ts        # Agregaciones bajo demanda según filtros activos
   layout.tsx                 # Root layout, fuentes, metadata, providers
 components/
-  ui/                        # Primitivos shadcn (Button, Select, Tabs, Sheet, Toast...)
-  charts/                    # RankedBarChart, TimeSeriesChart, SedeBarList, OtroPanel...
-  kpi/                       # KpiCard, InsightCard
-  layout/                    # AppShell, FilterBar
-  dashboard/                 # Client Components de cada página (consumen filtros en vivo)
-hooks/                       # useResumenFiltrado (TanStack Query + store de filtros)
-repositories/
-  encuestaRepository.ts      # única capa de acceso a datos de toda la app
-  datasource/
-    types.ts                 # interfaz EncuestaDataSource (contrato, agnóstico de origen)
-    excel-data-source.ts      # implementación: lee/transforma Excel, cachea por mtime
-    index.ts                  # único punto de construcción del data source
-lib/                         # utilidades transversales (formatters, cn, etc.)
+  ui/                        # Primitivos shadcn (Button, Select, Tabs, Drawer, Toast...)
+  charts/                    # Wrappers Recharts/Tremor con tema institucional aplicado
+  kpi/                       # KPICard, MetricCard
+  layout/                    # Sidebar, Navbar, Breadcrumbs, FilterBar
+modules/
+  participacion/             # lógica + componentes específicos del dominio "quién participó"
+  vision-estrategica/        # lógica + componentes específicos de las 4 preguntas
+  exploracion/
+hooks/                       # useFiltrosGlobales, useAgregado, etc.
+services/                    # llamadas a /api desde el cliente (React Query)
+repositories/                # acceso a los JSON pre-agregados (server-only)
+lib/                         # utilidades transversales (formatters, colores por sede, etc.)
 store/                       # Zustand: filtros globales compartidos entre dashboards
-types/                       # Persona, RolAsignado, RespuestaPregunta, FiltrosEncuesta...
-constants/                   # paleta de marca, preguntas, navegación, textos es-CO
-data/source/                 # *.xlsx — única fuente de datos, comitteada al repo
-public/assets/                # logos oficiales
+types/                       # Persona, RolAsignado, RespuestaPregunta, OpcionPregunta, Sede...
+constants/                   # paleta de marca, mapeos sede→color, textos es-CO
+styles/                      # tokens CSS, Tailwind config
+scripts/etl.ts                # ETL de los .xlsx → data/*.json
+data/                         # salida del ETL (JSON versionado, no editado a mano)
+public/assets/                # logos oficiales, texturas del manual
 ```
 
 ### 3.3 Gestión de estado
@@ -137,20 +133,13 @@ public/assets/                # logos oficiales
 type Rol = "Estudiante" | "Graduado" | "Gestores del Conocimiento y el Aprendizaje" | "Administrativo" | "Ops-Apa"
 type Sede = "Fusagasugá" | "Facatativá" | "Chía" | "Soacha" | "Ubaté" | "Girardot" | "Zipaquirá" | "Bogotá"
 
-interface Persona {
-  id: number
-  fechaInicio: string     // ISO 8601
-  rolPrincipal: Rol
-  cantidadRoles: number
-  sede: Sede | null
-  facultad: string | null       // derivado del diccionario Programa→Facultad
-  programaOArea: string | null  // académico o administrativo, según el rol
-}
-
 interface RolAsignado {
   personaId: number
   rol: Rol
-  cantidadRoles: number    // desde idxroles.xlsx, ya normalizado
+  sede?: Sede
+  facultad?: string
+  programa?: string
+  area?: string           // solo para roles administrativos
 }
 
 interface RespuestaPregunta {
@@ -161,6 +150,6 @@ interface RespuestaPregunta {
 }
 ```
 
-### 3.5 Patrón repositorio + capa de abstracción del origen de datos
+### 3.5 Patrón repositorio
 
-`repositories/encuestaRepository.ts` expone funciones puras (`getKpisFiltrados()`, `getDistribucionRolFiltrada()`, `getRankingPreguntaFiltrado(preguntaId, filtros)`, `getSerieTiempoFiltrada()`, `getMatrizCruce()`...) que internamente llaman a `getEncuestaDataSource()` — nunca leen Excel, JSON o SQL directamente. Esa función devuelve una instancia de `EncuestaDataSource` (interfaz con 3 métodos: `getPersonas`, `getRolesAsignados`, `getRespuestas`); hoy la implementación es `ExcelEncuestaDataSource`, mañana podría ser `SqlEncuestaDataSource` sin que ninguna de las funciones anteriores, ni los componentes que las consumen, cambien una sola línea.
+`repositories/encuestaRepository.ts` expone funciones puras (`getKpisEjecutivos()`, `getDistribucionPorRol()`, `getRankingPregunta(preguntaId, filtros)`, `getSeriesTiempo()`...) que hoy leen de `data/*.json` y mañana podrían leer de una base de datos, sin que ningún componente o hook cliente necesite cambiar.

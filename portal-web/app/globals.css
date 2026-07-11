@@ -43,6 +43,8 @@
   --color-warning: var(--warning);
   --color-brand-gold: var(--brand-gold);
   --color-brand-accent: var(--brand-accent);
+  --color-estado-finalizado: var(--estado-finalizado);
+  --color-estado-pendiente: var(--estado-pendiente);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -79,6 +81,11 @@
   --warning: #f7931e; /* PANTONE 144 C */
   --brand-gold: #daaa00; /* PANTONE 110 C */
   --brand-accent: #79c000; /* PANTONE 3561 C */
+
+  /* Estados de actividad CAI — par validado (validate_palette, modo claro).
+     El contraste del ámbar exige etiquetas directas visibles junto al gráfico. */
+  --estado-finalizado: #007b3e;
+  --estado-pendiente: #f7931e;
 
   --border: rgba(20, 20, 18, 0.1);
   --input: rgba(20, 20, 18, 0.14);
@@ -125,6 +132,10 @@
   --warning: #e8b92e;
   --brand-gold: #e8b92e;
   --brand-accent: #79c000;
+
+  /* Estados de actividad CAI — par validado (validate_palette, modo oscuro) */
+  --estado-finalizado: #2cae72;
+  --estado-pendiente: #a6821e;
 
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);

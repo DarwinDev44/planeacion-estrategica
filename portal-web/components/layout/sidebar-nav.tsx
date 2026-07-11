@@ -9,7 +9,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1.5 px-3" aria-label="Navegación de la sección">
+    <nav className="flex flex-col gap-1 px-3" aria-label="Navegación principal">
       {NAVEGACION.map((item) => {
         const activo = pathname === item.href;
         const Icono = item.icono;
@@ -20,20 +20,13 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             aria-current={activo ? "page" : undefined}
             className={cn(
-              "group flex items-start gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               activo
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-foreground/75 hover:bg-accent hover:text-accent-foreground"
             )}
           >
-            <span
-              className={cn(
-                "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg",
-                activo ? "bg-white/15" : "bg-secondary text-primary group-hover:bg-white"
-              )}
-            >
-              <Icono className="size-4" aria-hidden />
-            </span>
+            <Icono className="size-[18px] shrink-0" aria-hidden />
             <span className="flex flex-col leading-tight">
               <span>{item.etiqueta}</span>
               <span
