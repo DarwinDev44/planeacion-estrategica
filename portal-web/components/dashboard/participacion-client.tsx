@@ -122,7 +122,7 @@ export function ParticipacionClient({
                     <TableCell className="text-[13px]">{f.facultad}</TableCell>
                     <TableCell className="text-right text-[13px] tabular-nums">{formatNumero(f.conteo)}</TableCell>
                     <TableCell className="text-right text-[13px] tabular-nums">
-                      {formatPorcentaje(Math.round((f.conteo / totalFacultades) * 1000) / 10)}
+                      {formatPorcentaje((f.conteo / totalFacultades) * 100)}
                     </TableCell>
                   </TableRow>
                 ))}
