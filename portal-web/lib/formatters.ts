@@ -14,6 +14,7 @@ export function formatNumero(n: number): string {
 }
 
 export function formatPorcentaje(n: number): string {
+  if (n > 0 && n < 0.05) return "<0,1%";
   return `${percentFormatter.format(n)}%`;
 }
 
