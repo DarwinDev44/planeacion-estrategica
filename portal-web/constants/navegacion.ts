@@ -11,19 +11,19 @@ export interface ItemNavegacion {
 export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/encuesta",
-    etiqueta: "Panorama de participación",
+    etiqueta: "Panorama de participación, encuesta tu voz fundamental",
     descripcion: "Panorama general de la participación",
     icono: LayoutDashboard,
   },
   {
     href: "/encuesta/participacion",
-    etiqueta: "Quién participó",
+    etiqueta: "Quién participó, encuesta tu voz fundamental",
     descripcion: "Rol, sede, facultad y programa",
     icono: Users,
   },
   {
     href: "/encuesta/vision-estrategica",
-    etiqueta: "Visión estratégica",
+    etiqueta: "Visión estratégica, encuesta tu voz fundamental",
     descripcion: "Las 4 preguntas que orientan el plan",
     icono: Compass,
   },

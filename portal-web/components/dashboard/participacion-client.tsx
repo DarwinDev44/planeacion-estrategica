@@ -42,7 +42,9 @@ export function ParticipacionClient({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">Quién participó</h1>
+          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
+            Quién participó, encuesta tu voz fundamental
+          </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Composición de los {formatNumero(kpis.totalParticipantes)} participantes por rol, sede y facultad
             {isFetching ? (

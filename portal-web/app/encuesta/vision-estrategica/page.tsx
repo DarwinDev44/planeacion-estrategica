@@ -9,7 +9,7 @@ import {
   getRespuestasOtroPreagregadas,
 } from "@/repositories/encuestaRepository";
 
-export const metadata: Metadata = { title: "Visión estratégica" };
+export const metadata: Metadata = { title: "Visión estratégica, encuesta tu voz fundamental" };
 
 export default function VisionEstrategicaPage() {
   const inicial = {

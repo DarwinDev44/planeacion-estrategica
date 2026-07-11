@@ -32,7 +32,9 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       {/* Header: título + filtros */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">Panorama de participación</h1>
+          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
+            Panorama de participación, encuesta tu voz fundamental
+          </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {hayFiltros ? "Filtrado" : "Todos los registros"}
             {isFetching ? (
