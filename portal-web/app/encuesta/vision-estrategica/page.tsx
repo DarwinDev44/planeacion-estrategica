@@ -1,13 +1,18 @@
-import { ResumenEjecutivoClient } from "@/components/dashboard/resumen-ejecutivo-client";
+import type { Metadata } from "next";
+import { VisionEstrategicaClient } from "@/components/dashboard/vision-estrategica-client";
 import {
   getKpisEjecutivos,
   getDistribucionRolPreagregada,
   getDistribucionSedePreagregada,
   getRankingPreguntasPreagregado,
   getSerieTiempoPreagregada,
+  getRespuestasOtroPreagregadas,
+  getMatrizCruce,
 } from "@/repositories/encuestaRepository";
 
-export default function ResumenEjecutivoPage() {
+export const metadata: Metadata = { title: "Visión estratégica" };
+
+export default function VisionEstrategicaPage() {
   const inicial = {
     kpis: getKpisEjecutivos(),
     distribucionRol: getDistribucionRolPreagregada(),
@@ -16,5 +21,11 @@ export default function ResumenEjecutivoPage() {
     serieTiempo: getSerieTiempoPreagregada(),
   };
 
-  return <ResumenEjecutivoClient inicial={inicial} />;
+  return (
+    <VisionEstrategicaClient
+      inicial={inicial}
+      respuestasOtro={getRespuestasOtroPreagregadas()}
+      cruce={getMatrizCruce("P3", "P4", 3)}
+    />
+  );
 }

@@ -24,13 +24,13 @@ const TEMAS: TemaPlan[] = [
     titulo: "Valoración momentos",
     descripcion: "Seguimiento al avance de los momentos de construcción del plan",
     icono: Target,
-    href: null,
+    href: "/seguimiento",
   },
   {
     titulo: "Accesos a CAI Planeación estratégica 2027 – 2037",
     descripcion: "Comité de Apoyo Institucional: documentos y espacios de trabajo",
     icono: Sparkles,
-    href: null,
+    href: "/accesos-cai",
   },
 ];
 
