@@ -1,0 +1,6 @@
+# Archivos de bloqueo temporal de Microsoft Office (se crean al tener un .xlsx/.docx abierto)
+~$*
+
+# Vercel (credenciales y configuración local del CLI)
+.vercel
+.env*
