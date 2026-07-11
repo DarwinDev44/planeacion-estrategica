@@ -7,7 +7,6 @@ import {
   getRankingPreguntasPreagregado,
   getSerieTiempoPreagregada,
   getRespuestasOtroPreagregadas,
-  getMatrizCruce,
 } from "@/repositories/encuestaRepository";
 
 export const metadata: Metadata = { title: "Visión estratégica" };
@@ -22,10 +21,6 @@ export default function VisionEstrategicaPage() {
   };
 
   return (
-    <VisionEstrategicaClient
-      inicial={inicial}
-      respuestasOtro={getRespuestasOtroPreagregadas()}
-      cruce={getMatrizCruce("P3", "P4", 3)}
-    />
+    <VisionEstrategicaClient inicial={inicial} respuestasOtro={getRespuestasOtroPreagregadas()} />
   );
 }

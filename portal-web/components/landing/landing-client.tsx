@@ -71,10 +71,10 @@ export function LandingClient() {
           <Image
             src="/assets/logos/imagotipo-horizontal-blanco.png"
             alt="Universidad de Cundinamarca"
-            width={190}
-            height={45}
+            width={230}
+            height={55}
             priority
-            className="h-9 w-auto lg:h-10"
+            className="h-11 w-auto lg:h-14"
           />
           <span className="hidden text-sm font-medium text-white/85 sm:inline">
             Plan Estratégico 2027 – 2037
@@ -106,14 +106,14 @@ export function LandingClient() {
               initial={prefiereReducido ? false : { opacity: 0, scale: 0.94 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-md overflow-hidden rounded-2xl bg-white p-3 shadow-2xl shadow-black/30"
+              className="w-full max-w-lg lg:max-w-2xl"
             >
               <Image
                 src="/assets/campana/collage-estudiantes.png"
                 alt="Comunidad universitaria de la Universidad de Cundinamarca"
                 width={879}
                 height={524}
-                className="h-auto w-full rounded-lg"
+                className="h-auto w-full drop-shadow-[0_20px_45px_rgba(0,0,0,0.45)]"
                 priority
               />
             </motion.div>

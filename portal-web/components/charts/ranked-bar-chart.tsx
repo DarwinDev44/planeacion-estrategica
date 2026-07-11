@@ -24,6 +24,59 @@ interface RankedBarChartProps {
   ocultarAccion?: boolean;
 }
 
+const ALTURA_LINEA = 12;
+const MAX_LINEAS = 6;
+
+// Envuelve el texto en varias líneas por palabra completa, en vez de cortarlo con "...".
+function envolverEtiqueta(texto: string, maxCaracteres: number, maxLineas = MAX_LINEAS): string[] {
+  const palabras = texto.split(" ");
+  const lineas: string[] = [];
+  let actual = "";
+  for (const palabra of palabras) {
+    const candidato = actual ? `${actual} ${palabra}` : palabra;
+    if (candidato.length > maxCaracteres && actual) {
+      lineas.push(actual);
+      actual = palabra;
+    } else {
+      actual = candidato;
+    }
+  }
+  if (actual) lineas.push(actual);
+
+  if (lineas.length > maxLineas) {
+    const resto = lineas.slice(maxLineas - 1).join(" ");
+    const recortadas = lineas.slice(0, maxLineas - 1);
+    recortadas.push(resto.length > maxCaracteres ? `${resto.slice(0, maxCaracteres - 1)}…` : resto);
+    return recortadas;
+  }
+  return lineas;
+}
+
+function EtiquetaEjeMultilinea({
+  x,
+  y,
+  payload,
+  maxCaracteres,
+}: {
+  x?: number;
+  y?: number;
+  payload?: { value: string };
+  maxCaracteres: number;
+}) {
+  if (x === undefined || y === undefined || !payload) return null;
+  const lineas = envolverEtiqueta(payload.value, maxCaracteres);
+  const offsetInicial = 4 - ((lineas.length - 1) * ALTURA_LINEA) / 2;
+  return (
+    <text x={x} y={y} textAnchor="end" fontSize={11} fill="var(--muted-foreground)">
+      {lineas.map((linea, i) => (
+        <tspan key={`${i}-${linea}`} x={x} dy={i === 0 ? offsetInicial : ALTURA_LINEA}>
+          {linea}
+        </tspan>
+      ))}
+    </text>
+  );
+}
+
 export function RankedBarChart({
   datos,
   titulo,
@@ -36,6 +89,12 @@ export function RankedBarChart({
   const [vistaTabla, setVistaTabla] = useState(false);
   const id = useId();
   const ordenados = [...datos].sort((a, b) => b.conteo - a.conteo);
+
+  const maxLineas = Math.max(
+    1,
+    ...ordenados.map((d) => envolverEtiqueta(d.etiqueta, truncarEn).length)
+  );
+  const filaAltura = Math.max(alturaFila, maxLineas * ALTURA_LINEA + 16);
 
   function barraRedondeada(props: BarShapeProps) {
     const { x, y, width, height, index } = props;
@@ -90,7 +149,7 @@ export function RankedBarChart({
           </TableBody>
         </Table>
       ) : (
-        <div style={{ height: Math.max(ordenados.length * alturaFila, 90) }}>
+        <div style={{ height: Math.max(ordenados.length * filaAltura, 90) }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={ordenados}
@@ -104,10 +163,9 @@ export function RankedBarChart({
                 type="category"
                 dataKey="etiqueta"
                 width={truncarEn * 6}
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(v: string) => (v.length > truncarEn ? `${v.slice(0, truncarEn)}…` : v)}
+                tick={<EtiquetaEjeMultilinea maxCaracteres={truncarEn} />}
               />
               <Tooltip
                 cursor={{ fill: "var(--muted)" }}

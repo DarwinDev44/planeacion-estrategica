@@ -87,8 +87,8 @@ function Logo({ className, compact = false }: { className?: string; compact?: bo
       <Image
         src="/assets/logos/imagotipo-horizontal-color.png"
         alt="Universidad de Cundinamarca"
-        width={compact ? 140 : 170}
-        height={compact ? 33 : 40}
+        width={compact ? 160 : 200}
+        height={compact ? 38 : 47}
         priority
         className="h-auto w-auto"
       />
