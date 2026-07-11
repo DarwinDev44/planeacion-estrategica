@@ -76,7 +76,7 @@ function ContenidoDetalle({ actividad }: { actividad: Actividad }) {
           <GrupoParticipantes
             titulo="No finalizado"
             participantes={pendientes}
-            vacio={busqueda ? "Sin coincidencias" : "Nadie tiene esta actividad pendiente 🎉"}
+            vacio={busqueda ? "Sin coincidencias" : "Nadie tiene esta actividad pendiente"}
             tono="pendiente"
           />
           <GrupoParticipantes
