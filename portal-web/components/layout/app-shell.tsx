@@ -15,9 +15,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="mx-auto flex min-h-screen w-full max-w-[1600px]">
       {/* Sidebar desktop */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-sidebar py-5 lg:flex">
-        <Logo className="px-5 pb-6" />
-        <SidebarNav />
-        <div className="mt-auto flex flex-col gap-2 px-5 pt-6">
+        <Logo className="shrink-0 px-5 pb-6" />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SidebarNav />
+        </div>
+        <div className="flex shrink-0 flex-col gap-2 px-5 pt-6">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
@@ -35,15 +37,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       {/* Sidebar mobile (Sheet, no bloqueante — cumple la regla del manual) */}
       <Sheet open={menuAbierto} onOpenChange={setMenuAbierto}>
-        <SheetContent side="left" className="w-72 p-0">
-          <SheetHeader className="p-5 pb-2">
+        <SheetContent side="left" className="w-72 gap-0 p-0">
+          <SheetHeader className="shrink-0 p-5 pb-2">
             <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
             <Logo />
           </SheetHeader>
-          <div className="py-4">
+          <div className="min-h-0 flex-1 overflow-y-auto py-4">
             <SidebarNav onNavigate={() => setMenuAbierto(false)} />
           </div>
-          <div className="px-8 pt-2">
+          <div className="shrink-0 px-8 py-4">
             <Link
               href="/"
               onClick={() => setMenuAbierto(false)}
