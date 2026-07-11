@@ -28,6 +28,12 @@ export const NAVEGACION: ItemNavegacion[] = [
     icono: Compass,
   },
   {
+    href: "/metas",
+    etiqueta: "Metas, encuesta tu voz fundamental",
+    descripcion: "Cumplimiento de metas por categoría",
+    icono: Target,
+  },
+  {
     href: "/seguimiento",
     etiqueta: "Valoración momentos",
     descripcion: "Seguimiento y avance por actividad",
@@ -38,11 +44,5 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Accesos a CAI",
     descripcion: "Recencia y evolución de accesos",
     icono: Network,
-  },
-  {
-    href: "/metas",
-    etiqueta: "Metas",
-    descripcion: "Cumplimiento de metas por categoría",
-    icono: Target,
   },
 ];

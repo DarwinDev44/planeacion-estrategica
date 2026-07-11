@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Search, BookOpen, Building2, MapPin, Users, GraduationCap, type LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatNumero, formatPorcentajeMetas } from "@/lib/formatters";
 import type { TablaMeta, TablaMetaId } from "@/types/metas";
@@ -38,6 +38,16 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
     return tabla.filas.filter((f) => f.etiqueta.toLowerCase().includes(q));
   }, [busqueda, tabla.filas]);
 
+  // Total agregado de lo actualmente visible (respeta el filtro de búsqueda);
+  // el porcentaje es un promedio ponderado (SI / Total), no el promedio de
+  // los porcentajes de cada fila.
+  const totales = useMemo(() => {
+    const no = filtradas.reduce((acc, f) => acc + f.no, 0);
+    const si = filtradas.reduce((acc, f) => acc + f.si, 0);
+    const total = no + si;
+    return { no, si, total, porcentaje: total > 0 ? (si / total) * 100 : 0 };
+  }, [filtradas]);
+
   const [primeraCol, segundaCol] = tabla.ordenColumnas;
 
   return (
@@ -67,7 +77,13 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
         <div
           className={cn(
             "rounded-md border border-border",
-            conBuscador ? "max-h-[360px] overflow-y-auto" : "overflow-x-auto"
+            // El wrapper propio de <Table> ya trae overflow-x-auto; si además
+            // envolvemos con overflow-y-auto en un div distinto, el navegador
+            // ancla el `sticky` al contenedor interno (que nunca se desplaza)
+            // y no al externo. Se aplica el scroll vertical directamente sobre
+            // ese wrapper interno (vía [data-slot=table-container]) para que
+            // sea un único contenedor de scroll y el sticky funcione.
+            conBuscador && "[&_[data-slot=table-container]]:max-h-[360px] [&_[data-slot=table-container]]:overflow-y-auto"
           )}
         >
           <Table>
@@ -123,6 +139,33 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
                 </TableRow>
               ) : null}
             </TableBody>
+            {filtradas.length > 0 ? (
+              <TableFooter className={cn("border-t-2 border-t-primary bg-secondary", conBuscador && "sticky bottom-0 z-10")}>
+                <TableRow className="hover:bg-secondary">
+                  <TableCell className="text-[12px] font-bold text-secondary-foreground">Total</TableCell>
+                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
+                    {formatNumero(primeraCol === "no" ? totales.no : totales.si)}
+                  </TableCell>
+                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
+                    {formatNumero(segundaCol === "no" ? totales.no : totales.si)}
+                  </TableCell>
+                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
+                    {formatNumero(totales.total)}
+                  </TableCell>
+                  <TableCell className="text-right text-[12px] tabular-nums">
+                    <span
+                      className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums"
+                      style={{
+                        color: colorPorcentaje(totales.porcentaje),
+                        backgroundColor: `color-mix(in srgb, ${colorPorcentaje(totales.porcentaje)} 18%, transparent)`,
+                      }}
+                    >
+                      {formatPorcentajeMetas(totales.porcentaje)}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            ) : null}
           </Table>
         </div>
         {conBuscador ? (
