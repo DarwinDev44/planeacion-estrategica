@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   // servidor) queden incluidos en el bundle serverless — de otra forma el
   // file-tracing automático de Vercel podría omitirlos por no ser código.
   outputFileTracingIncludes: {
-    "/*": ["./data/source/**"],
+    "/*": ["./data/source/**", "./data/source-metas/**"],
   },
 };
 

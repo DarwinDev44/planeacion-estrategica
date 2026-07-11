@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, LayoutDashboard, Network, Users, Compass } from "lucide-react";
+import { Activity, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -38,5 +38,11 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Accesos a CAI",
     descripcion: "Recencia y evolución de accesos",
     icono: Network,
+  },
+  {
+    href: "/metas",
+    etiqueta: "Metas",
+    descripcion: "Cumplimiento de metas por categoría",
+    icono: Target,
   },
 ];
