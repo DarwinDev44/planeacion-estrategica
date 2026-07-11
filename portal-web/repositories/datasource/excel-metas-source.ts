@@ -114,6 +114,10 @@ export class ExcelMetasDataSource implements MetasDataSource {
         total: Number(f[idxTotal] ?? 0),
         porcentaje: Number(f[idxPorcentaje] ?? 0) * 100,
       }))
-      .sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, "es"));
+      // De mayor a menor Total general: agrupa primero las categorías con más
+      // muestra y deja al final los casos de N muy pequeño (p.ej. "Fondo
+      // Instituto de Posgrados" con Total=1), cuyo porcentaje es poco
+      // representativo por sí solo.
+      .sort((a, b) => b.total - a.total);
   }
 }
