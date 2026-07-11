@@ -176,6 +176,49 @@ export function getFacultadesDisponibles(): string[] {
   return [...set].sort((a, b) => a.localeCompare(b, "es"));
 }
 
+// Quita diacríticos por código de punto (evita depender de un escape
+// \uXXXX en el literal de una regex) — mismo criterio que en
+// lib/filtro-respuestas.ts.
+function normalizarParaAgrupar(texto: string): string {
+  return Array.from(texto.trim().toUpperCase().normalize("NFD"))
+    .filter((c) => {
+      const codigo = c.codePointAt(0) ?? 0;
+      return codigo < 0x0300 || codigo > 0x036f;
+    })
+    .join("")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Áreas administrativas (no académicas): personas cuyo "Programa o Area" del
+ * Excel no resolvió a ninguna Facultad (ver AREA_A_FACULTAD y el diccionario
+ * Programa→Facultad en el datasource). Como el texto de origen tiene
+ * variantes con/sin tilde para una misma área (p.ej. "Direccion De Talento
+ * Humano" vs "Dirección De Talento Humano"), se agrupan por texto
+ * normalizado y se muestra la variante escrita con más frecuencia.
+ */
+export function getAreasDisponibles(): string[] {
+  const conteoPorVariante = new Map<string, number>();
+  for (const p of getEncuestaDataSource().getPersonas()) {
+    if (p.facultad || !p.programaOArea) continue;
+    const texto = p.programaOArea.trim();
+    conteoPorVariante.set(texto, (conteoPorVariante.get(texto) ?? 0) + 1);
+  }
+
+  const mejorVariantePorGrupo = new Map<string, { etiqueta: string; conteo: number }>();
+  for (const [variante, conteo] of conteoPorVariante) {
+    const clave = normalizarParaAgrupar(variante);
+    const actual = mejorVariantePorGrupo.get(clave);
+    if (!actual || conteo > actual.conteo) {
+      mejorVariantePorGrupo.set(clave, { etiqueta: variante, conteo });
+    }
+  }
+
+  return [...mejorVariantePorGrupo.values()]
+    .map((v) => v.etiqueta)
+    .sort((a, b) => a.localeCompare(b, "es"));
+}
+
 export function getProgramasDisponibles(): string[] {
   const set = new Set<string>();
   for (const p of getEncuestaDataSource().getPersonas()) if (p.programaOArea) set.add(p.programaOArea);

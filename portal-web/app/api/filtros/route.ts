@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     rol: parseLista(searchParams.get("rol")) as FiltrosEncuesta["rol"],
     sede: parseLista(searchParams.get("sede")) as FiltrosEncuesta["sede"],
     facultad: parseLista(searchParams.get("facultad")),
+    programaOArea: parseLista(searchParams.get("area")),
   };
 
   const resumen = getResumenFiltrado(filtros);

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import * as XLSX from "xlsx";
 import type { Persona, RolAsignado, RespuestaPregunta, PreguntaId, Sede, Rol } from "@/types/encuesta";
 import { PREGUNTAS } from "@/constants/preguntas";
+import { AREA_A_FACULTAD } from "@/constants/marca";
 import type { EncuestaDataSource } from "./types";
 
 /**
@@ -130,7 +131,9 @@ export class ExcelEncuestaDataSource implements EncuestaDataSource {
 
       const sedeRaw = row[8] as string | null;
       const programaOArea = row[10] as string | null;
-      const facultad = programaOArea ? (programaAFacultad.get(normalizar(programaOArea)) ?? null) : null;
+      const facultad = programaOArea
+        ? (programaAFacultad.get(normalizar(programaOArea)) ?? AREA_A_FACULTAD[normalizar(programaOArea)] ?? null)
+        : null;
 
       personas.push({
         id: Number(id),
