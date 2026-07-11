@@ -60,7 +60,9 @@ export function FilterBar() {
           }}
         >
           <SelectTrigger size="sm" className="w-[160px] bg-card">
-            <SelectValue placeholder="Todas">{(v: string | null) => (v && v !== TODAS ? v : "Todas")}</SelectValue>
+            <SelectValue placeholder="Todas">
+              {(v: string | null) => <span className="min-w-0 truncate">{v && v !== TODAS ? v : "Todas"}</span>}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={TODAS}>Todas</SelectItem>
@@ -86,7 +88,9 @@ export function FilterBar() {
           }}
         >
           <SelectTrigger size="sm" className="w-[220px] bg-card">
-            <SelectValue placeholder="Todas">{(v: string | null) => (v && v !== TODAS ? v : "Todas")}</SelectValue>
+            <SelectValue placeholder="Todas">
+              {(v: string | null) => <span className="min-w-0 truncate">{v && v !== TODAS ? v : "Todas"}</span>}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={TODAS}>Todas</SelectItem>
@@ -122,7 +126,9 @@ export function FilterBar() {
         >
           <SelectTrigger size="sm" className="w-[180px] bg-card">
             <SelectValue placeholder="Todos">
-              {(v: string | null) => (v && v !== TODAS ? ETIQUETA_ROL_CORTA[v as Rol] : "Todos")}
+              {(v: string | null) => (
+                <span className="min-w-0 truncate">{v && v !== TODAS ? ETIQUETA_ROL_CORTA[v as Rol] : "Todos"}</span>
+              )}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
