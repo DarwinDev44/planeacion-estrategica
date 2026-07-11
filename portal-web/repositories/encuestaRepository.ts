@@ -1,6 +1,13 @@
 import "server-only";
-import type { Persona, FiltrosEncuesta, PreguntaId } from "@/types/encuesta";
+import type { AnalisisOtro, Persona, FiltrosEncuesta, PreguntaId } from "@/types/encuesta";
 import { PREGUNTAS } from "@/constants/preguntas";
+import {
+  ASIGNACION_OTRO,
+  CATEGORIAS_OTRO,
+  CATEGORIA_RESIDUAL_OTRO,
+  CONCLUSION_OTRO,
+  claveRespuestaOtro,
+} from "@/constants/analisis-otro";
 import { getEncuestaDataSource } from "./datasource";
 import { esRespuestaValida } from "@/lib/filtro-respuestas";
 
@@ -150,6 +157,31 @@ export function getRespuestasOtroPreagregadas(): { personaId: number; preguntaId
     .getRespuestas()
     .filter((r) => r.esOtro && esRespuestaValida(r.opcion))
     .map((r) => ({ personaId: r.personaId, preguntaId: r.preguntaId, texto: r.opcion }));
+}
+
+/**
+ * Categorización temática de las respuestas abiertas ("Otro") + conclusión.
+ * Cada respuesta viva del Excel se busca en ASIGNACION_OTRO (asignación
+ * cualitativa hecha respuesta por respuesta); las que no estén en el mapa
+ * (nuevas o editadas) caen en la categoría residual, así los conteos siempre
+ * suman el total real.
+ */
+export function getAnalisisOtroPreagregado(): AnalisisOtro {
+  const respuestas = getRespuestasOtroPreagregadas();
+  const conteos = new Map<string, number>();
+  for (const r of respuestas) {
+    const categoria = ASIGNACION_OTRO[claveRespuestaOtro(r.personaId, r.preguntaId, r.texto)] ?? CATEGORIA_RESIDUAL_OTRO;
+    conteos.set(categoria, (conteos.get(categoria) ?? 0) + 1);
+  }
+  const total = respuestas.length;
+  return {
+    total,
+    categorias: CATEGORIAS_OTRO.map((c) => {
+      const conteo = conteos.get(c.id) ?? 0;
+      return { ...c, conteo, porcentaje: total > 0 ? (conteo / total) * 100 : 0 };
+    }),
+    conclusion: CONCLUSION_OTRO,
+  };
 }
 
 export function getCombinacionesRolPreagregadas(): { combinacion: string; conteo: number }[] {

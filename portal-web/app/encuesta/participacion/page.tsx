@@ -10,7 +10,7 @@ import {
   getConteoPorFacultad,
 } from "@/repositories/encuestaRepository";
 
-export const metadata: Metadata = { title: "Quién participó, encuesta tu voz fundamental" };
+export const metadata: Metadata = { title: "Quién participó — Diagnóstico: Tu Voz Fundamental" };
 
 export default function ParticipacionPage() {
   const inicial = {

@@ -15,7 +15,7 @@ interface TemaPlan {
 
 const TEMAS: TemaPlan[] = [
   {
-    titulo: "Participación: tu encuesta, tu voz es fundamental",
+    titulo: "Diagnóstico: Tu Voz Fundamental",
     icono: Users2,
     href: "/encuesta",
   },

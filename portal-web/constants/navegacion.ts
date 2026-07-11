@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, BarChart3, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
+import { Activity, BarChart3, Blocks, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -11,25 +11,31 @@ export interface ItemNavegacion {
 export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/encuesta",
-    etiqueta: "Panorama de participación, encuesta tu voz fundamental",
+    etiqueta: "Diagnóstico: Tu Voz Fundamental",
     descripcion: "Panorama general de la participación",
     icono: LayoutDashboard,
   },
   {
     href: "/encuesta/participacion",
-    etiqueta: "Quién participó, encuesta tu voz fundamental",
+    etiqueta: "Quién participó — Diagnóstico: Tu Voz Fundamental",
     descripcion: "Rol, sede, facultad y programa",
     icono: Users,
   },
   {
     href: "/encuesta/vision-estrategica",
-    etiqueta: "Visión estratégica, encuesta tu voz fundamental",
-    descripcion: "Las 4 preguntas que orientan el plan",
+    etiqueta: "Visión estratégica — Diagnóstico: Tu Voz Fundamental",
+    descripcion: "Decisiones a futuro y visión a 10 años",
     icono: Compass,
   },
   {
+    href: "/encuesta/fundamentos-planeacion",
+    etiqueta: "Fundamentos de planeación — Diagnóstico: Tu Voz Fundamental",
+    descripcion: "Qué debe definir y cómo construir la planeación",
+    icono: Blocks,
+  },
+  {
     href: "/metas",
-    etiqueta: "Metas, encuesta tu voz fundamental",
+    etiqueta: "Metas — Diagnóstico: Tu Voz Fundamental",
     descripcion: "Cumplimiento de metas por categoría",
     icono: Target,
   },

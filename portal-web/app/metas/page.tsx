@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { TablaMetaCard } from "@/components/metas/tabla-meta";
 import { getTablasMetas } from "@/repositories/metasRepository";
 
-export const metadata: Metadata = { title: "Metas, encuesta tu voz fundamental" };
+export const metadata: Metadata = { title: "Metas — Diagnóstico: Tu Voz Fundamental" };
 
 export default function MetasPage() {
   const tablas = getTablasMetas();
@@ -13,7 +13,7 @@ export default function MetasPage() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
-            Metas, encuesta tu voz fundamental
+            Metas — Diagnóstico: Tu Voz Fundamental
           </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Cumplimiento de metas por categoría — NO / SI sobre el total de cada grupo.

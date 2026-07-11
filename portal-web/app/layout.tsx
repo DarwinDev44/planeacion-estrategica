@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     template: "%s | Participación UCundinamarca",
   },
   description:
-    "Portal de visualización estratégica institucional: explora los resultados de la encuesta de participación para la construcción del Plan Estratégico de la Universidad de Cundinamarca.",
+    "Portal de visualización estratégica institucional: explora los resultados del diagnóstico de participación para la construcción del Plan Estratégico de la Universidad de Cundinamarca.",
 };
 
 /**

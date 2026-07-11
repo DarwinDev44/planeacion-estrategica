@@ -7,12 +7,11 @@ import {
   getRankingPreguntasPreagregado,
   getSerieTiempoPreagregada,
   getRespuestasOtroPreagregadas,
-  getAnalisisOtroPreagregado,
 } from "@/repositories/encuestaRepository";
 
-export const metadata: Metadata = { title: "Visión estratégica — Diagnóstico: Tu Voz Fundamental" };
+export const metadata: Metadata = { title: "Fundamentos de planeación — Diagnóstico: Tu Voz Fundamental" };
 
-export default function VisionEstrategicaPage() {
+export default function FundamentosPlaneacionPage() {
   const inicial = {
     kpis: getKpisEjecutivos(),
     distribucionRol: getDistribucionRolPreagregada(),
@@ -23,12 +22,11 @@ export default function VisionEstrategicaPage() {
 
   return (
     <PreguntasEstrategicasClient
-      titulo="Visión estratégica — Diagnóstico: Tu Voz Fundamental"
-      descripcion="Decisiones estratégicas a futuro y la visión de la UCundinamarca a 10 años"
-      preguntasIds={["P3", "P4"]}
+      titulo="Fundamentos de planeación — Diagnóstico: Tu Voz Fundamental"
+      descripcion="Qué debe definir un Plan Estratégico y cómo debe construirse la planeación institucional"
+      preguntasIds={["P1", "P2"]}
       inicial={inicial}
       respuestasOtro={getRespuestasOtroPreagregadas()}
-      analisisOtro={getAnalisisOtroPreagregado()}
     />
   );
 }
