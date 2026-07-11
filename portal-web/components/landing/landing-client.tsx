@@ -15,8 +15,7 @@ interface TemaPlan {
 
 const TEMAS: TemaPlan[] = [
   {
-    titulo: "Participación, tu voz es fundamental",
-    descripcion: "Participación: tu encuesta, tu voz es fundamental",
+    titulo: "Participación: tu encuesta, tu voz es fundamental",
     icono: Users2,
     href: "/encuesta",
   },
@@ -99,8 +98,7 @@ export function LandingClient() {
                 2027 – 2037
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80 lg:text-base">
-                Analítica de datos del Plan Estratégico: cifras y avances en tiempo real de la
-                construcción colectiva de la universidad.
+                Analítica de datos del Plan Estratégico
               </p>
             </motion.div>
 
