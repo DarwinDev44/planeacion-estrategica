@@ -234,26 +234,3 @@ export function getConteoPorFacultad(): { facultad: string; conteo: number }[] {
   return [...out.entries()].map(([facultad, conteo]) => ({ facultad, conteo })).sort((a, b) => b.conteo - a.conteo);
 }
 
-export interface FilaExploracion {
-  id: number;
-  rolPrincipal: string;
-  sede: string | null;
-  facultad: string | null;
-  programaOArea: string | null;
-  cantidadRoles: number;
-  fechaInicio: string;
-}
-
-export function getFilasExploracion(): FilaExploracion[] {
-  return getEncuestaDataSource()
-    .getPersonas()
-    .map((p) => ({
-      id: p.id,
-      rolPrincipal: p.rolPrincipal,
-      sede: p.sede,
-      facultad: p.facultad,
-      programaOArea: p.programaOArea,
-      cantidadRoles: p.cantidadRoles,
-      fechaInicio: p.fechaInicio,
-    }));
-}

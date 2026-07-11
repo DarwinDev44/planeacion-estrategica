@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, LayoutDashboard, Network, Users, Compass, Table2 } from "lucide-react";
+import { Activity, LayoutDashboard, Network, Users, Compass } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -11,7 +11,7 @@ export interface ItemNavegacion {
 export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/encuesta",
-    etiqueta: "Resumen ejecutivo",
+    etiqueta: "Panorama de participación",
     descripcion: "Panorama general de la participación",
     icono: LayoutDashboard,
   },
@@ -26,12 +26,6 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Visión estratégica",
     descripcion: "Las 4 preguntas que orientan el plan",
     icono: Compass,
-  },
-  {
-    href: "/encuesta/exploracion",
-    etiqueta: "Exploración",
-    descripcion: "Tabla dinámica y exportación",
-    icono: Table2,
   },
   {
     href: "/seguimiento",
