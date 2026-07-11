@@ -42,7 +42,7 @@ export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/accesos-cai",
     etiqueta: "Accesos a CAI",
-    descripcion: "Recencia y evolución de accesos",
+    descripcion: "Evolución de accesos",
     icono: Network,
   },
 ];

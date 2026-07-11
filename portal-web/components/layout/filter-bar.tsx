@@ -48,7 +48,7 @@ export function FilterBar() {
         </Select>
       </Campo>
 
-      <Campo etiqueta="Facultad">
+      <Campo etiqueta="Facultad / Área">
         <Select
           value={facultadActiva}
           onValueChange={(v) => {
