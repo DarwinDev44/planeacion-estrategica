@@ -1,12 +1,12 @@
 "use client";
 
-import { Users, UserCog, Layers, Loader2 } from "lucide-react";
+import { Users, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { KpiCard } from "@/components/kpi/kpi-card";
 import { RankedBarChart } from "@/components/charts/ranked-bar-chart";
 import { SedeBarList } from "@/components/charts/sede-bar-list";
 import { FilterBar } from "@/components/layout/filter-bar";
-import { formatNumero, formatPorcentaje } from "@/lib/formatters";
+import { formatNumero } from "@/lib/formatters";
 import { ETIQUETA_ROL_CORTA } from "@/constants/marca";
 import { PREGUNTAS } from "@/constants/preguntas";
 import type { Rol } from "@/types/encuesta";
@@ -24,8 +24,6 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       porcentaje: Math.round((conteo / (kpis.totalAsignacionesRol || 1)) * 1000) / 10,
     }))
     .sort((a, b) => b.conteo - a.conteo);
-
-  const porcentajeMultiRol = Math.round((kpis.personasConMultiRol / (kpis.totalParticipantes || 1)) * 1000) / 10;
 
   return (
     <div className="flex flex-col gap-4">
@@ -48,13 +46,6 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       {/* KPIs compactos */}
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
         <KpiCard compacto etiqueta="Participantes" valor={formatNumero(kpis.totalParticipantes)} icono={Users} />
-        <KpiCard compacto etiqueta="Asignaciones de rol" valor={formatNumero(kpis.totalAsignacionesRol)} icono={UserCog} />
-        <KpiCard
-          compacto
-          etiqueta="Con más de un rol"
-          valor={`${formatNumero(kpis.personasConMultiRol)} (${formatPorcentaje(porcentajeMultiRol)})`}
-          icono={Layers}
-        />
       </div>
 
       {/* Fila superior: rol, sede */}

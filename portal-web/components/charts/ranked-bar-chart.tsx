@@ -184,7 +184,7 @@ export function RankedBarChart({
                   );
                 }}
               />
-              <Bar dataKey="conteo" shape={barraRedondeada} maxBarSize={18}>
+              <Bar dataKey="conteo" shape={barraRedondeada} maxBarSize={18} isAnimationActive={false}>
                 <LabelList
                   dataKey="conteo"
                   position="right"
