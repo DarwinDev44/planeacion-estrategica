@@ -165,6 +165,7 @@ export function RankedBarChart({
                 width={truncarEn * 6}
                 tickLine={false}
                 axisLine={false}
+                interval={0}
                 tick={<EtiquetaEjeMultilinea maxCaracteres={truncarEn} />}
               />
               <Tooltip
