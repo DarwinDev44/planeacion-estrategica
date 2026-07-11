@@ -25,6 +25,7 @@ export function formatPorcentaje(n: number): string {
 // Con 2 decimales y espacio antes del "%", igual al formato de origen del
 // módulo Metas (p.ej. "73,21 %").
 export function formatPorcentajeMetas(n: number): string {
+  if (n > 0 && n < 0.005) return "<0,01 %";
   return `${percentFormatterPreciso.format(n)} %`;
 }
 

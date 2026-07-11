@@ -164,7 +164,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Distribución de recencia</CardTitle>
+            <CardTitle>Tiempo desde el último acceso</CardTitle>
             <p className="text-xs text-muted-foreground">Personas únicas agrupadas por días desde su último acceso.</p>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
