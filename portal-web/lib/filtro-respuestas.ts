@@ -57,5 +57,10 @@ export function esRespuestaValida(textoOriginal: string): boolean {
   const soloLetras = normalizado.replace(/[^a-z]/g, "");
   if (soloLetras.length > 0 && soloLetras.length <= 2) return false;
 
+  // Frases de exactamente 2 palabras: suelen ser fragmentos sin desarrollar
+  // ("mas titulos") más que una respuesta completa.
+  const palabras = texto.split(/\s+/).filter(Boolean);
+  if (palabras.length === 2) return false;
+
   return true;
 }
