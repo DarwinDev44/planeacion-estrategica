@@ -111,12 +111,14 @@ export function RankedBarChart({
               />
               <Tooltip
                 cursor={{ fill: "var(--muted)" }}
+                allowEscapeViewBox={{ x: false, y: false }}
+                wrapperStyle={{ zIndex: 20 }}
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
                   const d = payload[0].payload as RankedBarDatum;
                   return (
-                    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
-                      <p className="max-w-[240px] font-medium text-popover-foreground">{d.etiqueta}</p>
+                    <div className="max-w-[200px] rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
+                      <p className="font-medium break-words text-popover-foreground">{d.etiqueta}</p>
                       <p className="mt-1 text-muted-foreground">
                         {formatNumero(d.conteo)} respuestas · {formatPorcentaje(d.porcentaje)}
                       </p>

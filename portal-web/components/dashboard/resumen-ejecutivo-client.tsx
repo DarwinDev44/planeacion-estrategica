@@ -77,11 +77,11 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       </div>
 
       {/* Fila inferior: las 4 preguntas estratégicas */}
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2">
         {PREGUNTAS.map((pregunta) => (
           <Card key={pregunta.id} className="py-3">
             <CardHeader className="px-3.5 pb-1">
-              <CardTitle className="text-[12px] leading-snug font-semibold">{pregunta.texto}</CardTitle>
+              <CardTitle className="text-[13px] leading-snug font-semibold">{pregunta.texto}</CardTitle>
             </CardHeader>
             <CardContent className="px-3.5">
               <RankedBarChart
@@ -91,8 +91,8 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
                   conteo: d.conteo,
                   porcentaje: d.porcentaje,
                 }))}
-                alturaFila={28}
-                truncarEn={18}
+                alturaFila={34}
+                truncarEn={32}
                 ocultarAccion
               />
             </CardContent>
