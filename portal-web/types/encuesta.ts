@@ -53,6 +53,21 @@ export interface PreguntaMeta {
   opciones: string[];
 }
 
+export interface CategoriaOtroAgregada {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  citas: string[];
+  conteo: number;
+  porcentaje: number;
+}
+
+export interface AnalisisOtro {
+  total: number;
+  categorias: CategoriaOtroAgregada[];
+  conclusion: string;
+}
+
 export interface FiltrosEncuesta {
   rol?: Rol[];
   sede?: Sede[];
