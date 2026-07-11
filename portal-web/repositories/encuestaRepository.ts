@@ -169,50 +169,6 @@ export function getCombinacionesRolPreagregadas(): { combinacion: string; conteo
     .sort((a, b) => b.conteo - a.conteo);
 }
 
-/**
- * Matriz de coherencia entre dos preguntas: para cada combinación de las top-N
- * opciones de A y B, el % de personas que seleccionó la opción de B *dado que*
- * seleccionó la opción de A (P(B|A)). Usada para el cruce P3<->P4.
- */
-export function getMatrizCruce(preguntaA: PreguntaId, preguntaB: PreguntaId, topN = 3) {
-  const respuestas = getEncuestaDataSource().getRespuestas();
-  const porPersonaA = new Map<number, Set<string>>();
-  const porPersonaB = new Map<number, Set<string>>();
-  const conteoA = new Map<string, number>();
-  const conteoB = new Map<string, number>();
-
-  for (const r of respuestas) {
-    if (r.esOtro) continue;
-    if (r.preguntaId === preguntaA) {
-      conteoA.set(r.opcion, (conteoA.get(r.opcion) ?? 0) + 1);
-      const set = porPersonaA.get(r.personaId) ?? new Set<string>();
-      set.add(r.opcion);
-      porPersonaA.set(r.personaId, set);
-    }
-    if (r.preguntaId === preguntaB) {
-      conteoB.set(r.opcion, (conteoB.get(r.opcion) ?? 0) + 1);
-      const set = porPersonaB.get(r.personaId) ?? new Set<string>();
-      set.add(r.opcion);
-      porPersonaB.set(r.personaId, set);
-    }
-  }
-
-  const topA = [...conteoA.entries()].sort((a, b) => b[1] - a[1]).slice(0, topN).map(([o]) => o);
-  const topB = [...conteoB.entries()].sort((a, b) => b[1] - a[1]).slice(0, topN).map(([o]) => o);
-
-  const filas = topA.map((opcionA) => {
-    const personasConA = [...porPersonaA.entries()].filter(([, set]) => set.has(opcionA)).map(([id]) => id);
-    const totalA = personasConA.length || 1;
-    const celdas = topB.map((opcionB) => {
-      const coinciden = personasConA.filter((id) => porPersonaB.get(id)?.has(opcionB)).length;
-      return { opcionB, porcentaje: Math.round((coinciden / totalA) * 1000) / 10 };
-    });
-    return { opcionA, celdas };
-  });
-
-  return { topB, filas };
-}
-
 export function getFacultadesDisponibles(): string[] {
   const set = new Set<string>();
   for (const p of getEncuestaDataSource().getPersonas()) if (p.facultad) set.add(p.facultad);
