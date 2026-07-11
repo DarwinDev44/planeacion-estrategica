@@ -87,6 +87,14 @@
   --estado-finalizado: #007b3e;
   --estado-pendiente: #f7931e;
 
+  /* Escala ordinal de valoración (1→5) — validada (validate_palette --ordinal,
+     modo claro): un solo hue, luminosidad monótona, extremo claro ≥2:1 vs superficie. */
+  --valoracion-1: #83c299;
+  --valoracion-2: #5cae7c;
+  --valoracion-3: #3a9761;
+  --valoracion-4: #188049;
+  --valoracion-5: #00612f;
+
   --border: rgba(20, 20, 18, 0.1);
   --input: rgba(20, 20, 18, 0.14);
   --ring: #007b3e;
@@ -136,6 +144,14 @@
   /* Estados de actividad CAI — par validado (validate_palette, modo oscuro) */
   --estado-finalizado: #2cae72;
   --estado-pendiente: #a6821e;
+
+  /* Escala ordinal de valoración (1→5) — validada (validate_palette --ordinal,
+     modo oscuro, superficie de tarjeta #132a1e). */
+  --valoracion-1: #356243;
+  --valoracion-2: #3d8552;
+  --valoracion-3: #47a862;
+  --valoracion-4: #57c774;
+  --valoracion-5: #79dd8f;
 
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);

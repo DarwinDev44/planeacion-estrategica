@@ -1,11 +1,11 @@
 import "server-only";
-import { readFileSync, statSync } from "node:fs";
+import { statSync } from "node:fs";
 import { join } from "node:path";
-import * as XLSX from "xlsx";
 import type { Persona, RolAsignado, RespuestaPregunta, PreguntaId, Sede, Rol } from "@/types/encuesta";
 import { PREGUNTAS } from "@/constants/preguntas";
 import { AREA_A_FACULTAD } from "@/constants/marca";
 import type { EncuestaDataSource } from "./types";
+import { leerPrimeraHoja, excelSerialToISO } from "./excel-utils";
 
 /**
  * Lee los dos archivos .xlsx que son la fuente de datos autorizada de la
@@ -65,16 +65,6 @@ export class ExcelEncuestaDataSource implements EncuestaDataSource {
     return this.cache!;
   }
 
-  private leerHoja(ruta: string): unknown[][] {
-    // Se lee el buffer explícitamente (en vez de XLSX.readFile) para evitar
-    // depender de cómo el bundler del servidor (Turbopack/webpack) transforma
-    // el acceso a fs interno de la librería.
-    const buffer = readFileSync(ruta);
-    const wb = XLSX.read(buffer, { type: "buffer" });
-    const hoja = wb.Sheets[wb.SheetNames[0]];
-    return XLSX.utils.sheet_to_json(hoja, { header: 1, raw: true, defval: null }) as unknown[][];
-  }
-
   /**
    * Decisión de alcance documentada (ver docs/02-investigacion-arquitectura.md):
    * el archivo principal repite Sede/Facultad/Programa hasta en 4 bloques
@@ -86,7 +76,7 @@ export class ExcelEncuestaDataSource implements EncuestaDataSource {
    * partir de los propios bloques (que sí traen ambos valores juntos).
    */
   private parsear() {
-    const filasIdx = this.leerHoja(this.rutaIdxRoles);
+    const filasIdx = leerPrimeraHoja(this.rutaIdxRoles);
     filasIdx.shift();
     const rolesAsignados: RolAsignado[] = filasIdx
       .filter((r) => r[0] != null)
@@ -96,7 +86,7 @@ export class ExcelEncuestaDataSource implements EncuestaDataSource {
         cantidadRoles: Number(r[2]),
       }));
 
-    const filas = this.leerHoja(this.rutaParticipacion);
+    const filas = leerPrimeraHoja(this.rutaParticipacion);
     filas.shift();
 
     const BLOQUES = [
@@ -176,10 +166,4 @@ function normalizar(s: string): string {
     .replace(/[̀-ͯ]/g, "")
     .trim()
     .toUpperCase();
-}
-
-function excelSerialToISO(serial: number): string {
-  const EPOCH_MS = Date.UTC(1899, 11, 30);
-  const ms = EPOCH_MS + Math.round(serial * 86400) * 1000;
-  return new Date(ms).toISOString();
 }

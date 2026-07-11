@@ -7,11 +7,18 @@ import { NAVEGACION } from "@/constants/navegacion";
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  // Ítem activo = el href más específico que coincide con la ruta actual
+  // (exacto o prefijo de subruta), para que las páginas de detalle
+  // ("/analitica-momentos/[slug]") resalten a su padre sin activar a la vez
+  // otros ítems de nivel superior que comparten prefijo (p. ej. "/encuesta").
+  const hrefActivo = [...NAVEGACION]
+    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <nav className="flex flex-col gap-1 px-3" aria-label="Navegación principal">
       {NAVEGACION.map((item) => {
-        const activo = pathname === item.href;
+        const activo = item.href === hrefActivo;
         const Icono = item.icono;
         return (
           <Link

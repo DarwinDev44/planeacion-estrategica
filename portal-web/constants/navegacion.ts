@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
+import { Activity, BarChart3, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -38,6 +38,12 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Valoración momentos",
     descripcion: "Seguimiento y avance por actividad",
     icono: Activity,
+  },
+  {
+    href: "/analitica-momentos",
+    etiqueta: "Analítica actividades momentos",
+    descripcion: "Valoración por actividad y momento",
+    icono: BarChart3,
   },
   {
     href: "/accesos-cai",
