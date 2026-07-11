@@ -5,6 +5,7 @@ interface FiltrosState extends FiltrosEncuesta {
   toggleRol: (rol: Rol) => void;
   toggleSede: (sede: Sede) => void;
   toggleFacultad: (facultad: string) => void;
+  toggleProgramaOArea: (area: string) => void;
   setRangoFechas: (desde?: string, hasta?: string) => void;
   limpiar: () => void;
   hayFiltrosActivos: () => boolean;
@@ -33,6 +34,13 @@ export const useFiltrosStore = create<FiltrosState>((set, get) => ({
       facultad: state.facultad?.includes(facultad)
         ? state.facultad.filter((f) => f !== facultad)
         : [...(state.facultad ?? []), facultad],
+    })),
+
+  toggleProgramaOArea: (area) =>
+    set((state) => ({
+      programaOArea: state.programaOArea?.includes(area)
+        ? state.programaOArea.filter((a) => a !== area)
+        : [...(state.programaOArea ?? []), area],
     })),
 
   setRangoFechas: (desde, hasta) => set({ fechaDesde: desde, fechaHasta: hasta }),

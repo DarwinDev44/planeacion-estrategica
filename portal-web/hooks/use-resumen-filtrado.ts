@@ -18,17 +18,23 @@ export interface ResumenFiltrado {
   serieTiempo: { fecha: string; conteo: number }[];
 }
 
-function construirQueryString(filtros: { rol?: string[]; sede?: string[]; facultad?: string[] }) {
+function construirQueryString(filtros: {
+  rol?: string[];
+  sede?: string[];
+  facultad?: string[];
+  programaOArea?: string[];
+}) {
   const params = new URLSearchParams();
   if (filtros.rol?.length) params.set("rol", filtros.rol.join(","));
   if (filtros.sede?.length) params.set("sede", filtros.sede.join(","));
   if (filtros.facultad?.length) params.set("facultad", filtros.facultad.join(","));
+  if (filtros.programaOArea?.length) params.set("area", filtros.programaOArea.join(","));
   return params.toString();
 }
 
 export function useFiltrosActivos() {
-  const { rol, sede, facultad } = useFiltrosStore();
-  return Boolean(rol?.length || sede?.length || facultad?.length);
+  const { rol, sede, facultad, programaOArea } = useFiltrosStore();
+  return Boolean(rol?.length || sede?.length || facultad?.length || programaOArea?.length);
 }
 
 /**
@@ -37,9 +43,9 @@ export function useFiltrosActivos() {
  * pre-calculados por defecto vía Server Component).
  */
 export function useResumenFiltrado() {
-  const { rol, sede, facultad } = useFiltrosStore();
-  const hayFiltros = Boolean(rol?.length || sede?.length || facultad?.length);
-  const qs = construirQueryString({ rol, sede, facultad });
+  const { rol, sede, facultad, programaOArea } = useFiltrosStore();
+  const hayFiltros = Boolean(rol?.length || sede?.length || facultad?.length || programaOArea?.length);
+  const qs = construirQueryString({ rol, sede, facultad, programaOArea });
 
   const query = useQuery<ResumenFiltrado>({
     queryKey: ["resumen-filtrado", qs],

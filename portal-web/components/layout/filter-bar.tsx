@@ -1,11 +1,14 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -14,14 +17,36 @@ import { ETIQUETA_ROL_CORTA, FACULTADES_ORDENADAS, ROLES_ORDENADOS, SEDES_ORDENA
 import type { Rol, Sede } from "@/types/encuesta";
 
 const TODAS = "__todas__";
+const FACULTADES_SET = new Set(FACULTADES_ORDENADAS);
 
 export function FilterBar() {
-  const { rol, sede, facultad, toggleRol, toggleSede, toggleFacultad, limpiar, hayFiltrosActivos } =
-    useFiltrosStore();
+  const {
+    rol,
+    sede,
+    facultad,
+    programaOArea,
+    toggleRol,
+    toggleSede,
+    toggleFacultad,
+    toggleProgramaOArea,
+    limpiar,
+    hayFiltrosActivos,
+  } = useFiltrosStore();
+
+  const { data: opciones } = useQuery({
+    queryKey: ["opciones-filtro"],
+    queryFn: async () => {
+      const res = await fetch("/api/filtros/opciones");
+      if (!res.ok) throw new Error("No se pudieron cargar las áreas");
+      return res.json() as Promise<{ areas: string[] }>;
+    },
+    staleTime: Infinity,
+  });
+  const areas = opciones?.areas ?? [];
 
   const rolActivo = rol?.[0] ?? TODAS;
   const sedeActiva = sede?.[0] ?? TODAS;
-  const facultadActiva = facultad?.[0] ?? TODAS;
+  const facultadOAreaActiva = facultad?.[0] ?? programaOArea?.[0] ?? TODAS;
   const activo = hayFiltrosActivos();
 
   return (
@@ -50,10 +75,14 @@ export function FilterBar() {
 
       <Campo etiqueta="Facultad / Área">
         <Select
-          value={facultadActiva}
+          value={facultadOAreaActiva}
           onValueChange={(v) => {
             if (facultad?.[0]) toggleFacultad(facultad[0]);
-            if (v && v !== TODAS) toggleFacultad(v);
+            if (programaOArea?.[0]) toggleProgramaOArea(programaOArea[0]);
+            if (v && v !== TODAS) {
+              if (FACULTADES_SET.has(v)) toggleFacultad(v);
+              else toggleProgramaOArea(v);
+            }
           }}
         >
           <SelectTrigger size="sm" className="w-[220px] bg-card">
@@ -61,11 +90,24 @@ export function FilterBar() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={TODAS}>Todas</SelectItem>
-            {FACULTADES_ORDENADAS.map((f) => (
-              <SelectItem key={f} value={f}>
-                {f}
-              </SelectItem>
-            ))}
+            <SelectGroup>
+              <SelectLabel>Facultad</SelectLabel>
+              {FACULTADES_ORDENADAS.map((f) => (
+                <SelectItem key={f} value={f}>
+                  {f}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+            {areas.length ? (
+              <SelectGroup>
+                <SelectLabel>Área</SelectLabel>
+                {areas.map((a) => (
+                  <SelectItem key={a} value={a}>
+                    {a}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ) : null}
           </SelectContent>
         </Select>
       </Campo>

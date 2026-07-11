@@ -66,3 +66,23 @@ export const FACULTADES_ORDENADAS: string[] = [
   "Instituto de posgrados",
   "Educación",
 ];
+
+/**
+ * Para personas cuyo rol principal no es Estudiante (Administrativo, GCA,
+ * Ops-Apa), la columna "Programa o Area" del Excel a veces trae el nombre
+ * literal de la facultad a la que están adscritas (p.ej. "Facultad De
+ * Ingeniería") en vez de un programa académico — texto que el diccionario
+ * Programa→Facultad no captura porque no es un programa. Este mapa cierra
+ * ese vacío. Claves ya normalizadas (sin tildes, mayúsculas — ver
+ * `normalizar()` en excel-data-source.ts) para comparar exacto.
+ */
+export const AREA_A_FACULTAD: Record<string, string> = {
+  "FACULTAD DE CIENCIAS ADMINISTRATIVAS ECONOMICAS Y CONTABLES": "Ciencias administrativas y contables",
+  "FACULTAD DE INGENIERIA": "Ingeniería",
+  "FACULTAD DE CIENCIAS AGROPECUARIAS": "Ciencias agropecuarias",
+  "FACULTAD DE CIENCIAS DE LA SALUD": "Ciencias de la salud",
+  "FACULTAD DE CIENCIAS SOCIALES - HUMANIDADES Y CIENCIAS POLITICAS": "Ciencias sociales, humanidades y ciencias políticas",
+  "FACULTAD DE CIENCIAS DEL DEPORTE Y EDUCACION FISICA": "Ciencias del deporte y la educación física",
+  "FACULTAD DE EDUCACION": "Educación",
+  "FONDO INSTITUTO DE POSGRADOS": "Instituto de posgrados",
+};
