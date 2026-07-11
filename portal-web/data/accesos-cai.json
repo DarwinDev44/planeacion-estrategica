@@ -1,0 +1,1160 @@
+{
+  "fuente": "Accesos1.xlsx",
+  "correoExcluido": "lmireyarincon@ucundinamarca.edu.co",
+  "correoExcluidoEncontrado": false,
+  "promedioGlobal": 4.37,
+  "cortes": [
+    {
+      "fecha": "2026-03-17",
+      "personasUnicas": 52,
+      "registros": 52,
+      "promedioDias": 5.63,
+      "personas": [
+        {
+          "nombre": "Edilberto Ramirez Rivera",
+          "correo": "edilbertoramirez@ucundinamarca.edu.co",
+          "dias": 13
+        },
+        {
+          "nombre": "Jorge Tapias Ordoñez",
+          "correo": "jltapias@ucundinamarca.edu.co",
+          "dias": 10
+        },
+        {
+          "nombre": "Luis Castañeda Galindo",
+          "correo": "lmiguelcastaneda@ucundinamarca.edu.co",
+          "dias": 10
+        },
+        {
+          "nombre": "Maria Nancy Garzon Soche",
+          "correo": "mnancygarzon@ucundinamarca.edu.co",
+          "dias": 10
+        },
+        {
+          "nombre": "Mario Bernal Ovalle",
+          "correo": "mcbernal@ucundinamarca.edu.co",
+          "dias": 10
+        },
+        {
+          "nombre": "Yeny Casas Méndez",
+          "correo": "ylcasas@ucundinamarca.edu.co",
+          "dias": 10
+        },
+        {
+          "nombre": "Diego Mauricio Parra Laguna",
+          "correo": "diegomparra@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Eduard Gutierrez Rodriguez",
+          "correo": "egutierrezrodriguez@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Elvis Cortes Garcia",
+          "correo": "eycortes@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Faider Barrero Sanchez",
+          "correo": "fhbarrero@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Gloria Isabel Garcia Ballen",
+          "correo": "gigarcia@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Gustavo Adolfo Lanza Bayona",
+          "correo": "galanza@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Isabel Quintero Uribe",
+          "correo": "iquinterou@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Ledis Castiblanco Forero",
+          "correo": "ljohanacastiblanco@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Luis Guillermo Montaño Gallo",
+          "correo": "lgmontano@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Luz Venegas Sabogal",
+          "correo": "lnvenegas@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Miguel Alejandro Flechas Montaño",
+          "correo": "mflechas@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Oscar Adolfo Niño Mendez",
+          "correo": "oanino@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Yuliana Pérez Gaviria",
+          "correo": "yperezg@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Javier Hernando Gracia Gil",
+          "correo": "jhgracia@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Jenny Alezandra Paramo Aragón",
+          "correo": "japaramo@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "John Alexander Moreno Sandoval",
+          "correo": "jalexandermoreno@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Miguel Angel Avila Diaz",
+          "correo": "mangelavila@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Milton Buitrago Torres",
+          "correo": "mhernandobuitrago@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Sara Niño Montero",
+          "correo": "smnino@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Segundo Cortes Lopez",
+          "correo": "sleonardocortes@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Jose Gregorio Fonseca Soledad",
+          "correo": "jgfonseca@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Ivonne Ibarra Pinilla",
+          "correo": "iibarra@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Johanna Romo Cadena",
+          "correo": "jromo@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Andres Mogollon Reina",
+          "correo": "amogollon@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Hector Rincon Moreno",
+          "correo": "hmrincon@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Jimmy Mendez Molano",
+          "correo": "jmendezm@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Luis Sanchez Sarrazola",
+          "correo": "luiseduardosanchez@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "William Andrés Castañeda Celeita",
+          "correo": "wacastaneda@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Yury Garzon Rodriguez",
+          "correo": "ygarzon@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Camilo Suárez Rodríguez",
+          "correo": "csuarezr@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Daniel Rodriguez Beltran",
+          "correo": "danielenriquerodriguez@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Edgar Eduardo Roa Guerrero",
+          "correo": "eeduardoroa@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Francisco Lanza Rodriguez",
+          "correo": "flanza@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Jorge Enrique Guerrero Ruiz",
+          "correo": "guerreroruiz@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Adriana Asencion Torres Espitia",
+          "correo": "aatorres@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Angela Duarte Camacho",
+          "correo": "ahduarte@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Hugo Sanchez Avila",
+          "correo": "hjaviersanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jesus Enrique Pabon Quintero",
+          "correo": "jepabon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "John Zambrano Rocha",
+          "correo": "jjairozambrano@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jonathan Cordoba Fontecha",
+          "correo": "jcordobaf@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Rico Rodriguez",
+          "correo": "jricor@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Juan Avila Melendez",
+          "correo": "jromanavila@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Julieth Maca Romero",
+          "correo": "jmaca@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Myriam Lucia Sanchez Gutierrez",
+          "correo": "msanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Sandra Carmona Urueña",
+          "correo": "scarmona@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Wilson Ricardo Pinillos Castillo",
+          "correo": "wrpinillos@ucundinamarca.edu.co",
+          "dias": 1
+        }
+      ],
+      "rangos": [
+        {
+          "etiqueta": "0–1 día",
+          "cantidad": 12
+        },
+        {
+          "etiqueta": "2–3 días",
+          "cantidad": 11
+        },
+        {
+          "etiqueta": "4–7 días",
+          "cantidad": 3
+        },
+        {
+          "etiqueta": "8+ días",
+          "cantidad": 26
+        }
+      ],
+      "variacionDias": null,
+      "variacionPorcentaje": null
+    },
+    {
+      "fecha": "2026-03-25",
+      "personasUnicas": 52,
+      "registros": 54,
+      "promedioDias": 5.52,
+      "personas": [
+        {
+          "nombre": "Angela Duarte Camacho",
+          "correo": "ahduarte@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Camilo Suárez Rodríguez",
+          "correo": "csuarezr@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Edilberto Ramirez Rivera",
+          "correo": "edilbertoramirez@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Eduard Gutierrez Rodriguez",
+          "correo": "egutierrezrodriguez@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Gustavo Adolfo Lanza Bayona",
+          "correo": "galanza@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Hector Rincon Moreno",
+          "correo": "hmrincon@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Hugo Sanchez Avila",
+          "correo": "hjaviersanchez@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Jesus Enrique Pabon Quintero",
+          "correo": "jepabon@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "John Zambrano Rocha",
+          "correo": "jjairozambrano@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Jorge Rico Rodriguez",
+          "correo": "jricor@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Ledis Castiblanco Forero",
+          "correo": "ljohanacastiblanco@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Luis Sanchez Sarrazola",
+          "correo": "luiseduardosanchez@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Miguel Alejandro Flechas Montaño",
+          "correo": "mflechas@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Segundo Cortes Lopez",
+          "correo": "sleonardocortes@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Yeny Casas Méndez",
+          "correo": "ylcasas@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Yuliana Pérez Gaviria",
+          "correo": "yperezg@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Andres Mogollon Reina",
+          "correo": "amogollon@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Elvis Cortes Garcia",
+          "correo": "eycortes@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Isabel Quintero Uribe",
+          "correo": "iquinterou@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Jenny Alezandra Paramo Aragón",
+          "correo": "japaramo@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Jimmy Mendez Molano",
+          "correo": "jmendezm@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Jonathan Cordoba Fontecha",
+          "correo": "jcordobaf@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Jorge Enrique Guerrero Ruiz",
+          "correo": "guerreroruiz@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Jorge Tapias Ordoñez",
+          "correo": "jltapias@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Maria Nancy Garzon Soche",
+          "correo": "mnancygarzon@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Miguel Angel Avila Diaz",
+          "correo": "mangelavila@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Milton Buitrago Torres",
+          "correo": "mhernandobuitrago@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Myriam Lucia Sanchez Gutierrez",
+          "correo": "msanchez@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Oscar Adolfo Niño Mendez",
+          "correo": "oanino@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Sara Niño Montero",
+          "correo": "smnino@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "William Andrés Castañeda Celeita",
+          "correo": "wacastaneda@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Gloria Isabel Garcia Ballen",
+          "correo": "gigarcia@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Julieth Maca Romero",
+          "correo": "jmaca@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Luz Venegas Sabogal",
+          "correo": "lnvenegas@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Johanna Romo Cadena",
+          "correo": "jromo@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Mario Bernal Ovalle",
+          "correo": "mcbernal@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Sandra Carmona Urueña",
+          "correo": "scarmona@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Edgar Eduardo Roa Guerrero",
+          "correo": "eeduardoroa@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "John Alexander Moreno Sandoval",
+          "correo": "jalexandermoreno@ucundinamarca.edu.co",
+          "dias": 3
+        },
+        {
+          "nombre": "Adriana Asencion Torres Espitia",
+          "correo": "aatorres@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Daniel Rodriguez Beltran",
+          "correo": "danielenriquerodriguez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Diego Mauricio Parra Laguna",
+          "correo": "diegomparra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Faider Barrero Sanchez",
+          "correo": "fhbarrero@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Francisco Lanza Rodriguez",
+          "correo": "flanza@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Ivonne Ibarra Pinilla",
+          "correo": "iibarra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Javier Hernando Gracia Gil",
+          "correo": "jhgracia@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jose Gregorio Fonseca Soledad",
+          "correo": "jgfonseca@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Juan Avila Melendez",
+          "correo": "jromanavila@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Castañeda Galindo",
+          "correo": "lmiguelcastaneda@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Guillermo Montaño Gallo",
+          "correo": "lgmontano@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Wilson Ricardo Pinillos Castillo",
+          "correo": "wrpinillos@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Yury Garzon Rodriguez",
+          "correo": "ygarzon@ucundinamarca.edu.co",
+          "dias": 1
+        }
+      ],
+      "rangos": [
+        {
+          "etiqueta": "0–1 día",
+          "cantidad": 13
+        },
+        {
+          "etiqueta": "2–3 días",
+          "cantidad": 2
+        },
+        {
+          "etiqueta": "4–7 días",
+          "cantidad": 21
+        },
+        {
+          "etiqueta": "8+ días",
+          "cantidad": 16
+        }
+      ],
+      "variacionDias": -0.11,
+      "variacionPorcentaje": -1.95
+    },
+    {
+      "fecha": "2026-05-12",
+      "personasUnicas": 52,
+      "registros": 52,
+      "promedioDias": 2.71,
+      "personas": [
+        {
+          "nombre": "Edgar Eduardo Roa Guerrero",
+          "correo": "eeduardoroa@ucundinamarca.edu.co",
+          "dias": 28
+        },
+        {
+          "nombre": "John Zambrano Rocha",
+          "correo": "jjairozambrano@ucundinamarca.edu.co",
+          "dias": 25
+        },
+        {
+          "nombre": "Jenny Alezandra Paramo Aragón",
+          "correo": "japaramo@ucundinamarca.edu.co",
+          "dias": 13
+        },
+        {
+          "nombre": "Oscar Adolfo Niño Mendez",
+          "correo": "oanino@ucundinamarca.edu.co",
+          "dias": 13
+        },
+        {
+          "nombre": "Faider Barrero Sanchez",
+          "correo": "fhbarrero@ucundinamarca.edu.co",
+          "dias": 4
+        },
+        {
+          "nombre": "Hector Rincon Moreno",
+          "correo": "hmrincon@ucundinamarca.edu.co",
+          "dias": 4
+        },
+        {
+          "nombre": "John Alexander Moreno Sandoval",
+          "correo": "jalexandermoreno@ucundinamarca.edu.co",
+          "dias": 4
+        },
+        {
+          "nombre": "Jonathan Cordoba Fontecha",
+          "correo": "jcordobaf@ucundinamarca.edu.co",
+          "dias": 4
+        },
+        {
+          "nombre": "Angela Duarte Camacho",
+          "correo": "ahduarte@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Daniel Rodriguez Beltran",
+          "correo": "danielenriquerodriguez@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Adriana Asencion Torres Espitia",
+          "correo": "aatorres@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Andres Mogollon Reina",
+          "correo": "amogollon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Camilo Suárez Rodríguez",
+          "correo": "csuarezr@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Diego Mauricio Parra Laguna",
+          "correo": "diegomparra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Edilberto Ramirez Rivera",
+          "correo": "edilbertoramirez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Eduard Gutierrez Rodriguez",
+          "correo": "egutierrezrodriguez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Elvis Cortes Garcia",
+          "correo": "eycortes@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Francisco Lanza Rodriguez",
+          "correo": "flanza@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Gloria Isabel Garcia Ballen",
+          "correo": "gigarcia@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Gustavo Adolfo Lanza Bayona",
+          "correo": "galanza@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Hugo Sanchez Avila",
+          "correo": "hjaviersanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Isabel Quintero Uribe",
+          "correo": "iquinterou@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Ivonne Ibarra Pinilla",
+          "correo": "iibarra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Javier Hernando Gracia Gil",
+          "correo": "jhgracia@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jesus Enrique Pabon Quintero",
+          "correo": "jepabon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jimmy Mendez Molano",
+          "correo": "jmendezm@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Johanna Romo Cadena",
+          "correo": "jromo@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Enrique Guerrero Ruiz",
+          "correo": "guerreroruiz@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Rico Rodriguez",
+          "correo": "jricor@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Tapias Ordoñez",
+          "correo": "jltapias@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jose Gregorio Fonseca Soledad",
+          "correo": "jgfonseca@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Juan Avila Melendez",
+          "correo": "jromanavila@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Julieth Maca Romero",
+          "correo": "jmaca@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Ledis Castiblanco Forero",
+          "correo": "ljohanacastiblanco@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Castañeda Galindo",
+          "correo": "lmiguelcastaneda@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Guillermo Montaño Gallo",
+          "correo": "lgmontano@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Sanchez Sarrazola",
+          "correo": "luiseduardosanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luz Venegas Sabogal",
+          "correo": "lnvenegas@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Maria Nancy Garzon Soche",
+          "correo": "mnancygarzon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Mario Bernal Ovalle",
+          "correo": "mcbernal@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Miguel Alejandro Flechas Montaño",
+          "correo": "mflechas@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Miguel Angel Avila Diaz",
+          "correo": "mangelavila@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Milton Buitrago Torres",
+          "correo": "mhernandobuitrago@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Myriam Lucia Sanchez Gutierrez",
+          "correo": "msanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Sandra Carmona Urueña",
+          "correo": "scarmona@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Sara Niño Montero",
+          "correo": "smnino@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Segundo Cortes Lopez",
+          "correo": "sleonardocortes@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "William Andrés Castañeda Celeita",
+          "correo": "wacastaneda@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Wilson Ricardo Pinillos Castillo",
+          "correo": "wrpinillos@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Yeny Casas Méndez",
+          "correo": "ylcasas@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Yuliana Pérez Gaviria",
+          "correo": "yperezg@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Yury Garzon Rodriguez",
+          "correo": "ygarzon@ucundinamarca.edu.co",
+          "dias": 1
+        }
+      ],
+      "rangos": [
+        {
+          "etiqueta": "0–1 día",
+          "cantidad": 42
+        },
+        {
+          "etiqueta": "2–3 días",
+          "cantidad": 2
+        },
+        {
+          "etiqueta": "4–7 días",
+          "cantidad": 4
+        },
+        {
+          "etiqueta": "8+ días",
+          "cantidad": 4
+        }
+      ],
+      "variacionDias": -2.81,
+      "variacionPorcentaje": -50.91
+    },
+    {
+      "fecha": "2026-05-19",
+      "personasUnicas": 52,
+      "registros": 52,
+      "promedioDias": 3.6,
+      "personas": [
+        {
+          "nombre": "Edgar Eduardo Roa Guerrero",
+          "correo": "eeduardoroa@ucundinamarca.edu.co",
+          "dias": 35
+        },
+        {
+          "nombre": "Jorge Tapias Ordoñez",
+          "correo": "jltapias@ucundinamarca.edu.co",
+          "dias": 9
+        },
+        {
+          "nombre": "Gloria Isabel Garcia Ballen",
+          "correo": "gigarcia@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Jose Gregorio Fonseca Soledad",
+          "correo": "jgfonseca@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Juan Avila Melendez",
+          "correo": "jromanavila@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Yuliana Pérez Gaviria",
+          "correo": "yperezg@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Yury Garzon Rodriguez",
+          "correo": "ygarzon@ucundinamarca.edu.co",
+          "dias": 8
+        },
+        {
+          "nombre": "Miguel Angel Avila Diaz",
+          "correo": "mangelavila@ucundinamarca.edu.co",
+          "dias": 7
+        },
+        {
+          "nombre": "Andres Mogollon Reina",
+          "correo": "amogollon@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Francisco Lanza Rodriguez",
+          "correo": "flanza@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Isabel Quintero Uribe",
+          "correo": "iquinterou@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Julieth Maca Romero",
+          "correo": "jmaca@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Luz Venegas Sabogal",
+          "correo": "lnvenegas@ucundinamarca.edu.co",
+          "dias": 6
+        },
+        {
+          "nombre": "Edilberto Ramirez Rivera",
+          "correo": "edilbertoramirez@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Eduard Gutierrez Rodriguez",
+          "correo": "egutierrezrodriguez@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Hugo Sanchez Avila",
+          "correo": "hjaviersanchez@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Javier Hernando Gracia Gil",
+          "correo": "jhgracia@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Jimmy Mendez Molano",
+          "correo": "jmendezm@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Yeny Casas Méndez",
+          "correo": "ylcasas@ucundinamarca.edu.co",
+          "dias": 5
+        },
+        {
+          "nombre": "Daniel Rodriguez Beltran",
+          "correo": "danielenriquerodriguez@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Gustavo Adolfo Lanza Bayona",
+          "correo": "galanza@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Milton Buitrago Torres",
+          "correo": "mhernandobuitrago@ucundinamarca.edu.co",
+          "dias": 2
+        },
+        {
+          "nombre": "Adriana Asencion Torres Espitia",
+          "correo": "aatorres@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Angela Duarte Camacho",
+          "correo": "ahduarte@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Camilo Suárez Rodríguez",
+          "correo": "csuarezr@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Diego Mauricio Parra Laguna",
+          "correo": "diegomparra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Elvis Cortes Garcia",
+          "correo": "eycortes@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Faider Barrero Sanchez",
+          "correo": "fhbarrero@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Hector Rincon Moreno",
+          "correo": "hmrincon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Ivonne Ibarra Pinilla",
+          "correo": "iibarra@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jenny Alezandra Paramo Aragón",
+          "correo": "japaramo@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jesus Enrique Pabon Quintero",
+          "correo": "jepabon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Johanna Romo Cadena",
+          "correo": "jromo@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "John Alexander Moreno Sandoval",
+          "correo": "jalexandermoreno@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "John Zambrano Rocha",
+          "correo": "jjairozambrano@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jonathan Cordoba Fontecha",
+          "correo": "jcordobaf@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Enrique Guerrero Ruiz",
+          "correo": "guerreroruiz@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Jorge Rico Rodriguez",
+          "correo": "jricor@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Ledis Castiblanco Forero",
+          "correo": "ljohanacastiblanco@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Castañeda Galindo",
+          "correo": "lmiguelcastaneda@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Guillermo Montaño Gallo",
+          "correo": "lgmontano@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Luis Sanchez Sarrazola",
+          "correo": "luiseduardosanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Maria Nancy Garzon Soche",
+          "correo": "mnancygarzon@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Mario Bernal Ovalle",
+          "correo": "mcbernal@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Miguel Alejandro Flechas Montaño",
+          "correo": "mflechas@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Myriam Lucia Sanchez Gutierrez",
+          "correo": "msanchez@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Oscar Adolfo Niño Mendez",
+          "correo": "oanino@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Sandra Carmona Urueña",
+          "correo": "scarmona@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Sara Niño Montero",
+          "correo": "smnino@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Segundo Cortes Lopez",
+          "correo": "sleonardocortes@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "William Andrés Castañeda Celeita",
+          "correo": "wacastaneda@ucundinamarca.edu.co",
+          "dias": 1
+        },
+        {
+          "nombre": "Wilson Ricardo Pinillos Castillo",
+          "correo": "wrpinillos@ucundinamarca.edu.co",
+          "dias": 1
+        }
+      ],
+      "rangos": [
+        {
+          "etiqueta": "0–1 día",
+          "cantidad": 30
+        },
+        {
+          "etiqueta": "2–3 días",
+          "cantidad": 3
+        },
+        {
+          "etiqueta": "4–7 días",
+          "cantidad": 12
+        },
+        {
+          "etiqueta": "8+ días",
+          "cantidad": 7
+        }
+      ],
+      "variacionDias": 0.89,
+      "variacionPorcentaje": 32.84
+    }
+  ]
+}

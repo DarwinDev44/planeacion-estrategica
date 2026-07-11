@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard } from "lucide-react";
+import { Activity, LayoutDashboard, Network, Users, Compass, Table2 } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -11,8 +11,38 @@ export interface ItemNavegacion {
 export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/encuesta",
-    etiqueta: "Seguimiento actividades",
-    descripcion: "Participación y avance por actividad",
+    etiqueta: "Resumen ejecutivo",
+    descripcion: "Panorama general de la participación",
     icono: LayoutDashboard,
+  },
+  {
+    href: "/encuesta/participacion",
+    etiqueta: "Quién participó",
+    descripcion: "Rol, sede, facultad y programa",
+    icono: Users,
+  },
+  {
+    href: "/encuesta/vision-estrategica",
+    etiqueta: "Visión estratégica",
+    descripcion: "Las 4 preguntas que orientan el plan",
+    icono: Compass,
+  },
+  {
+    href: "/encuesta/exploracion",
+    etiqueta: "Exploración",
+    descripcion: "Tabla dinámica y exportación",
+    icono: Table2,
+  },
+  {
+    href: "/seguimiento",
+    etiqueta: "Valoración momentos",
+    descripcion: "Seguimiento y avance por actividad",
+    icono: Activity,
+  },
+  {
+    href: "/accesos-cai",
+    etiqueta: "Accesos a CAI",
+    descripcion: "Recencia y evolución de accesos",
+    icono: Network,
   },
 ];

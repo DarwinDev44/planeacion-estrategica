@@ -26,9 +26,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             Volver al inicio
           </Link>
           <p className="text-xs text-muted-foreground">
-            Comité de Apoyo Institucional
+            Plan Estratégico
             <br />
-            Corte: 9 jul 2026
+            2027 – 2037
           </p>
         </div>
       </aside>
@@ -93,7 +93,7 @@ function Logo({ className, compact = false }: { className?: string; compact?: bo
         className="h-auto w-auto"
       />
       <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-primary">
-        Seguimiento participación actividades
+        Planeación estratégica 2027 – 2037
       </p>
     </Link>
   );
