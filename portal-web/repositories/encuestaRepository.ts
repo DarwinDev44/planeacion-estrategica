@@ -2,6 +2,7 @@ import "server-only";
 import type { Persona, FiltrosEncuesta, PreguntaId } from "@/types/encuesta";
 import { PREGUNTAS } from "@/constants/preguntas";
 import { getEncuestaDataSource } from "./datasource";
+import { esRespuestaValida } from "@/lib/filtro-respuestas";
 
 /**
  * Única capa de acceso a datos de la encuesta. Todo componente, página o
@@ -147,7 +148,7 @@ export const getSerieTiempoPreagregada = () => getSerieTiempoFiltrada();
 export function getRespuestasOtroPreagregadas(): { personaId: number; preguntaId: PreguntaId; texto: string }[] {
   return getEncuestaDataSource()
     .getRespuestas()
-    .filter((r) => r.esOtro)
+    .filter((r) => r.esOtro && esRespuestaValida(r.opcion))
     .map((r) => ({ personaId: r.personaId, preguntaId: r.preguntaId, texto: r.opcion }));
 }
 
