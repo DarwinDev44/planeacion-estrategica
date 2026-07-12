@@ -1,5 +1,6 @@
 import type { Persona, RolAsignado, RespuestaPregunta } from "@/types/encuesta";
 import type { FilaMeta } from "@/types/metas";
+import type { ConferenciaCard } from "@/types/conferencistas";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -28,4 +29,14 @@ export interface MetasDataSource {
   getAdministrativosPorSede(): FilaMeta[];
   getCreadorOportunidad(): FilaMeta[];
   getGraduados(): FilaMeta[];
+}
+
+/**
+ * Contrato del origen de datos del módulo Conferencistas. Una única hoja
+ * ("Base de Datos" de Participación jornadas.xlsx) ya trae una fila por
+ * tarjeta a publicar, con columnas *_card listas para presentar — no hace
+ * falta agregación, solo tipar y filtrar por `publicar`.
+ */
+export interface ConferencistasDataSource {
+  getConferencias(): ConferenciaCard[];
 }
