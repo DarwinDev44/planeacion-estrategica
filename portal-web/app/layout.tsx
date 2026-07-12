@@ -9,58 +9,92 @@ import { AppProviders } from "@/components/layout/app-providers";
 const ANCHO_ESCRITORIO = 1280;
 
 /**
- * El <meta viewport> se fija SIEMPRE en 1280 (no `device-width`). Esto es
- * necesario, no cosmético: si se declarara `width=device-width` y luego
- * #app-frame tuviera `width:1280px` vía CSS, el navegador expandiría por su
- * cuenta el viewport para contener ese ancho — y entonces `window.innerWidth`
- * dejaría de reflejar el ancho real del dispositivo, invalidando cualquier
- * cálculo de escala hecho a partir de él (se probó y reprodujo este ciclo).
- * Fijar 1280 de entrada evita esa ambigüedad: el viewport siempre es 1280 en
- * móvil, sin importar el contenido.
+ * El <meta viewport> se fija SIEMPRE en 1280 (no `device-width`). Necesario:
+ * si se declarara `width=device-width` y luego #app-frame tuviera
+ * `width:1280px` vía CSS, el navegador expandiría por su cuenta el viewport
+ * para contener ese ancho — y `window.innerWidth` dejaría de reflejar el
+ * ancho real del dispositivo (se probó y reprodujo este ciclo). Fijar 1280
+ * de entrada evita esa ambigüedad.
+ *
+ * `height: "device-height"` cierra el mismo hueco pero en el eje vertical: sin
+ * declararlo, el navegador expande el viewport verticalmente para "contener"
+ * el contenido de 1280px de #app-frame (a pesar del recorte por overflow en
+ * #app-frame-outer) — `window.innerHeight` terminaba reportando el alto
+ * completo sin escalar (p.ej. 2179px) en vez del alto real del teléfono, y la
+ * página dejaba de necesitar scroll porque, para el navegador, "ya cabía todo"
+ * en ese viewport gigante. Fijar `device-height` ancla el viewport al alto
+ * físico real, igual que `width` lo hace con el ancho.
  */
 export const viewport: Viewport = {
   width: ANCHO_ESCRITORIO,
+  height: "device-height",
   initialScale: 1,
 };
 
 /**
- * Con el viewport ya anclado en 1280, `window.innerWidth` dejó de servir para
- * saber el ancho real del dispositivo (siempre da 1280). Se usa
- * `window.screen.width` en su lugar: es una propiedad de la pantalla física,
- * ajena a cualquier <meta viewport> o CSS de la página.
+ * Con el viewport ya anclado en 1280, `window.innerWidth` no sirve para saber
+ * el ancho real del dispositivo (siempre da 1280). Se usa `window.screen.width`:
+ * es una propiedad de la pantalla física, ajena a cualquier <meta viewport> o
+ * CSS de la página.
  *
- * Con esa medida se decide si el dispositivo es "móvil" (pantalla < 1280) y,
- * de serlo, se agrega la clase `forzar-escritorio` a <html> y se publica
- * `--escala-escritorio` (pantalla / 1280) como variable CSS. La regla
- * correspondiente en globals.css usa esa clase (no un media query — un media
- * query sobre el ancho del viewport caería en el mismo ciclo de arriba, ya
- * que el viewport está fijo en 1280) para poner #app-frame en
- * `width:1280px; zoom: var(--escala-escritorio)`.
- *
- * Se eligió `zoom` (no `transform: scale`) porque además de escalar
- * visualmente, `zoom` SÍ reduce el alto realmente ocupado en el documento
- * (transform no lo hace, dejaría un hueco en blanco debajo) y porque, al ser
- * una propiedad CSS que se reevalúa igual que cualquier otra en cada
- * resize/rotación, no depende de que el motor del navegador reinterprete el
- * <meta viewport> después de ya haber pintado — que es donde fallaba el
- * enfoque anterior (mutar `initial-scale` por JS tras la carga) de forma
- * intermitente en componentes que se remiden a sí mismos con ResizeObserver,
- * como los gráficos de recharts (`ResponsiveContainer`): al medir su
- * contenedor, siguen viendo el ancho real de 1280px — solo cambia la escala
- * con la que se pinta todo el conjunto — así que su layout interno ya no
- * varía entre dispositivos.
+ * El escalado visual se hace con `transform: scale()` sobre #app-frame — NO
+ * con `zoom`. Se probó `zoom` primero (más simple: además de escalar, ajusta
+ * solo el alto ocupado) pero en Safari/WebKit real (no en la emulación de
+ * Chromium, que es donde se probó primero) los componentes que se miden a sí
+ * mismos con ResizeObserver — los gráficos de recharts — quedaban rotos: en
+ * WebKit, bajo `zoom`, `getBoundingClientRect()` devuelve el tamaño YA
+ * escalado (390px) mientras que `offsetWidth` devuelve el tamaño sin escalar
+ * (1280px) — dos APIs de medición dan resultados distintos para el mismo
+ * elemento — y ResizeObserver sigue a la primera, así que los gráficos se
+ * calculaban a sí mismos con un contenedor minúsculo y todo el texto quedaba
+ * envuelto en columnas angostas. `transform` no tiene esa ambigüedad: por
+ * especificación, actúa solo en la etapa de pintado, después de que el layout
+ * ya se calculó — ninguna API de medición (offsetWidth, getBoundingClientRect,
+ * ResizeObserver) se ve afectada por él, en ningún navegador. La contrapartida
+ * es que `transform` no reduce el alto ocupado en el documento (a diferencia
+ * de `zoom`), así que hay que compensarlo a mano: #app-frame-outer mide la
+ * altura natural (sin escalar) de #app-frame y fija su propio alto en
+ * `alturaNatural * escala`, actualizándose con un ResizeObserver para que
+ * cambios dinámicos de contenido (filtros, datos) no dejen un hueco en blanco
+ * ni corten contenido.
  */
 const ESCALA_ESCRITORIO = `(() => {
-  function actualizar() {
+  function calcularEscala() {
     var anchoPantalla = window.screen && window.screen.width;
     var esMovil = anchoPantalla > 0 && anchoPantalla < ${ANCHO_ESCRITORIO};
     document.documentElement.classList.toggle('forzar-escritorio', esMovil);
     var escala = esMovil ? anchoPantalla / ${ANCHO_ESCRITORIO} : 1;
     document.documentElement.style.setProperty('--escala-escritorio', String(escala));
+    return { esMovil: esMovil, escala: escala };
   }
-  actualizar();
-  window.addEventListener('resize', actualizar);
-  window.addEventListener('orientationchange', actualizar);
+
+  function actualizarAltura() {
+    var outer = document.getElementById('app-frame-outer');
+    var frame = document.getElementById('app-frame');
+    if (!outer || !frame) return;
+    var estado = calcularEscala();
+    if (!estado.esMovil) {
+      outer.style.height = '';
+      return;
+    }
+    outer.style.height = (frame.scrollHeight * estado.escala) + 'px';
+  }
+
+  calcularEscala();
+  window.addEventListener('resize', actualizarAltura);
+  window.addEventListener('orientationchange', actualizarAltura);
+
+  function iniciarObservador() {
+    var frame = document.getElementById('app-frame');
+    if (!frame) return;
+    actualizarAltura();
+    if (window.ResizeObserver) new ResizeObserver(actualizarAltura).observe(frame);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarObservador);
+  } else {
+    iniciarObservador();
+  }
 })();`;
 
 const montserrat = Montserrat({
@@ -98,8 +132,10 @@ export default function RootLayout({
         <Script id="escala-escritorio" strategy="beforeInteractive">
           {ESCALA_ESCRITORIO}
         </Script>
-        <div id="app-frame">
-          <AppProviders>{children}</AppProviders>
+        <div id="app-frame-outer">
+          <div id="app-frame">
+            <AppProviders>{children}</AppProviders>
+          </div>
         </div>
       </body>
     </html>
