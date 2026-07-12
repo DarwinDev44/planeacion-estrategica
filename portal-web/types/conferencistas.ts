@@ -17,4 +17,10 @@ export interface ConferenciaCard {
   tipo: TipoCardConferencista;
   asistentesPresenciales: number | null;
   vistasRedesSociales: number | null;
+  /** Cargo o rol destacado (p. ej. "Viceministro de Educación Superior de Colombia"). */
+  tituloProfesional: string | null;
+  formacionAcademica: string[];
+  trayectoriaDestacada: string[];
+  /** Ruta pública de la foto de perfil, o null si no hay una (cae al avatar de iniciales). */
+  fotoUrl: string | null;
 }

@@ -1,9 +1,31 @@
 import "server-only";
-import { readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import * as XLSX from "xlsx";
 import type { ConferenciaCard, TipoCardConferencista } from "@/types/conferencistas";
 import type { ConferencistasDataSource } from "./types";
+
+const DIRECTORIO_FOTOS = join(process.cwd(), "public", "conferencistas", "fotos");
+
+/**
+ * La foto de un conferencista no se referencia con una columna en el Excel:
+ * si existe un archivo `{slug_participante}.png` en `public/conferencistas/fotos/`
+ * se usa; si no, la card cae al avatar de iniciales. Agregar la foto de alguien
+ * nuevo es entonces soltar un archivo con su slug — cero cambios de esquema.
+ */
+function resolverFotoUrl(slug: string): string | null {
+  if (!slug) return null;
+  const archivo = `${slug}.png`;
+  return existsSync(join(DIRECTORIO_FOTOS, archivo)) ? `/conferencistas/fotos/${archivo}` : null;
+}
+
+function dividirBullets(valor: unknown): string[] {
+  if (typeof valor !== "string") return [];
+  return valor
+    .split("\n")
+    .map((linea) => linea.trim())
+    .filter(Boolean);
+}
 
 /**
  * Lee en vivo la hoja "Base de Datos" de Participación jornadas.xlsx — única
@@ -62,6 +84,10 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
       publicar: col("publicar"),
       asistentes: col("asistentes_presenciales"),
       vistas: col("vistas_redes_sociales"),
+      slugParticipante: col("slug_participante"),
+      tituloProfesional: col("titulo_profesional"),
+      formacionAcademica: col("formacion_academica"),
+      trayectoriaDestacada: col("trayectoria_destacada"),
     };
 
     return filas
@@ -80,6 +106,10 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
         tipo: (f[idx.tipoCard] === "Grupo" ? "Grupo" : "Participante") as TipoCardConferencista,
         asistentesPresenciales: f[idx.asistentes] != null ? Number(f[idx.asistentes]) : null,
         vistasRedesSociales: f[idx.vistas] != null ? Number(f[idx.vistas]) : null,
+        tituloProfesional: f[idx.tituloProfesional] ? String(f[idx.tituloProfesional]).trim() : null,
+        formacionAcademica: dividirBullets(f[idx.formacionAcademica]),
+        trayectoriaDestacada: dividirBullets(f[idx.trayectoriaDestacada]),
+        fotoUrl: resolverFotoUrl(String(f[idx.slugParticipante] ?? "").trim()),
       }))
       .sort((a, b) => a.orden - b.orden);
   }

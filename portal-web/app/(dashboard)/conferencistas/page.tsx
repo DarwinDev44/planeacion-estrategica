@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ConferencistaCard } from "@/components/conferencistas/conferencista-card";
+import { ConferencistasGrid } from "@/components/conferencistas/conferencistas-grid";
 import { getConferencias } from "@/repositories/conferencistasRepository";
 
 export const metadata: Metadata = { title: "Conferencistas — Diagnóstico: Tu Voz Fundamental" };
@@ -17,11 +17,7 @@ export default function ConferencistasPage() {
       </div>
 
       {conferencias.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {conferencias.map((c) => (
-            <ConferencistaCard key={c.id} conferencia={c} />
-          ))}
-        </div>
+        <ConferencistasGrid conferencias={conferencias} />
       ) : (
         <p className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
           Aún no hay conferencistas publicados.
