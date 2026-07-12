@@ -71,7 +71,7 @@ function ContenidoDetalle({ actividad }: { actividad: Actividad }) {
         />
       </div>
 
-      <ScrollArea className="max-h-[50vh] pr-3">
+      <ScrollArea className="min-h-0 flex-1 pr-3">
         <div className="flex flex-col gap-5">
           <GrupoParticipantes
             titulo="No finalizado"

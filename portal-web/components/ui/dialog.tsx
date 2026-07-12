@@ -39,6 +39,43 @@ function DialogOverlay({
   )
 }
 
+/**
+ * El centrado NO se hace con `top/left: 50%` (ni con `inset-0` + `m-auto`,
+ * que también depende de un porcentaje): bajo el modo "forzar escritorio"
+ * móvil, WebKit resuelve cualquier porcentaje de alto contra un viewport
+ * fantasma para elementos `position:fixed` específicamente (el mismo tipo de
+ * bug de `window.innerHeight` ya documentado en app/layout.tsx, confirmado
+ * aquí también para `position:fixed`) — verificado que NO afecta a
+ * `position:absolute`, que sí resuelve porcentajes contra el alto real
+ * (`document.documentElement.clientHeight`). Por eso el diálogo usa
+ * `position:absolute` con `top`/`left` calculados a mano en píxeles a partir
+ * de esas propiedades confiables, sumando el scroll actual para simular el
+ * "quedarse fijo en la pantalla" que normalmente da `fixed`.
+ */
+function useCentrarDialogo(ref: React.RefObject<HTMLElement | null>) {
+  React.useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    function centrar() {
+      if (!el) return;
+      const margen = 16;
+      const alto = document.documentElement.clientHeight;
+      const ancho = document.documentElement.clientWidth;
+      el.style.maxHeight = `${alto - margen * 2}px`;
+      const rect = el.getBoundingClientRect();
+      const top = Math.max(margen, window.scrollY + (alto - rect.height) / 2);
+      const left = Math.max(margen, window.scrollX + (ancho - rect.width) / 2);
+      el.style.top = `${top}px`;
+      el.style.left = `${left}px`;
+    }
+
+    centrar();
+    window.addEventListener("resize", centrar);
+    return () => window.removeEventListener("resize", centrar);
+  }, [ref]);
+}
+
 function DialogContent({
   className,
   children,
@@ -47,13 +84,17 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
 }) {
+  const popupRef = React.useRef<HTMLDivElement>(null);
+  useCentrarDialogo(popupRef);
+
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
+        ref={popupRef}
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "absolute z-50 flex h-fit w-full max-w-[calc(100%-2rem)] flex-col gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}
