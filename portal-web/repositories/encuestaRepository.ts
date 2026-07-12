@@ -152,11 +152,21 @@ export const getDistribucionSedePreagregada = () => getDistribucionSedeFiltrada(
 export const getRankingPreguntasPreagregado = () => getRankingPreguntasFiltrado();
 export const getSerieTiempoPreagregada = () => getSerieTiempoFiltrada();
 
-export function getRespuestasOtroPreagregadas(): { personaId: number; preguntaId: PreguntaId; texto: string }[] {
+export function getRespuestasOtroPreagregadas(): {
+  personaId: number;
+  preguntaId: PreguntaId;
+  texto: string;
+  categoriaId: string;
+}[] {
   return getEncuestaDataSource()
     .getRespuestas()
     .filter((r) => r.esOtro && esRespuestaValida(r.opcion))
-    .map((r) => ({ personaId: r.personaId, preguntaId: r.preguntaId, texto: r.opcion }));
+    .map((r) => ({
+      personaId: r.personaId,
+      preguntaId: r.preguntaId,
+      texto: r.opcion,
+      categoriaId: ASIGNACION_OTRO[claveRespuestaOtro(r.personaId, r.preguntaId, r.opcion)] ?? CATEGORIA_RESIDUAL_OTRO,
+    }));
 }
 
 /**

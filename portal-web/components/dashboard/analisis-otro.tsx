@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RankedBarChart } from "@/components/charts/ranked-bar-chart";
+import { cn } from "@/lib/utils";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
 import type { AnalisisOtro } from "@/types/encuesta";
 
@@ -7,9 +8,30 @@ import type { AnalisisOtro } from "@/types/encuesta";
  * Lectura analítica de las respuestas abiertas ("Otro"): distribución por
  * categoría temática (con descripción y una cita representativa por tema) y
  * conclusión del análisis cualitativo.
+ *
+ * El gráfico y la lista de categorías son clickeables: seleccionar una
+ * categoría (clic en la barra o en el tema de la lista) filtra el panel de
+ * "Respuestas abiertas" que se muestra debajo, vía el estado compartido
+ * `categoriaSeleccionada`/`onSeleccionarCategoria` que administra el
+ * componente padre.
  */
-export function AnalisisOtroCards({ analisis }: { analisis: AnalisisOtro }) {
+export function AnalisisOtroCards({
+  analisis,
+  categoriaSeleccionada,
+  onSeleccionarCategoria,
+}: {
+  analisis: AnalisisOtro;
+  categoriaSeleccionada: string | null;
+  onSeleccionarCategoria: (id: string | null) => void;
+}) {
   const conCitas = analisis.categorias.filter((c) => c.conteo > 0);
+  const nombrePorId = new Map(analisis.categorias.map((c) => [c.id, c.nombre]));
+  const idPorNombre = new Map(analisis.categorias.map((c) => [c.nombre, c.id]));
+  const nombreSeleccionado = categoriaSeleccionada ? nombrePorId.get(categoriaSeleccionada) : null;
+
+  function alternar(id: string) {
+    onSeleccionarCategoria(categoriaSeleccionada === id ? null : id);
+  }
 
   return (
     <>
@@ -17,7 +39,8 @@ export function AnalisisOtroCards({ analisis }: { analisis: AnalisisOtro }) {
         <CardHeader className="px-3.5 pb-1">
           <CardTitle className="text-[13px]">Categorización de las respuestas abiertas</CardTitle>
           <p className="text-[11px] text-muted-foreground">
-            Los {formatNumero(analisis.total)} aportes de texto libre, agrupados en {conCitas.length} temas.
+            Los {formatNumero(analisis.total)} aportes de texto libre, agrupados en {conCitas.length} temas. Clic en
+            un tema para filtrar las respuestas de abajo.
           </p>
         </CardHeader>
         <CardContent className="px-3.5">
@@ -32,24 +55,42 @@ export function AnalisisOtroCards({ analisis }: { analisis: AnalisisOtro }) {
               alturaFila={40}
               truncarEn={44}
               ocultarAccion
+              etiquetaSeleccionada={nombreSeleccionado ?? null}
+              onSeleccionarBarra={(etiqueta) => {
+                const id = idPorNombre.get(etiqueta);
+                if (id) alternar(id);
+              }}
             />
             <ul className="flex flex-col gap-3">
-              {conCitas.map((c) => (
-                <li key={c.id} className="flex flex-col gap-0.5">
-                  <p className="text-xs font-semibold text-foreground">
-                    {c.nombre}{" "}
-                    <span className="font-normal tabular-nums text-muted-foreground">
-                      · {formatNumero(c.conteo)} ({formatPorcentaje(c.porcentaje)})
-                    </span>
-                  </p>
-                  <p className="text-[11px] leading-relaxed text-muted-foreground">{c.descripcion}</p>
-                  {c.citas[0] ? (
-                    <p className="text-[11px] italic leading-relaxed text-muted-foreground/80">
-                      &ldquo;{c.citas[0]}&rdquo;
-                    </p>
-                  ) : null}
-                </li>
-              ))}
+              {conCitas.map((c) => {
+                const activa = categoriaSeleccionada === c.id;
+                return (
+                  <li key={c.id}>
+                    <button
+                      type="button"
+                      onClick={() => alternar(c.id)}
+                      aria-pressed={activa}
+                      className={cn(
+                        "flex w-full flex-col gap-0.5 rounded-md px-2 py-1.5 text-left transition-colors",
+                        activa ? "bg-secondary ring-1 ring-primary/40" : "hover:bg-muted/60"
+                      )}
+                    >
+                      <p className="text-xs font-semibold text-foreground">
+                        {c.nombre}{" "}
+                        <span className="font-normal tabular-nums text-muted-foreground">
+                          · {formatNumero(c.conteo)} ({formatPorcentaje(c.porcentaje)})
+                        </span>
+                      </p>
+                      <p className="text-[11px] leading-relaxed text-muted-foreground">{c.descripcion}</p>
+                      {c.citas[0] ? (
+                        <p className="text-[11px] italic leading-relaxed text-muted-foreground/80">
+                          &ldquo;{c.citas[0]}&rdquo;
+                        </p>
+                      ) : null}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </CardContent>
