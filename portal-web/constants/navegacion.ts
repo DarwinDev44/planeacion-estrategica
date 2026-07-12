@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, BarChart3, Blocks, LayoutDashboard, Network, Users, Compass, Target } from "lucide-react";
+import { Activity, BarChart3, Blocks, LayoutDashboard, Network, Users, Compass, Target, Mic2 } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -44,6 +44,12 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Valoración momentos",
     descripcion: "Seguimiento y avance por actividad",
     icono: Activity,
+  },
+  {
+    href: "/conferencistas",
+    etiqueta: "Conferencistas",
+    descripcion: "Jornadas y conferencias del Plan Estratégico",
+    icono: Mic2,
   },
   {
     href: "/analitica-momentos",

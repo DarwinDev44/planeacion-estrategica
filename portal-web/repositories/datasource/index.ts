@@ -1,9 +1,10 @@
 import "server-only";
 import { ExcelEncuestaDataSource } from "./excel-data-source";
 import { ExcelMetasDataSource } from "./excel-metas-source";
-import type { EncuestaDataSource, MetasDataSource } from "./types";
+import { ExcelConferencistasDataSource } from "./excel-conferencistas-source";
+import type { EncuestaDataSource, MetasDataSource, ConferencistasDataSource } from "./types";
 
-export type { EncuestaDataSource, MetasDataSource } from "./types";
+export type { EncuestaDataSource, MetasDataSource, ConferencistasDataSource } from "./types";
 
 /**
  * Único punto de construcción del origen de datos. Para migrar a otra fuente
@@ -23,4 +24,11 @@ let instanciaMetas: MetasDataSource | null = null;
 export function getMetasDataSource(): MetasDataSource {
   if (!instanciaMetas) instanciaMetas = new ExcelMetasDataSource();
   return instanciaMetas;
+}
+
+let instanciaConferencistas: ConferencistasDataSource | null = null;
+
+export function getConferencistasDataSource(): ConferencistasDataSource {
+  if (!instanciaConferencistas) instanciaConferencistas = new ExcelConferencistasDataSource();
+  return instanciaConferencistas;
 }
