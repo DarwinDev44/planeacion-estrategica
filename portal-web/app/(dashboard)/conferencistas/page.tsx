@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { ConferencistasGrid } from "@/components/conferencistas/conferencistas-grid";
 import { getConferencias } from "@/repositories/conferencistasRepository";
+import { getValoracion } from "@/repositories/valoracionesRepository";
+import type { ConferenciaConValoracion } from "@/types/conferencistas";
 
 export const metadata: Metadata = { title: "Conferencistas — Diagnóstico: Tu Voz Fundamental" };
 
 export default function ConferencistasPage() {
-  const conferencias = getConferencias();
+  const conferencias: ConferenciaConValoracion[] = getConferencias().map((c) => ({
+    ...c,
+    valoracion: getValoracion(c.slug),
+  }));
 
   return (
     <div className="flex flex-col gap-4">

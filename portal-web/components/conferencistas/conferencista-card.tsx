@@ -1,11 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { CalendarDays, MapPin, Users, Video, Eye, ExternalLink } from "lucide-react";
+import { CalendarDays, MapPin, Star, Users, Video, Eye, ExternalLink } from "lucide-react";
 import { AvatarConferencista } from "@/components/conferencistas/avatar-conferencista";
 import { formatNumero } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
-import type { ConferenciaCard } from "@/types/conferencistas";
+import type { ConferenciaConValoracion } from "@/types/conferencistas";
 
 const PALETA_ACENTO = [
   "var(--chart-1)",
@@ -31,8 +31,8 @@ export function ConferencistaCard({
   conferencia,
   onSeleccionar,
 }: {
-  conferencia: ConferenciaCard;
-  onSeleccionar: (conferencia: ConferenciaCard) => void;
+  conferencia: ConferenciaConValoracion;
+  onSeleccionar: (conferencia: ConferenciaConValoracion) => void;
 }) {
   const prefiereReducido = useReducedMotion();
   const esGrupo = conferencia.tipo === "Grupo";
@@ -66,13 +66,24 @@ export function ConferencistaCard({
       <div className="relative rounded-[15px] bg-card ring-1 ring-foreground/10">
         <div className="flex flex-col gap-2.5 p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
-            <span
-              className="inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
-              title={conferencia.modalidad}
-            >
-              <IconoModalidad className="size-3" aria-hidden />
-              {conferencia.modalidad}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className="inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                title={conferencia.modalidad}
+              >
+                <IconoModalidad className="size-3" aria-hidden />
+                {conferencia.modalidad}
+              </span>
+              {conferencia.valoracion ? (
+                <span
+                  className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400"
+                  title={`${conferencia.valoracion.totalRespuestas} valoraciones`}
+                >
+                  <Star className="size-3 fill-current" aria-hidden />
+                  {conferencia.valoracion.promedio.toFixed(1)}
+                </span>
+              ) : null}
+            </div>
             {esGrupo ? (
               <span className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
                 Grupo

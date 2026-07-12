@@ -1,14 +1,16 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { CalendarDays, ExternalLink, Eye, GraduationCap, MapPin, Milestone, Users, Video, XIcon } from "lucide-react";
+import { CalendarDays, ExternalLink, Eye, GraduationCap, MapPin, Milestone, Star, Users, Video, XIcon } from "lucide-react";
 import { AvatarConferencista } from "@/components/conferencistas/avatar-conferencista";
+import { ValoracionesConferencista } from "@/components/conferencistas/valoraciones-conferencista";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatNumero } from "@/lib/formatters";
-import type { ConferenciaCard } from "@/types/conferencistas";
+import type { ConferenciaConValoracion } from "@/types/conferencistas";
 
 const PALETA_ACENTO = [
   "var(--chart-1)",
@@ -36,7 +38,7 @@ const seccion: Variants = {
 };
 
 interface DetalleConferencistaProps {
-  conferencia: ConferenciaCard | null;
+  conferencia: ConferenciaConValoracion | null;
   onCerrar: () => void;
 }
 
@@ -48,7 +50,7 @@ export function DetalleConferencista({ conferencia, onCerrar }: DetalleConferenc
   );
 }
 
-function ContenidoDetalle({ conferencia }: { conferencia: ConferenciaCard }) {
+function ContenidoDetalle({ conferencia }: { conferencia: ConferenciaConValoracion }) {
   const prefiereReducido = useReducedMotion();
   const acento = colorAcento(conferencia.nombre);
   const variants = prefiereReducido ? undefined : seccion;
@@ -65,7 +67,31 @@ function ContenidoDetalle({ conferencia }: { conferencia: ConferenciaCard }) {
         className="flex min-h-0 flex-1 flex-col"
       >
         <CabeceraHero conferencia={conferencia} acento={acento} variants={variants} />
-        <CuerpoDetalle conferencia={conferencia} acento={acento} variants={variants} />
+        {conferencia.valoracion ? (
+          <Tabs defaultValue="perfil" className="flex min-h-0 flex-1 flex-col gap-0">
+            <motion.div variants={variants} className="border-b border-border px-6">
+              <TabsList variant="line" className="h-9">
+                <TabsTrigger value="perfil">Perfil</TabsTrigger>
+                <TabsTrigger value="valoraciones" className="gap-1.5">
+                  <Star className="size-3.5 fill-amber-500 text-amber-500" aria-hidden />
+                  Valoraciones
+                </TabsTrigger>
+              </TabsList>
+            </motion.div>
+            <TabsContent value="perfil" className="min-h-0 flex-1">
+              <CuerpoDetalle conferencia={conferencia} acento={acento} variants={variants} />
+            </TabsContent>
+            <TabsContent value="valoraciones" className="min-h-0 flex-1">
+              <ScrollArea className="min-h-0 flex-1 px-6 pb-6">
+                <div className="pt-5">
+                  <ValoracionesConferencista valoracion={conferencia.valoracion} acento={acento} variants={variants} />
+                </div>
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <CuerpoDetalle conferencia={conferencia} acento={acento} variants={variants} />
+        )}
       </motion.div>
     </DialogContent>
   );
@@ -76,7 +102,7 @@ function CuerpoDetalle({
   acento,
   variants,
 }: {
-  conferencia: ConferenciaCard;
+  conferencia: ConferenciaConValoracion;
   acento: string;
   variants: Variants | undefined;
 }) {
@@ -126,7 +152,7 @@ function CabeceraHero({
   acento,
   variants,
 }: {
-  conferencia: ConferenciaCard;
+  conferencia: ConferenciaConValoracion;
   acento: string;
   variants: Variants | undefined;
 }) {
@@ -157,7 +183,7 @@ function CabeceraHero({
   );
 }
 
-function InsigniasEvento({ conferencia }: { conferencia: ConferenciaCard }) {
+function InsigniasEvento({ conferencia }: { conferencia: ConferenciaConValoracion }) {
   const IconoModalidad = conferencia.modalidad.includes("Virtual") ? Video : MapPin;
   return (
     <>
@@ -177,7 +203,7 @@ function InsigniasEvento({ conferencia }: { conferencia: ConferenciaCard }) {
   );
 }
 
-function PiePagina({ conferencia }: { conferencia: ConferenciaCard }) {
+function PiePagina({ conferencia }: { conferencia: ConferenciaConValoracion }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
       <div className="flex items-center gap-4 text-xs text-muted-foreground">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ConferencistaCard } from "@/components/conferencistas/conferencista-card";
 import { DetalleConferencista } from "@/components/conferencistas/detalle-conferencista";
-import type { ConferenciaCard } from "@/types/conferencistas";
+import type { ConferenciaConValoracion } from "@/types/conferencistas";
 
 const contenedor: Variants = {
   oculto: {},
@@ -16,8 +16,8 @@ const item: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
-export function ConferencistasGrid({ conferencias }: { conferencias: ConferenciaCard[] }) {
-  const [seleccionada, setSeleccionada] = useState<ConferenciaCard | null>(null);
+export function ConferencistasGrid({ conferencias }: { conferencias: ConferenciaConValoracion[] }) {
+  const [seleccionada, setSeleccionada] = useState<ConferenciaConValoracion | null>(null);
   const prefiereReducido = useReducedMotion();
 
   return (
