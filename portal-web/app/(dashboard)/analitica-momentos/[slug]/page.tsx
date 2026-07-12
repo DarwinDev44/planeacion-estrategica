@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DistribucionValoracion } from "@/components/analitica-momentos/distribucion-valoracion";
+import { esDistribucionLikert } from "@/lib/valoracion";
 import { RespuestasAbiertas } from "@/components/analitica-momentos/respuestas-abiertas";
 import { FeedForo } from "@/components/analitica-momentos/feed-foro";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
@@ -80,14 +81,30 @@ export default async function AnaliticaMomentoDetallePage({ params }: PageProps)
       </section>
 
       {datos.preguntasValoracion.length > 0 ? (
-        <section className="grid gap-4 lg:grid-cols-2" aria-label="Distribución de valoración por pregunta">
-          {datos.preguntasValoracion.map((pregunta) => (
-            <Card key={pregunta.pregunta}>
-              <CardContent>
-                <DistribucionValoracion pregunta={pregunta} />
-              </CardContent>
-            </Card>
-          ))}
+        <section className="flex flex-col gap-3" aria-label="Distribución de valoración por pregunta">
+          <p className="text-xs text-muted-foreground">
+            {datos.preguntasValoracion.every((p) => esDistribucionLikert(p.distribucion)) ? (
+              <>
+                Cada gráfico resume las respuestas en una escala de valoración de{" "}
+                <span className="font-medium text-foreground">1 (Muy bajo)</span> a{" "}
+                <span className="font-medium text-foreground">5 (Muy alto)</span>.
+              </>
+            ) : (
+              <>
+                Valoraciones en una escala de <span className="font-medium text-foreground">1 a 5</span> (5 = máximo);
+                los promedios se muestran como puntaje sobre 5.
+              </>
+            )}
+          </p>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {datos.preguntasValoracion.map((pregunta) => (
+              <Card key={pregunta.pregunta}>
+                <CardContent>
+                  <DistribucionValoracion pregunta={pregunta} />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </section>
       ) : null}
 
