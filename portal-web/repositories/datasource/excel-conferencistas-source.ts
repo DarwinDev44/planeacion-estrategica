@@ -92,25 +92,29 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
 
     return filas
       .filter((f) => f[idx.idRegistro] != null && f[idx.publicar] === true)
-      .map((f) => ({
-        id: Number(f[idx.idRegistro]),
-        nombre: String(f[idx.nombreCard] ?? "").trim(),
-        titulo: String(f[idx.tituloCard] ?? "").trim(),
-        fecha: String(f[idx.fechaCard] ?? "").trim(),
-        ubicacion: String(f[idx.ubicacionCard] ?? "").trim(),
-        modalidad: String(f[idx.modalidad] ?? "").trim(),
-        descripcion: String(f[idx.descripcionCard] ?? "").trim(),
-        enlace: f[idx.enlaceCard] ? String(f[idx.enlaceCard]).trim() : null,
-        textoAlternativoImagen: String(f[idx.textoAlt] ?? f[idx.nombreCard] ?? "").trim(),
-        orden: Number(f[idx.ordenCard] ?? 0),
-        tipo: (f[idx.tipoCard] === "Grupo" ? "Grupo" : "Participante") as TipoCardConferencista,
-        asistentesPresenciales: f[idx.asistentes] != null ? Number(f[idx.asistentes]) : null,
-        vistasRedesSociales: f[idx.vistas] != null ? Number(f[idx.vistas]) : null,
-        tituloProfesional: f[idx.tituloProfesional] ? String(f[idx.tituloProfesional]).trim() : null,
-        formacionAcademica: dividirBullets(f[idx.formacionAcademica]),
-        trayectoriaDestacada: dividirBullets(f[idx.trayectoriaDestacada]),
-        fotoUrl: resolverFotoUrl(String(f[idx.slugParticipante] ?? "").trim()),
-      }))
+      .map((f) => {
+        const slug = String(f[idx.slugParticipante] ?? "").trim();
+        return {
+          id: Number(f[idx.idRegistro]),
+          slug,
+          nombre: String(f[idx.nombreCard] ?? "").trim(),
+          titulo: String(f[idx.tituloCard] ?? "").trim(),
+          fecha: String(f[idx.fechaCard] ?? "").trim(),
+          ubicacion: String(f[idx.ubicacionCard] ?? "").trim(),
+          modalidad: String(f[idx.modalidad] ?? "").trim(),
+          descripcion: String(f[idx.descripcionCard] ?? "").trim(),
+          enlace: f[idx.enlaceCard] ? String(f[idx.enlaceCard]).trim() : null,
+          textoAlternativoImagen: String(f[idx.textoAlt] ?? f[idx.nombreCard] ?? "").trim(),
+          orden: Number(f[idx.ordenCard] ?? 0),
+          tipo: (f[idx.tipoCard] === "Grupo" ? "Grupo" : "Participante") as TipoCardConferencista,
+          asistentesPresenciales: f[idx.asistentes] != null ? Number(f[idx.asistentes]) : null,
+          vistasRedesSociales: f[idx.vistas] != null ? Number(f[idx.vistas]) : null,
+          tituloProfesional: f[idx.tituloProfesional] ? String(f[idx.tituloProfesional]).trim() : null,
+          formacionAcademica: dividirBullets(f[idx.formacionAcademica]),
+          trayectoriaDestacada: dividirBullets(f[idx.trayectoriaDestacada]),
+          fotoUrl: resolverFotoUrl(slug),
+        };
+      })
       .sort((a, b) => a.orden - b.orden);
   }
 }

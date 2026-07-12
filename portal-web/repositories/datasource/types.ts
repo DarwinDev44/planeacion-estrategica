@@ -1,6 +1,7 @@
 import type { Persona, RolAsignado, RespuestaPregunta } from "@/types/encuesta";
 import type { FilaMeta } from "@/types/metas";
 import type { ConferenciaCard } from "@/types/conferencistas";
+import type { ValoracionConferencista } from "@/types/valoraciones";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -39,4 +40,15 @@ export interface MetasDataSource {
  */
 export interface ConferencistasDataSource {
   getConferencias(): ConferenciaCard[];
+}
+
+/**
+ * Contrato del origen de datos de Valoraciones.xlsx. El mapeo hoja/columna ->
+ * conferencista vive dentro de la implementación (ver
+ * excel-valoraciones-source.ts); acá solo se expone la consulta por slug,
+ * que devuelve null cuando no hay evidencia confiable para asociar una
+ * valoración a esa persona (en vez de inventar una).
+ */
+export interface ValoracionesDataSource {
+  getValoracion(slug: string): ValoracionConferencista | null;
 }
