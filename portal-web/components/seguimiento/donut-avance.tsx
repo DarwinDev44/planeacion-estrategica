@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MousePointerClick } from "lucide-react";
 import { formatPorcentaje } from "@/lib/formatters";
 
 interface DonutAvanceProps {
@@ -33,6 +33,15 @@ export function DonutAvance({
         aria-label={`Avance general ${formatPorcentaje(avanceGeneral)}. Ver detalle por actividad`}
         className="group relative mx-auto block h-64 w-64 cursor-pointer rounded-full outline-none transition-transform hover:scale-[1.02] focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:h-72 sm:w-72 [&_*]:cursor-pointer!"
       >
+        {/* Etiqueta flotante: llama la atención hacia el clic y se retira apenas
+            el usuario pasa el mouse (ya no hace falta el aviso). */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-2 right-2 z-10 inline-flex animate-bounce items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap text-primary-foreground shadow-md transition-opacity duration-200 group-hover:opacity-0 sm:right-4"
+        >
+          <MousePointerClick className="size-3" aria-hidden />
+          Clic para ver detalle
+        </span>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
