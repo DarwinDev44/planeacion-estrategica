@@ -8,14 +8,45 @@
   Fuerza el layout de escritorio en cualquier dispositivo. La clase
   `forzar-escritorio` la agrega app/layout.tsx por JS solo cuando la pantalla
   física es < 1280px (ver el comentario ahí sobre por qué es una clase y no un
-  media query de ancho). Sin esa clase (pantallas >= 1280, o navegadores de
-  escritorio que ignoran el <meta viewport>), #app-frame queda sin estilos:
-  el sitio se comporta exactamente igual que hoy (fluido, hasta
-  max-w-[1600px] en AppShell).
+  media query de ancho, y por qué `transform` en vez de `zoom`). Sin esa clase
+  (pantallas >= 1280, o navegadores de escritorio que ignoran el <meta
+  viewport>), #app-frame-outer/#app-frame quedan sin estilos: el sitio se
+  comporta exactamente igual que hoy (fluido, hasta max-w-[1600px] en
+  AppShell).
+
+  #app-frame-outer recorta el "hueco" que dejaría #app-frame al escalarse
+  hacia adentro con transform (que no reduce el espacio reservado en el
+  documento); su alto real se fija por JS (alturaNatural * escala) para que
+  encaje exacto con lo que se ve, sin scroll ni hueco de más.
+
+  html/body usan `h-full`/`min-h-full` (alto en %) en el resto del sitio; en
+  este modo eso entra en una referencia circular (el % de body depende del
+  alto de html, que depende del contenido de body) y termina resolviendo al
+  alto SIN escalar de #app-frame en vez de al de #app-frame-outer ya
+  compensado — se comprobó con getComputedStyle que <body> quedaba con la
+  altura completa de 1280px de #app-frame, dejando un hueco en blanco debajo
+  del contenido real. Se anula ese alto en % aquí para que html/body midan
+  según su contenido real (el de #app-frame-outer, ya correcto).
 */
+html.forzar-escritorio,
+html.forzar-escritorio body {
+  height: auto;
+  min-height: 0;
+}
+
+html.forzar-escritorio #app-frame-outer {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
 html.forzar-escritorio #app-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 1280px;
-  zoom: var(--escala-escritorio, 1);
+  transform-origin: top left;
+  transform: scale(var(--escala-escritorio, 1));
 }
 
 @theme inline {
