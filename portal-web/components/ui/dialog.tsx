@@ -40,40 +40,62 @@ function DialogOverlay({
 }
 
 /**
- * El centrado NO se hace con `top/left: 50%` (ni con `inset-0` + `m-auto`,
- * que también depende de un porcentaje): bajo el modo "forzar escritorio"
- * móvil, WebKit resuelve cualquier porcentaje de alto contra un viewport
- * fantasma para elementos `position:fixed` específicamente (el mismo tipo de
- * bug de `window.innerHeight` ya documentado en app/layout.tsx, confirmado
- * aquí también para `position:fixed`) — verificado que NO afecta a
- * `position:absolute`, que sí resuelve porcentajes contra el alto real
- * (`document.documentElement.clientHeight`). Por eso el diálogo usa
- * `position:absolute` con `top`/`left` calculados a mano en píxeles a partir
- * de esas propiedades confiables, sumando el scroll actual para simular el
- * "quedarse fijo en la pantalla" que normalmente da `fixed`.
+ * El centrado normal (`fixed` + `top/left: 50%` + `-translate-1/2`, clases
+ * de abajo) es correcto y suficiente en todos los casos — EXCEPTO bajo el
+ * modo "forzar escritorio" móvil: ahí WebKit resuelve ese `50%` contra un
+ * viewport fantasma para `position:fixed` (el mismo tipo de bug de
+ * `window.innerHeight` ya documentado en app/layout.tsx). Por eso esta
+ * corrección se aplica SOLO cuando `html.forzar-escritorio` está presente —
+ * en cualquier otro contexto (incluido escritorio real) el hook no toca
+ * nada y se usa el `fixed` de siempre, evitando reintroducir con JS un bug
+ * distinto en el caso normal.
  */
-function useCentrarDialogo(ref: React.RefObject<HTMLElement | null>) {
-  React.useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+function useCentrarDialogoMovilForzado() {
+  const nodeRef = React.useRef<HTMLDivElement | null>(null);
 
-    function centrar() {
-      if (!el) return;
-      const margen = 16;
-      const alto = document.documentElement.clientHeight;
-      const ancho = document.documentElement.clientWidth;
-      el.style.maxHeight = `${alto - margen * 2}px`;
-      const rect = el.getBoundingClientRect();
-      const top = Math.max(margen, window.scrollY + (alto - rect.height) / 2);
-      const left = Math.max(margen, window.scrollX + (ancho - rect.width) / 2);
-      el.style.top = `${top}px`;
-      el.style.left = `${left}px`;
-    }
+  const centrar = React.useCallback(() => {
+    const el = nodeRef.current;
+    if (!el || !document.documentElement.classList.contains("forzar-escritorio")) return;
+    const margen = 16;
+    const alto = document.documentElement.clientHeight;
+    const ancho = document.documentElement.clientWidth;
+    el.style.position = "absolute";
+    // Tailwind v4 aplica `-translate-x-1/2 -translate-y-1/2` con la
+    // propiedad CSS `translate` independiente (no con `transform`) — hay que
+    // anularla aparte, `transform:none` no la toca. La animación de entrada
+    // (data-open:zoom-in-95) también se apaga para que no reintroduzca una
+    // escala/transform propia por encima del estilo inline.
+    el.style.animation = "none";
+    el.style.setProperty("transform", "none", "important");
+    el.style.setProperty("translate", "none", "important");
+    el.getAnimations().forEach((a) => a.cancel());
+    el.style.maxHeight = `${alto - margen * 2}px`;
+    const rect = el.getBoundingClientRect();
+    const top = Math.max(margen, window.scrollY + (alto - rect.height) / 2);
+    const left = Math.max(margen, window.scrollX + (ancho - rect.width) / 2);
+    el.style.top = `${top}px`;
+    el.style.left = `${left}px`;
+  }, []);
 
-    centrar();
+  // Callback ref en vez de useRef+useLayoutEffect: el Popup de base-ui se
+  // monta en el DOM real un paso después (vía su Portal), así que un
+  // useLayoutEffect en el componente padre puede correr con `ref.current`
+  // todavía en null. Un callback ref se dispara exactamente cuando React
+  // adjunta el nodo real, sin importar ese desfase interno.
+  const setRef = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      nodeRef.current = el;
+      if (el) centrar();
+    },
+    [centrar]
+  );
+
+  React.useEffect(() => {
     window.addEventListener("resize", centrar);
     return () => window.removeEventListener("resize", centrar);
-  }, [ref]);
+  }, [centrar]);
+
+  return setRef;
 }
 
 function DialogContent({
@@ -84,8 +106,7 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
 }) {
-  const popupRef = React.useRef<HTMLDivElement>(null);
-  useCentrarDialogo(popupRef);
+  const popupRef = useCentrarDialogoMovilForzado();
 
   return (
     <DialogPortal>
@@ -94,7 +115,7 @@ function DialogContent({
         ref={popupRef}
         data-slot="dialog-content"
         className={cn(
-          "absolute z-50 flex h-fit w-full max-w-[calc(100%-2rem)] flex-col gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 flex h-fit max-h-[calc(100%-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-hidden rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}

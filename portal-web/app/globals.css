@@ -236,3 +236,28 @@ html.forzar-escritorio #app-frame {
     font-variant-numeric: tabular-nums;
   }
 }
+
+/*
+ * Balanceo muy sutil del aro floral decorativo de Conferencistas (no un giro
+ * completo: se ve más a un elemento vivo que a un ícono girando). Respeta
+ * prefers-reduced-motion apagándose por completo.
+ */
+@keyframes balanceo-floral {
+  0%,
+  100% {
+    transform: rotate(-2.5deg) scale(1);
+  }
+  50% {
+    transform: rotate(2.5deg) scale(1.015);
+  }
+}
+
+.animar-floral {
+  animation: balanceo-floral 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animar-floral {
+    animation: none;
+  }
+}

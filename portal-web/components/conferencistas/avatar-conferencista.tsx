@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ConferenciaCard } from "@/types/conferencistas";
 
 const PALETA_AVATAR = [
@@ -36,9 +37,14 @@ function iniciales(nombre: string): string {
 export function AvatarConferencista({
   conferencia,
   tamaño = 96,
+  animado = true,
+  prioridad = false,
 }: {
   conferencia: ConferenciaCard;
   tamaño?: number;
+  /** Balanceo idle del aro floral — apagado en contextos con muchas instancias a la vez si se prefiere. */
+  animado?: boolean;
+  prioridad?: boolean;
 }) {
   const color = colorAvatar(conferencia.nombre);
   const esGrupo = conferencia.tipo === "Grupo";
@@ -46,16 +52,18 @@ export function AvatarConferencista({
 
   return (
     <div className="relative shrink-0" style={{ width: tamañoFloral, height: tamañoFloral }}>
-      <Image
-        src="/conferencistas/decoracion/aro-floral.png"
-        alt=""
-        fill
-        aria-hidden
-        className="pointer-events-none object-contain select-none"
-        sizes={`${tamañoFloral}px`}
-      />
+      <div className={cn("absolute inset-0", animado && "animar-floral")}>
+        <Image
+          src="/conferencistas/decoracion/aro-floral.png"
+          alt=""
+          fill
+          aria-hidden
+          className="pointer-events-none object-contain select-none"
+          sizes={`${tamañoFloral}px`}
+        />
+      </div>
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full shadow-md ring-4 ring-card"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full shadow-lg ring-4 ring-card transition-transform duration-300 ease-out group-hover:scale-[1.04]"
         style={{ width: tamaño, height: tamaño }}
       >
         {conferencia.fotoUrl ? (
@@ -63,6 +71,7 @@ export function AvatarConferencista({
             src={conferencia.fotoUrl}
             alt={conferencia.textoAlternativoImagen || conferencia.nombre}
             fill
+            priority={prioridad}
             className="object-cover"
             sizes={`${tamaño}px`}
           />
