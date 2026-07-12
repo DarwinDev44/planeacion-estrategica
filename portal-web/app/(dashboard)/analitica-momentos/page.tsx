@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FileSpreadsheet } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { ResumenAnaliticaMomentos } from "@/components/analitica-momentos/resumen-analitica";
 import {
   listarArchivosAnaliticaMomentos,
+  obtenerResumenAnaliticaMomentos,
   type ArchivoAnaliticaMomentos,
 } from "@/repositories/datasource/analitica-momentos";
 
@@ -13,9 +15,10 @@ export const metadata: Metadata = {
 
 export default function AnaliticaMomentosPage() {
   const archivos = listarArchivosAnaliticaMomentos();
+  const resumen = obtenerResumenAnaliticaMomentos();
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       <header>
         <h1 className="font-heading text-2xl font-bold text-foreground lg:text-3xl">
           Analítica actividades momentos
@@ -24,10 +27,16 @@ export default function AnaliticaMomentosPage() {
           Valoración por actividad y momento. Selecciona una tarjeta para ver su análisis.
         </p>
       </header>
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Actividades y momentos">
-        {archivos.map((item) => (
-          <TarjetaActividad key={item.archivo} item={item} />
-        ))}
+
+      <ResumenAnaliticaMomentos resumen={resumen} />
+
+      <section className="flex flex-col gap-3" aria-label="Actividades y momentos">
+        <h2 className="font-heading text-lg font-semibold text-foreground">Explora cada actividad</h2>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {archivos.map((item) => (
+            <TarjetaActividad key={item.archivo} item={item} />
+          ))}
+        </div>
       </section>
     </div>
   );

@@ -49,6 +49,43 @@ export interface AnaliticaMomentoDetalle {
   publicacionesForo: PublicacionForo[];
 }
 
+// --- Resumen agregado de toda la sección (panel de la galería) ---
+
+export interface ResumenActividad {
+  slug: string;
+  titulo: string;
+  tituloCorto: string;
+  respondieron: number;
+  porcentaje: number | null;
+  promedio: number | null;
+  porcentajeAltas: number | null;
+  aportes: number;
+}
+
+export interface ConversacionResumen {
+  slug: string;
+  tituloCorto: string;
+  participantes: number;
+  publicaciones: number;
+}
+
+export interface ResumenAnaliticaMomentos {
+  universo: number;
+  numActividades: number;
+  promedioParticipacion: number | null;
+  promedioValoracion: number | null;
+  porcentajeSatisfaccion: number | null;
+  totalAportes: number;
+  actividades: ResumenActividad[];
+  conversaciones: ConversacionResumen[];
+  calificacionMomentos: { slug: string; tituloCorto: string; promedio: number | null } | null;
+  destacados: {
+    mejorValorada: { slug: string; tituloCorto: string; promedio: number } | null;
+    mayorParticipacion: { slug: string; tituloCorto: string; respondieron: number; porcentaje: number | null } | null;
+    masAportes: { slug: string; tituloCorto: string; aportes: number } | null;
+  };
+}
+
 const DIRECTORIO_FUENTE = join(process.cwd(), "data", "source-analitica-momentos");
 const ARCHIVO_ROSTER = "01_Valoracion_momentos_1_y_2.xlsx";
 
@@ -101,6 +138,119 @@ export function obtenerAnaliticaMomento(archivo: string): AnaliticaMomentoDetall
   return parsearRoster(archivo, titulo, encabezados, cuerpo);
 }
 
+/**
+ * Agrega todas las tarjetas de la sección en un resumen para el panel de la
+ * galería: métricas globales (participación, valoración, satisfacción,
+ * aportes), comparativos por actividad, conversación (foro/reflexiones) y los
+ * destacados. Se calcula en vivo a partir de los mismos Excel.
+ */
+export function obtenerResumenAnaliticaMomentos(): ResumenAnaliticaMomentos {
+  const archivos = listarArchivosAnaliticaMomentos();
+  const universo = contarParticipantesRoster();
+
+  const actividades: ResumenActividad[] = [];
+  const conversaciones: ConversacionResumen[] = [];
+
+  let sumaValores = 0;
+  let sumaCantidades = 0;
+  let sumaAltas = 0;
+
+  for (const { slug, titulo, archivo } of archivos) {
+    const detalle = obtenerAnaliticaMomento(archivo);
+
+    if (detalle.tipo === "encuesta" || detalle.tipo === "roster") {
+      let sv = 0;
+      let sc = 0;
+      let sa = 0;
+      for (const pregunta of detalle.preguntasValoracion) {
+        for (const op of pregunta.distribucion) {
+          sv += op.valorNumerico * op.cantidad;
+          sc += op.cantidad;
+          if (op.valorNumerico >= 4) sa += op.cantidad;
+        }
+      }
+      const aportes = detalle.preguntasAbiertas.reduce((suma, p) => suma + p.respuestas.length, 0);
+      actividades.push({
+        slug,
+        titulo,
+        tituloCorto: tituloCortoActividad(titulo),
+        respondieron: detalle.totalRespondieron,
+        porcentaje: detalle.porcentajeRespondieron,
+        promedio: sc > 0 ? sv / sc : null,
+        porcentajeAltas: sc > 0 ? (sa / sc) * 100 : null,
+        aportes,
+      });
+      sumaValores += sv;
+      sumaCantidades += sc;
+      sumaAltas += sa;
+    } else if (detalle.tipo === "foro") {
+      conversaciones.push({
+        slug,
+        tituloCorto: titulo,
+        participantes: detalle.totalParticipantes,
+        publicaciones: detalle.totalRespondieron,
+      });
+    }
+  }
+
+  const promedioParticipacion = actividades.length
+    ? actividades.reduce((suma, a) => suma + (a.porcentaje ?? 0), 0) / actividades.length
+    : null;
+
+  const mejor = maxPor(actividades, (a) => a.promedio ?? -1);
+  const participativa = maxPor(actividades, (a) => a.respondieron);
+  const aportadora = maxPor(actividades, (a) => a.aportes);
+
+  return {
+    universo,
+    numActividades: actividades.length,
+    promedioParticipacion,
+    promedioValoracion: sumaCantidades > 0 ? sumaValores / sumaCantidades : null,
+    porcentajeSatisfaccion: sumaCantidades > 0 ? (sumaAltas / sumaCantidades) * 100 : null,
+    totalAportes: actividades.reduce((suma, a) => suma + a.aportes, 0),
+    actividades,
+    conversaciones,
+    calificacionMomentos: null,
+    destacados: {
+      mejorValorada:
+        mejor && mejor.promedio != null
+          ? { slug: mejor.slug, tituloCorto: mejor.tituloCorto, promedio: mejor.promedio }
+          : null,
+      mayorParticipacion: participativa
+        ? {
+            slug: participativa.slug,
+            tituloCorto: participativa.tituloCorto,
+            respondieron: participativa.respondieron,
+            porcentaje: participativa.porcentaje,
+          }
+        : null,
+      masAportes:
+        aportadora && aportadora.aportes > 0
+          ? { slug: aportadora.slug, tituloCorto: aportadora.tituloCorto, aportes: aportadora.aportes }
+          : null,
+    },
+  };
+}
+
+function maxPor<T>(items: T[], valor: (item: T) => number): T | null {
+  if (items.length === 0) return null;
+  return items.reduce((mejor, actual) => (valor(actual) > valor(mejor) ? actual : mejor));
+}
+
+/**
+ * "Valoracion actividad 3.1 y 3.2 momento 3" → "Momento 3 · Actividad 3.1 y 3.2".
+ * "Valoracion momentos 1 y 2" → "Momentos 1 y 2" (ya se identifica sin prefijo).
+ */
+function tituloCortoActividad(titulo: string): string {
+  const sinPrefijo = titulo.replace(/^Valoracion\s+/i, "").trim();
+  const conMomento = sinPrefijo.match(/^(.*)\s+momento\s+3$/i);
+  if (conMomento) {
+    const resto = conMomento[1].trim();
+    return `Momento 3 · ${resto.charAt(0).toUpperCase()}${resto.slice(1)}`;
+  }
+  return sinPrefijo.charAt(0).toUpperCase() + sinPrefijo.slice(1);
+}
+
 // ---------------------------------------------------------------------------
 // Tipo "roster": el archivo maestro (01) con una fila por persona y una
 // columna por momento valorado.
@@ -131,7 +281,9 @@ function parsearRoster(
     tipo: "roster",
     totalParticipantes: filasValidas.length,
     totalRespondieron: filasValidas.length,
-    porcentajeRespondieron: null,
+    // El roster es el universo fijo de participantes: todos los listados
+    // respondieron por construcción, así que el porcentaje siempre es 100%.
+    porcentajeRespondieron: filasValidas.length > 0 ? 100 : null,
     preguntasValoracion,
     preguntasAbiertas: [],
     publicacionesForo: [],
