@@ -46,6 +46,16 @@ interface ColumnaActividad {
   tituloCompleto: string;
 }
 
+/**
+ * Nombres oficiales para actividades cuyo encabezado en el Excel no trae el
+ * nombre completo (solo "Momento N actividad X"). Se aplican por id después
+ * del parseo, así sobreviven a futuras regeneraciones del ETL.
+ */
+const NOMBRES_MANUALES: Record<string, string> = {
+  "m3-a4-1": "Lectura Crítica para una Internacionalización con Identidad Territorial",
+  "m3-a4-2": "El futuro de la educación superior y las tendencias mundiales",
+};
+
 function parseEncabezado(titulo: string, indice: number): ColumnaActividad {
   const limpio = titulo.trim();
 
@@ -112,6 +122,19 @@ function main(): void {
   for (let i = 3; i < encabezados.length; i++) {
     if (!encabezados[i]) continue;
     columnas.push(parseEncabezado(encabezados[i], i));
+  }
+
+  // "Aceptación PAD" es el paso previo a las actividades y siempre va
+  // primero, sin importar en qué columna quedó en el Excel de origen.
+  const idxPad = columnas.findIndex((c) => c.id === "aceptacion-pad");
+  if (idxPad > 0) {
+    const [pad] = columnas.splice(idxPad, 1);
+    columnas.unshift(pad);
+  }
+
+  for (const col of columnas) {
+    const nombreManual = NOMBRES_MANUALES[col.id];
+    if (nombreManual) col.nombre = nombreManual;
   }
 
   // Filas de participantes (ignora filas sin nombre).
