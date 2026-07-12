@@ -9,7 +9,7 @@ export default function SeguimientoActividadesPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-heading text-2xl font-bold text-foreground lg:text-3xl">
-          Seguimiento participación actividades
+          Valoración de momentos
         </h1>
       </div>
       <PanelSeguimiento datos={datos} />
