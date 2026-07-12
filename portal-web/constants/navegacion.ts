@@ -22,16 +22,16 @@ export const NAVEGACION: ItemNavegacion[] = [
     icono: Users,
   },
   {
-    href: "/encuesta/vision-estrategica",
-    etiqueta: "Visión estratégica — Diagnóstico: Tu Voz Fundamental",
-    descripcion: "Decisiones a futuro y visión a 10 años",
-    icono: Compass,
-  },
-  {
     href: "/encuesta/fundamentos-planeacion",
     etiqueta: "Fundamentos de planeación — Diagnóstico: Tu Voz Fundamental",
     descripcion: "Qué debe definir y cómo construir la planeación",
     icono: Blocks,
+  },
+  {
+    href: "/encuesta/vision-estrategica",
+    etiqueta: "Visión estratégica — Diagnóstico: Tu Voz Fundamental",
+    descripcion: "Decisiones a futuro y visión a 10 años",
+    icono: Compass,
   },
   {
     href: "/metas",
