@@ -26,6 +26,21 @@ function iniciales(nombre: string): string {
 }
 
 /**
+ * Ajuste puntual de encuadre para fotos cuyo recorte central por defecto
+ * (`object-cover`, foto original vertical) deja la cabeza cortada arriba —
+ * el resto de las fotos ya centra bien la cara con el comportamiento por
+ * defecto, así que sólo se listan las excepciones.
+ */
+const AJUSTE_ENCUADRE: Record<string, string> = {
+  "indira-sotelo": "center 15%",
+};
+
+function posicionFoto(fotoUrl: string): string | undefined {
+  const slug = fotoUrl.split("/").pop()?.replace(/\.\w+$/, "");
+  return slug ? AJUSTE_ENCUADRE[slug] : undefined;
+}
+
+/**
  * Retrato reutilizable: foto circular cuando el Excel resolvió una (ver
  * `resolverFotoUrl` en el datasource), con el aro floral institucional
  * detrás — extraído de las presentaciones de perfil de los conferencistas y
@@ -73,6 +88,7 @@ export function AvatarConferencista({
             fill
             priority={prioridad}
             className="object-cover"
+            style={{ objectPosition: posicionFoto(conferencia.fotoUrl) }}
             sizes={`${tamaño}px`}
           />
         ) : (
