@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RankedBarChart } from "@/components/charts/ranked-bar-chart";
@@ -16,6 +17,13 @@ import type { AnalisisOtro, PreguntaId } from "@/types/encuesta";
  * mismas preguntas. Se reutiliza en "Visión estratégica" (P3, P4) y en
  * "Fundamentos de planeación" (P1, P2); la única diferencia entre ambas
  * páginas es el título, la descripción y qué preguntas muestran.
+ *
+ * `categoriaSeleccionada` vive acá (no en cada componente por separado) para
+ * conectar el gráfico "Categorización de las respuestas abiertas" con el
+ * panel "Respuestas abiertas" de abajo: clickear una categoría en el gráfico
+ * o en la lista filtra las respuestas que se listan más abajo, y el
+ * desplegable del panel de respuestas permite el mismo filtro en sentido
+ * inverso.
  */
 export function PreguntasEstrategicasClient({
   titulo,
@@ -35,9 +43,14 @@ export function PreguntasEstrategicasClient({
   const { data, hayFiltros, isFetching } = useResumenFiltrado();
   const resumen = hayFiltros && data ? data : inicial;
   const { rankingPreguntas } = resumen;
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
 
   const preguntas = PREGUNTAS.filter((pregunta) => preguntasIds.includes(pregunta.id));
   const otroFiltradas = respuestasOtro.filter((r) => preguntasIds.includes(r.preguntaId));
+  const categoriasDisponibles = useMemo(
+    () => (analisisOtro ? analisisOtro.categorias.filter((c) => c.conteo > 0).map((c) => ({ id: c.id, nombre: c.nombre })) : []),
+    [analisisOtro]
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -79,7 +92,13 @@ export function PreguntasEstrategicasClient({
         ))}
       </div>
 
-      {analisisOtro && otroFiltradas.length > 0 ? <AnalisisOtroCards analisis={analisisOtro} /> : null}
+      {analisisOtro && otroFiltradas.length > 0 ? (
+        <AnalisisOtroCards
+          analisis={analisisOtro}
+          categoriaSeleccionada={categoriaSeleccionada}
+          onSeleccionarCategoria={setCategoriaSeleccionada}
+        />
+      ) : null}
 
       {otroFiltradas.length > 0 ? (
         <Card className="py-3">
@@ -90,7 +109,12 @@ export function PreguntasEstrategicasClient({
             </p>
           </CardHeader>
           <CardContent className="px-3.5">
-            <OtroPanel respuestas={otroFiltradas} />
+            <OtroPanel
+              respuestas={otroFiltradas}
+              categorias={categoriasDisponibles}
+              categoriaSeleccionada={categoriaSeleccionada}
+              onCambiarCategoria={setCategoriaSeleccionada}
+            />
           </CardContent>
         </Card>
       ) : null}

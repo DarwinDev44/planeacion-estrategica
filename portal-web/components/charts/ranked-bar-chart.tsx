@@ -22,6 +22,11 @@ interface RankedBarChartProps {
   alturaFila?: number;
   truncarEn?: number;
   ocultarAccion?: boolean;
+  // Si se pasa, las barras se vuelven clickeables: click alterna la selección
+  // (clickear la barra activa la deselecciona). etiquetaSeleccionada resalta
+  // la barra activa y atenúa las demás.
+  onSeleccionarBarra?: (etiqueta: string) => void;
+  etiquetaSeleccionada?: string | null;
 }
 
 const ALTURA_LINEA = 12;
@@ -85,10 +90,13 @@ export function RankedBarChart({
   alturaFila = 32,
   truncarEn = 26,
   ocultarAccion = false,
+  onSeleccionarBarra,
+  etiquetaSeleccionada,
 }: RankedBarChartProps) {
   const [vistaTabla, setVistaTabla] = useState(false);
   const id = useId();
   const ordenados = [...datos].sort((a, b) => b.conteo - a.conteo);
+  const esClickeable = Boolean(onSeleccionarBarra);
 
   const maxLineas = Math.max(
     1,
@@ -98,8 +106,24 @@ export function RankedBarChart({
 
   function barraRedondeada(props: BarShapeProps) {
     const { x, y, width, height, index } = props;
+    const etiqueta = ordenados[index ?? -1]?.etiqueta;
+    const seleccionada = etiquetaSeleccionada === etiqueta;
+    const atenuada = esClickeable && etiquetaSeleccionada != null && !seleccionada;
     const fill = colores ? colores[index % colores.length] : "var(--primary)";
-    return <rect x={x} y={y} width={Math.max(width, 1)} height={height} rx={3} ry={3} fill={fill} />;
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={Math.max(width, 1)}
+        height={height}
+        rx={3}
+        ry={3}
+        fill={fill}
+        opacity={atenuada ? 0.35 : 1}
+        style={esClickeable ? { cursor: "pointer" } : undefined}
+        onClick={esClickeable && etiqueta ? () => onSeleccionarBarra!(etiqueta) : undefined}
+      />
+    );
   }
 
   return (

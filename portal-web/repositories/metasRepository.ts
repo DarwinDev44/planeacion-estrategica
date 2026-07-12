@@ -18,7 +18,7 @@ export function getTablasMetas(): TablaMeta[] {
     },
     {
       id: "administrativosContrato",
-      titulo: "Administrativos",
+      titulo: "Administrativos OPS / APA",
       subtitulo: "Por tipo de contrato",
       columnaEtiqueta: "Etiquetas de fila",
       ordenColumnas: ["no", "si"],
@@ -26,7 +26,7 @@ export function getTablasMetas(): TablaMeta[] {
     },
     {
       id: "administrativosSede",
-      titulo: "Administrativos",
+      titulo: "Administrativos Planta / Término Fijo",
       subtitulo: "Por unidad regional",
       columnaEtiqueta: "Unidad regional",
       ordenColumnas: ["si", "no"],
