@@ -64,9 +64,8 @@ export function ConferencistaCard({
       <span className="borde-animado absolute inset-[-60%]" aria-hidden />
 
       <div className="relative rounded-[15px] bg-card ring-1 ring-foreground/10">
-        <div className="flex items-start gap-3.5 p-4 pb-3">
-          <AvatarConferencista conferencia={conferencia} tamaño={72} />
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
+        <div className="flex flex-col gap-2.5 p-4 pb-3">
+          <div className="flex items-center justify-between gap-2">
             <span
               className="inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
               title={conferencia.modalidad}
@@ -74,18 +73,23 @@ export function ConferencistaCard({
               <IconoModalidad className="size-3" aria-hidden />
               {conferencia.modalidad}
             </span>
-            <h3 className="text-[15.5px] leading-tight font-semibold text-foreground">{conferencia.nombre}</h3>
-            {conferencia.tituloProfesional ? (
-              <p className="text-[12px] leading-snug font-medium" style={{ color: acento }}>
-                {conferencia.tituloProfesional}
-              </p>
+            {esGrupo ? (
+              <span className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
+                Grupo
+              </span>
             ) : null}
           </div>
-          {esGrupo ? (
-            <span className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
-              Grupo
-            </span>
-          ) : null}
+          <div className="flex items-start gap-3.5">
+            <AvatarConferencista conferencia={conferencia} tamaño={72} />
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
+              <h3 className="text-[15.5px] leading-tight font-semibold text-foreground">{conferencia.nombre}</h3>
+              {conferencia.tituloProfesional ? (
+                <p className="text-[12px] leading-snug font-medium" style={{ color: acento }}>
+                  {conferencia.tituloProfesional}
+                </p>
+              ) : null}
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2.5 px-4 pb-4">
