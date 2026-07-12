@@ -261,3 +261,46 @@ html.forzar-escritorio #app-frame {
     animation: none;
   }
 }
+
+/*
+ * Borde animado de las cards de Conferencistas: un degradado cónico gigante
+ * detrás del contenido que gira; el wrapper (`p-px`) sólo deja asomar un
+ * anillo de ~1px, así que lo que se ve es una línea de color recorriendo el
+ * borde — apagado hasta el hover. `--borde-color` lo fija cada card según
+ * la persona (mismo color que su avatar/acento).
+ */
+@keyframes girar-borde-tarjeta {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.borde-animado {
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  /* Nunca queda del todo transparente (piso al 12%) para que siempre haya
+     algo de brillo visible en el anillo; el tramo brillante es el que
+     recorre el borde al girar. */
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--borde-color, var(--primary)) 12%, transparent),
+    var(--borde-color, var(--primary)) 20%,
+    color-mix(in srgb, var(--borde-color, var(--primary)) 12%, transparent) 45%,
+    color-mix(in srgb, var(--borde-color, var(--primary)) 12%, transparent) 100%
+  );
+  animation: girar-borde-tarjeta 5s linear infinite;
+  animation-play-state: paused;
+  transition: opacity 300ms ease;
+}
+
+.group:hover .borde-animado {
+  opacity: 1;
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .borde-animado {
+    animation: none;
+  }
+}
