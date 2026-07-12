@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { CalendarDays, ExternalLink, Eye, GraduationCap, MapPin, Sparkles, Users, Video, XIcon } from "lucide-react";
+import { CalendarDays, ExternalLink, Eye, GraduationCap, MapPin, Milestone, Users, Video, XIcon } from "lucide-react";
 import { AvatarConferencista } from "@/components/conferencistas/avatar-conferencista";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ function CuerpoDetalle({
 
         {conferencia.trayectoriaDestacada.length > 0 ? (
           <motion.div variants={variants}>
-            <SeccionBullets icono={Sparkles} titulo="Trayectoria destacada" items={conferencia.trayectoriaDestacada} acento={acento} />
+            <SeccionBullets icono={Milestone} titulo="Trayectoria destacada" items={conferencia.trayectoriaDestacada} acento={acento} />
           </motion.div>
         ) : null}
 
