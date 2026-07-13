@@ -50,7 +50,7 @@ export function LandingClient() {
   const variantesContenedor = prefiereReducido ? { oculto: {}, visible: {} } : contenedor;
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#00482B]">
+    <div className="relative flex min-h-screen w-full flex-col bg-[#00482B]">
       <Image
         src="/assets/campana/fondo-verde-completo.jpg"
         alt=""
