@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { BusquedaRapidaConferencistas } from "@/components/conferencistas/busqueda-rapida-conferencistas";
+import { NavegacionRapidaConferencistas } from "@/components/conferencistas/navegacion-rapida-conferencistas";
 import { CarouselConferencistas, type CarouselConferencistasHandle } from "@/components/conferencistas/carousel-conferencistas";
 import { DetalleConferencista } from "@/components/conferencistas/detalle-conferencista";
 import type { ConferenciaConValoracion } from "@/types/conferencistas";
@@ -31,7 +31,7 @@ export function ConferencistasExplorador({ conferencias }: { conferencias: Confe
 
   return (
     <div className="flex flex-col gap-4">
-      <BusquedaRapidaConferencistas conferencias={conferencias} onSeleccionar={irYResaltar} />
+      <NavegacionRapidaConferencistas conferencias={conferencias} onSeleccionar={irYResaltar} />
 
       <motion.div
         initial={prefiereReducido ? undefined : { opacity: 0, y: 16 }}
