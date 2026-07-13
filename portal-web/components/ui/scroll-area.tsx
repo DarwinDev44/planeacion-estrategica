@@ -13,12 +13,21 @@ function ScrollArea({
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
-      className={cn("relative", className)}
+      className={cn("relative flex min-h-0 flex-col", className)}
       {...props}
     >
+      {/*
+        `flex-1 min-h-0` en vez de `size-full` (height:100%): dentro de una
+        cadena de flex anidados (Tabs > TabsContent > ScrollArea, como en el
+        modal de Conferencistas) un `height:100%` no siempre encuentra una
+        altura "definida" contra la cual resolverse y el Viewport termina
+        creciendo a su alto de contenido real en vez de quedar acotado —
+        el scroll dejaba de funcionar y el diálogo se cortaba sin aviso.
+        flex-basis 0 + min-h-0 sí se propaga de forma confiable.
+      */}
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+        className="min-h-0 w-full flex-1 rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
