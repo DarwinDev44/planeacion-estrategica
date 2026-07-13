@@ -31,8 +31,6 @@ export function ConferencistasExplorador({ conferencias }: { conferencias: Confe
 
   return (
     <div className="flex flex-col gap-4">
-      <NavegacionRapidaConferencistas conferencias={conferencias} onSeleccionar={irYResaltar} />
-
       <motion.div
         initial={prefiereReducido ? undefined : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,6 +43,8 @@ export function ConferencistasExplorador({ conferencias }: { conferencias: Confe
           resaltadaId={resaltadaId}
         />
       </motion.div>
+
+      <NavegacionRapidaConferencistas conferencias={conferencias} onSeleccionar={irYResaltar} />
 
       <DetalleConferencista conferencia={seleccionada} onCerrar={() => setSeleccionada(null)} />
     </div>
