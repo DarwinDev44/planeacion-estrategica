@@ -77,7 +77,7 @@ export function LandingClient() {
             width={230}
             height={55}
             priority
-            className="h-11 w-auto lg:h-14"
+            className="h-16 w-auto lg:h-20"
           />
           <span className="hidden text-sm font-medium text-white/85 sm:inline">
             Plan Estratégico 2027 – 2037
@@ -92,10 +92,7 @@ export function LandingClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <p className="text-xs font-bold tracking-[0.2em] text-brand-accent uppercase">
-                Cultivando la UCundinamarca que somos
-              </p>
-              <h1 className="mt-3 font-heading text-4xl leading-[1.05] font-bold text-white lg:text-5xl">
+              <h1 className="font-heading text-4xl leading-[1.05] font-bold text-white lg:text-5xl">
                 Plan Estratégico
                 <br />
                 2027 – 2037
@@ -129,18 +126,6 @@ export function LandingClient() {
             animate="visible"
             className="flex w-full max-w-md flex-col gap-3"
           >
-            <motion.div variants={variantesItem}>
-              <a
-                href={ENLACE_CONSOLIDACION_APORTES}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 text-left shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] transition-transform hover:-translate-y-0.5"
-              >
-                <span className="text-sm font-bold text-primary lg:text-base">Consolidación de Aportes del Ciclo</span>
-                <ExternalLink className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
-              </a>
-            </motion.div>
-
             <motion.p
               variants={variantesItem}
               className="px-1 text-xs font-bold tracking-[0.15em] text-white/70 uppercase"
@@ -152,6 +137,18 @@ export function LandingClient() {
                 <TemaBoton tema={tema} />
               </motion.div>
             ))}
+
+            <motion.div variants={variantesItem}>
+              <a
+                href={ENLACE_CONSOLIDACION_APORTES}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 text-left shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] transition-transform hover:-translate-y-0.5"
+              >
+                <span className="text-sm font-bold text-primary lg:text-base">Consolidación de Aportes del Ciclo</span>
+                <ExternalLink className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </a>
+            </motion.div>
           </motion.div>
         </div>
 
