@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TablaMetaCard } from "@/components/metas/tabla-meta";
+import { GraficoMetas } from "@/components/metas/grafico-metas";
 import { getTablasMetas } from "@/repositories/metasRepository";
 
 export const metadata: Metadata = { title: "Metas — Diagnóstico: Tu Voz Fundamental" };
@@ -32,6 +33,8 @@ export default function MetasPage() {
         <TablaMetaCard tabla={estudiantes} />
         <TablaMetaCard tabla={graduados} />
       </div>
+
+      <GraficoMetas tablas={tablas} />
     </div>
   );
 }
