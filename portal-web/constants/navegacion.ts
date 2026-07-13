@@ -47,7 +47,7 @@ export const NAVEGACION: ItemNavegacion[] = [
   },
   {
     href: "/conferencistas",
-    etiqueta: "Conferencistas",
+    etiqueta: "Ciclos de Diálogo Estratégico",
     descripcion: "Jornadas y conferencias del Plan Estratégico",
     icono: Mic2,
   },
