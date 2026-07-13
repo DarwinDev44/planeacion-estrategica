@@ -31,6 +31,15 @@ const TEMAS: TemaPlan[] = [
   },
 ];
 
+/**
+ * Los assets estáticos de /public se sirven con Cache-Control público del
+ * navegador; como el nombre de archivo no cambia entre ediciones de imagen,
+ * un query param de versión fuerza a los navegadores a descargar la versión
+ * nueva en vez de servir la cacheada. Subir este número cada vez que se
+ * reemplace alguna de estas 3 imágenes.
+ */
+const VERSION_ASSETS_CAMPANA = "3";
+
 const ENLACE_CONSOLIDACION_APORTES =
   "https://mailunicundiedu-my.sharepoint.com/:f:/g/personal/ydguzman_ucundinamarca_edu_co/IgDnHm6iOKgzSJOIky7GNXw6AbX-G_HEtNmfVwjPgAApMu8?e=EBm28U";
 
@@ -52,7 +61,7 @@ export function LandingClient() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#00482B]">
       <Image
-        src="/assets/campana/fondo-verde-completo.jpg"
+        src={`/assets/campana/fondo-verde-completo.jpg?v=${VERSION_ASSETS_CAMPANA}`}
         alt=""
         fill
         priority
@@ -109,7 +118,7 @@ export function LandingClient() {
               className="w-full max-w-lg lg:max-w-2xl"
             >
               <Image
-                src="/assets/campana/collage-estudiantes.webp"
+                src={`/assets/campana/collage-estudiantes.webp?v=${VERSION_ASSETS_CAMPANA}`}
                 alt="Comunidad universitaria de la Universidad de Cundinamarca"
                 width={879}
                 height={524}
