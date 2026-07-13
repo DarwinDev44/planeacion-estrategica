@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, MessagesSquare, MessageSquareText, Sparkles, Star, TrendingUp, Users } from "lucide-react";
+import { ArrowUpRight, ListChecks, MessagesSquare, MessageSquareText, Star, ThumbsUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { NubePalabras } from "@/components/analitica-momentos/nube-palabras";
 import { FrecuenciaPorTipo } from "@/components/analitica-momentos/frecuencia-por-tipo";
@@ -43,7 +43,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
       etiqueta: "Actividades del Momento 3",
       valor: formatNumero(resumen.numActividades),
       pie: "con valoración",
-      icono: Sparkles,
+      icono: ListChecks,
     },
     {
       etiqueta: "Valoración promedio",
@@ -55,7 +55,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
       etiqueta: "Satisfacción (4–5)",
       valor: resumen.porcentajeSatisfaccion != null ? formatPorcentaje(resumen.porcentajeSatisfaccion) : "—",
       pie: "valoraciones altas",
-      icono: TrendingUp,
+      icono: ThumbsUp,
     },
     {
       etiqueta: "Aportes cualitativos",

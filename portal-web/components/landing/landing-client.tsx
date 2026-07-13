@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { ArrowRight, ExternalLink, Sparkles, Target, Users2 } from "lucide-react";
+import { ArrowRight, ExternalLink, Network, Target, Users2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TemaPlan {
@@ -26,7 +26,7 @@ const TEMAS: TemaPlan[] = [
   },
   {
     titulo: "Accesos a CAI Planeación estratégica 2027 – 2037",
-    icono: Sparkles,
+    icono: Network,
     href: "/accesos-cai",
   },
 ];
