@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { ArrowRight, Sparkles, Target, Users2 } from "lucide-react";
+import { ArrowRight, ExternalLink, Sparkles, Target, Users2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TemaPlan {
@@ -30,6 +30,9 @@ const TEMAS: TemaPlan[] = [
     href: "/accesos-cai",
   },
 ];
+
+const ENLACE_CONSOLIDACION_APORTES =
+  "https://mailunicundiedu-my.sharepoint.com/:f:/g/personal/ydguzman_ucundinamarca_edu_co/IgDnHm6iOKgzSJOIky7GNXw6AbX-G_HEtNmfVwjPgAApMu8?e=EBm28U";
 
 const contenedor: Variants = {
   oculto: {},
@@ -126,6 +129,18 @@ export function LandingClient() {
             animate="visible"
             className="flex w-full max-w-md flex-col gap-3"
           >
+            <motion.div variants={variantesItem}>
+              <a
+                href={ENLACE_CONSOLIDACION_APORTES}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 text-left shadow-[0_12px_30px_-8px_rgba(0,0,0,0.4)] transition-transform hover:-translate-y-0.5"
+              >
+                <span className="text-sm font-bold text-primary lg:text-base">Consolidación de Aportes del Ciclo</span>
+                <ExternalLink className="size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </a>
+            </motion.div>
+
             <motion.p
               variants={variantesItem}
               className="px-1 text-xs font-bold tracking-[0.15em] text-white/70 uppercase"

@@ -28,7 +28,7 @@ export function NavegacionRapidaConferencistas({
         className="flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-left transition-colors hover:bg-muted/50"
       >
         <span className="text-sm font-semibold text-foreground">
-          Lista de conferencistas <span className="font-normal text-muted-foreground">({conferencias.length})</span>
+          Jornadas de Diálogo Estratégico <span className="font-normal text-muted-foreground">({conferencias.length})</span>
         </span>
         <ChevronDown
           className={cn("size-4 shrink-0 text-muted-foreground transition-transform duration-300", abierta && "rotate-180")}
