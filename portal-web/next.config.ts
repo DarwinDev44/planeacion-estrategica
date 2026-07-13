@@ -6,7 +6,12 @@ const nextConfig: NextConfig = {
   // imagen, así que sin esto los navegadores seguirían sirviendo la versión
   // cacheada tras reemplazar el archivo).
   images: {
-    localPatterns: [{ pathname: "/assets/campana/**", search: "" }],
+    // "/**" cubre TODAS las imágenes locales de /public (logos, fotos de
+    // conferencistas, etc.) — restringirlo a una sola carpeta rompe el resto
+    // del sitio, ya que localPatterns funciona como lista blanca completa.
+    // Sin la clave "search" no se exige que la URL venga sin query string,
+    // así el ?v= de cache-busting también pasa.
+    localPatterns: [{ pathname: "/**" }],
   },
   // Asegura que los .xlsx (fuente de datos en vivo, leídos con fs en el
   // servidor) queden incluidos en el bundle serverless — de otra forma el
