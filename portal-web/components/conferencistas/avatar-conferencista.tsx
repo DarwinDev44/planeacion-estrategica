@@ -32,7 +32,11 @@ function iniciales(nombre: string): string {
  * defecto, así que sólo se listan las excepciones.
  */
 const AJUSTE_ENCUADRE: Record<string, string> = {
-  "indira-sotelo": "center 15%",
+  "indira-sotelo": "center 0%",
+  // Foto original 1280x720 con la persona ubicada en la mitad izquierda —
+  // el recorte central por defecto (50%) cae sobre todo en el espacio en
+  // blanco de la derecha y deja la cara pegada al borde.
+  "francisco-cajiao-restrepo": "18% center",
 };
 
 function posicionFoto(fotoUrl: string): string | undefined {

@@ -78,10 +78,10 @@ function ContenidoDetalle({ conferencia }: { conferencia: ConferenciaConValoraci
                 </TabsTrigger>
               </TabsList>
             </motion.div>
-            <TabsContent value="perfil" className="min-h-0 flex-1">
+            <TabsContent value="perfil" className="flex min-h-0 flex-1 flex-col">
               <CuerpoDetalle conferencia={conferencia} acento={acento} variants={variants} />
             </TabsContent>
-            <TabsContent value="valoraciones" className="min-h-0 flex-1">
+            <TabsContent value="valoraciones" className="flex min-h-0 flex-1 flex-col">
               <ScrollArea className="min-h-0 flex-1 px-6 pb-6">
                 <div className="pt-5">
                   <ValoracionesConferencista valoracion={conferencia.valoracion} acento={acento} variants={variants} />
