@@ -22,7 +22,8 @@ import type { ValoracionesDataSource } from "./types";
  * vivo del Excel, nunca se copian.
  *
  * Dos jornadas fueron compartidas por dos conferencistas en una sola
- * pregunta (Indira Sotelo/David Tesone, Leonardo Yunda/Edgar Rodríguez), y
+ * pregunta (Luz Indira Sotelo Díaz/David Tesone, Leonardo Emilio Yunda
+ * Perlaza/Edgar Rodríguez), y
  * en dos hojas más los comentarios de texto libre son una sola columna
  * compartida entre varias personas aunque la calificación numérica sí sea
  * individual (Algeless/Ricardo Moreno/Martha Duque; y Ana Lucía Chávez
@@ -66,8 +67,8 @@ const MAPEO: Record<string, FuenteValoracion> = {
     hoja: "Val actividad 4. conferencia 5",
     columnasCalificacion: [3],
     columnasComentarios: [4],
-    calificacionCompartidaCon: ["Indira Sotelo"],
-    comentariosCompartidosCon: ["Indira Sotelo"],
+    calificacionCompartidaCon: ["Luz Indira Sotelo Díaz"],
+    comentariosCompartidosCon: ["Luz Indira Sotelo Díaz"],
   },
   "indira-sotelo": {
     hoja: "Val actividad 4. conferencia 5",
@@ -92,14 +93,14 @@ const MAPEO: Record<string, FuenteValoracion> = {
     hoja: "Val actividad 4. confe 7 y 8",
     columnasCalificacion: [3],
     columnasComentarios: [5],
-    calificacionCompartidaCon: ["Leonardo Yunda"],
-    comentariosCompartidosCon: ["Leonardo Yunda", "Ana Lucía Chávez Correal"],
+    calificacionCompartidaCon: ["Leonardo Emilio Yunda Perlaza"],
+    comentariosCompartidosCon: ["Leonardo Emilio Yunda Perlaza", "Ana Lucía Chávez Correal"],
   },
   "ana-lucia-chavez-correal": {
     hoja: "Val actividad 4. confe 7 y 8",
     columnasCalificacion: [4],
     columnasComentarios: [5],
-    comentariosCompartidosCon: ["Leonardo Yunda", "Edgar Guillermo Rodríguez Díaz"],
+    comentariosCompartidosCon: ["Leonardo Emilio Yunda Perlaza", "Edgar Guillermo Rodríguez Díaz"],
   },
 };
 
