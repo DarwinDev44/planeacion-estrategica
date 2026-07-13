@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight, MessagesSquare, MessageSquareText, Sparkles, Star, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { NubePalabras } from "@/components/analitica-momentos/nube-palabras";
+import { FrecuenciaPorTipo } from "@/components/analitica-momentos/frecuencia-por-tipo";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
 import type { ResumenAnaliticaMomentos } from "@/repositories/datasource/analitica-momentos";
 
@@ -199,6 +201,15 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
           </CardContent>
         </Card>
       </div>
+
+      <NubePalabras palabras={resumen.palabrasFrecuentes} totalRespuestas={resumen.totalRespuestasAbiertas} />
+
+      <FrecuenciaPorTipo
+        palabrasMejoras={resumen.palabrasMejoras}
+        totalRespuestasMejoras={resumen.totalRespuestasMejoras}
+        palabrasAprendizaje={resumen.palabrasAprendizaje}
+        totalRespuestasAprendizaje={resumen.totalRespuestasAprendizaje}
+      />
 
       {/* Conversación */}
       {resumen.conversaciones.length > 0 ? (

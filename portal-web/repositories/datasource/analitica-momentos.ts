@@ -2,6 +2,7 @@ import "server-only";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { leerPrimeraHoja, excelSerialToISO } from "./excel-utils";
+import { calcularFrecuenciaPalabras, type PalabraFrecuencia } from "@/lib/frecuencia-palabras";
 
 export interface ArchivoAnaliticaMomentos {
   archivo: string;
@@ -79,6 +80,14 @@ export interface ResumenAnaliticaMomentos {
   actividades: ResumenActividad[];
   conversaciones: ConversacionResumen[];
   calificacionMomentos: { slug: string; tituloCorto: string; promedio: number | null } | null;
+  /** Palabras más frecuentes en las respuestas abiertas de aprendizajes y mejoras (todas las actividades tipo "encuesta"). */
+  palabrasFrecuentes: PalabraFrecuencia[];
+  totalRespuestasAbiertas: number;
+  /** Mismo cálculo, separado por tipo de pregunta abierta. */
+  palabrasMejoras: PalabraFrecuencia[];
+  totalRespuestasMejoras: number;
+  palabrasAprendizaje: PalabraFrecuencia[];
+  totalRespuestasAprendizaje: number;
   destacados: {
     mejorValorada: { slug: string; tituloCorto: string; promedio: number } | null;
     mayorParticipacion: { slug: string; tituloCorto: string; respondieron: number; porcentaje: number | null } | null;
@@ -150,6 +159,8 @@ export function obtenerResumenAnaliticaMomentos(): ResumenAnaliticaMomentos {
 
   const actividades: ResumenActividad[] = [];
   const conversaciones: ConversacionResumen[] = [];
+  const textosMejoras: string[] = [];
+  const textosAprendizaje: string[] = [];
 
   let sumaValores = 0;
   let sumaCantidades = 0;
@@ -168,6 +179,11 @@ export function obtenerResumenAnaliticaMomentos(): ResumenAnaliticaMomentos {
           sc += op.cantidad;
           if (op.valorNumerico >= 4) sa += op.cantidad;
         }
+      }
+      for (const pregunta of detalle.preguntasAbiertas) {
+        const tipo = clasificarPreguntaAbierta(pregunta.pregunta);
+        if (tipo === "mejoras") textosMejoras.push(...pregunta.respuestas);
+        else if (tipo === "aprendizaje") textosAprendizaje.push(...pregunta.respuestas);
       }
       const aportes = detalle.preguntasAbiertas.reduce((suma, p) => suma + p.respuestas.length, 0);
       actividades.push({
@@ -211,6 +227,12 @@ export function obtenerResumenAnaliticaMomentos(): ResumenAnaliticaMomentos {
     actividades,
     conversaciones,
     calificacionMomentos: null,
+    palabrasFrecuentes: calcularFrecuenciaPalabras([...textosMejoras, ...textosAprendizaje]),
+    totalRespuestasAbiertas: textosMejoras.length + textosAprendizaje.length,
+    palabrasMejoras: calcularFrecuenciaPalabras(textosMejoras, { maxPalabras: 15 }),
+    totalRespuestasMejoras: textosMejoras.length,
+    palabrasAprendizaje: calcularFrecuenciaPalabras(textosAprendizaje, { maxPalabras: 15 }),
+    totalRespuestasAprendizaje: textosAprendizaje.length,
     destacados: {
       mejorValorada:
         mejor && mejor.promedio != null
@@ -235,6 +257,19 @@ export function obtenerResumenAnaliticaMomentos(): ResumenAnaliticaMomentos {
 function maxPor<T>(items: T[], valor: (item: T) => number): T | null {
   if (items.length === 0) return null;
   return items.reduce((mejor, actual) => (valor(actual) > valor(mejor) ? actual : mejor));
+}
+
+/**
+ * Clasifica una pregunta abierta como "mejoras" o "aprendizaje" por su
+ * enunciado. Se revisa "mejora" primero porque la pregunta de la Actividad 1
+ * ("¿Qué mejoras recomiendas debe tener el campo de aprendizaje...?")
+ * contiene ambas palabras y es, en esencia, una pregunta de mejoras.
+ */
+function clasificarPreguntaAbierta(pregunta: string): "mejoras" | "aprendizaje" | null {
+  const texto = pregunta.toLowerCase();
+  if (texto.includes("mejora")) return "mejoras";
+  if (texto.includes("aprendizaje")) return "aprendizaje";
+  return null;
 }
 
 /**

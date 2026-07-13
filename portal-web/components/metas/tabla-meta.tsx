@@ -5,6 +5,7 @@ import { Search, BookOpen, Building2, MapPin, Users, GraduationCap, type LucideI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { formatNumero, formatPorcentajeMetas } from "@/lib/formatters";
 import type { TablaMeta, TablaMetaId } from "@/types/metas";
@@ -23,6 +24,38 @@ const ETIQUETA_PARTICIPACION = {
   no: "No",
   si: "Sí",
 } as const;
+
+const DESCRIPCION_PARTICIPACION = {
+  no: "No: no registra participación en el diagnóstico.",
+  si: "Sí: completó el diagnóstico.",
+} as const;
+
+/**
+ * Celda de las columnas No/Sí con tooltip explicativo. Se usa `render`
+ * (en vez del `<button>` por defecto de TooltipTrigger) para no convertir
+ * cada celda en un tab-stop — con tablas de hasta 80+ filas, cientos de
+ * botones enfocables romperían la navegación por teclado.
+ */
+function CeldaParticipacion({
+  tipo,
+  valor,
+  className,
+}: {
+  tipo: "no" | "si";
+  valor: number;
+  className?: string;
+}) {
+  return (
+    <TableCell className={className}>
+      <Tooltip>
+        <TooltipTrigger render={<span />} className="cursor-help decoration-dotted underline-offset-2 hover:underline">
+          {formatNumero(valor)}
+        </TooltipTrigger>
+        <TooltipContent>{DESCRIPCION_PARTICIPACION[tipo]}</TooltipContent>
+      </Tooltip>
+    </TableCell>
+  );
+}
 
 export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
   const [busqueda, setBusqueda] = useState("");
@@ -88,10 +121,20 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
               <TableRow className="border-none hover:bg-primary">
                 <TableHead className="text-[11px] text-primary-foreground">{tabla.columnaEtiqueta}</TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground uppercase">
-                  {ETIQUETA_PARTICIPACION[primeraCol]}
+                  <Tooltip>
+                    <TooltipTrigger className="cursor-help bg-transparent p-0 font-inherit text-inherit uppercase decoration-dotted underline-offset-2 hover:underline">
+                      {ETIQUETA_PARTICIPACION[primeraCol]}
+                    </TooltipTrigger>
+                    <TooltipContent>{DESCRIPCION_PARTICIPACION[primeraCol]}</TooltipContent>
+                  </Tooltip>
                 </TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground uppercase">
-                  {ETIQUETA_PARTICIPACION[segundaCol]}
+                  <Tooltip>
+                    <TooltipTrigger className="cursor-help bg-transparent p-0 font-inherit text-inherit uppercase decoration-dotted underline-offset-2 hover:underline">
+                      {ETIQUETA_PARTICIPACION[segundaCol]}
+                    </TooltipTrigger>
+                    <TooltipContent>{DESCRIPCION_PARTICIPACION[segundaCol]}</TooltipContent>
+                  </Tooltip>
                 </TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground">Total</TableHead>
                 <TableHead className="text-right text-[11px] text-primary-foreground">Porcentaje</TableHead>
@@ -106,12 +149,16 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
                   <TableCell className="max-w-[280px] text-[12px] leading-snug whitespace-normal">
                     {f.etiqueta}
                   </TableCell>
-                  <TableCell className="text-right text-[12px] tabular-nums">
-                    {formatNumero(primeraCol === "no" ? f.no : f.si)}
-                  </TableCell>
-                  <TableCell className="text-right text-[12px] tabular-nums">
-                    {formatNumero(segundaCol === "no" ? f.no : f.si)}
-                  </TableCell>
+                  <CeldaParticipacion
+                    tipo={primeraCol}
+                    valor={primeraCol === "no" ? f.no : f.si}
+                    className="text-right text-[12px] tabular-nums"
+                  />
+                  <CeldaParticipacion
+                    tipo={segundaCol}
+                    valor={segundaCol === "no" ? f.no : f.si}
+                    className="text-right text-[12px] tabular-nums"
+                  />
                   <TableCell className="text-right text-[12px] font-semibold tabular-nums">
                     {formatNumero(f.total)}
                   </TableCell>
@@ -132,12 +179,16 @@ export function TablaMetaCard({ tabla }: { tabla: TablaMeta }) {
               <TableFooter className={cn("border-t-2 border-t-primary bg-secondary", conBuscador && "sticky bottom-0 z-10")}>
                 <TableRow className="hover:bg-secondary">
                   <TableCell className="text-[12px] font-bold text-secondary-foreground">Total</TableCell>
-                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
-                    {formatNumero(primeraCol === "no" ? totales.no : totales.si)}
-                  </TableCell>
-                  <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
-                    {formatNumero(segundaCol === "no" ? totales.no : totales.si)}
-                  </TableCell>
+                  <CeldaParticipacion
+                    tipo={primeraCol}
+                    valor={primeraCol === "no" ? totales.no : totales.si}
+                    className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground"
+                  />
+                  <CeldaParticipacion
+                    tipo={segundaCol}
+                    valor={segundaCol === "no" ? totales.no : totales.si}
+                    className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground"
+                  />
                   <TableCell className="text-right text-[12px] font-bold tabular-nums text-secondary-foreground">
                     {formatNumero(totales.total)}
                   </TableCell>
