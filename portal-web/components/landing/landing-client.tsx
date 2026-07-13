@@ -52,7 +52,7 @@ export function LandingClient() {
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-hidden bg-[#00482B]">
       <Image
-        src="/assets/campana/fondo-verde-completo.png"
+        src="/assets/campana/fondo-verde-completo.jpg"
         alt=""
         fill
         priority
@@ -109,7 +109,7 @@ export function LandingClient() {
               className="w-full max-w-lg lg:max-w-2xl"
             >
               <Image
-                src="/assets/campana/collage-estudiantes.png"
+                src="/assets/campana/collage-estudiantes.webp"
                 alt="Comunidad universitaria de la Universidad de Cundinamarca"
                 width={879}
                 height={524}
