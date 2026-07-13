@@ -84,6 +84,8 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
       publicar: col("publicar"),
       asistentes: col("asistentes_presenciales"),
       vistas: col("vistas_redes_sociales"),
+      mes: col("mes"),
+      dia: col("dia"),
       slugParticipante: col("slug_participante"),
       tituloProfesional: col("titulo_profesional"),
       formacionAcademica: col("formacion_academica"),
@@ -113,8 +115,14 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
           formacionAcademica: dividirBullets(f[idx.formacionAcademica]),
           trayectoriaDestacada: dividirBullets(f[idx.trayectoriaDestacada]),
           fotoUrl: resolverFotoUrl(slug),
+          // Clave cronológica real (mes*100+día, columnas mes/dia de la
+          // hoja) — no se expone en el tipo, solo se usa para ordenar acá
+          // abajo. orden_card no es la fuente de verdad de la fecha; podría
+          // desincronizarse si alguien reordena filas sin actualizarlo.
+          _ordenCronologico: Number(f[idx.mes] ?? 0) * 100 + Number(f[idx.dia] ?? 0),
         };
       })
-      .sort((a, b) => a.orden - b.orden);
+      .sort((a, b) => a._ordenCronologico - b._ordenCronologico || a.id - b.id)
+      .map(({ _ordenCronologico, ...resto }) => resto);
   }
 }

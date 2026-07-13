@@ -304,3 +304,31 @@ html.forzar-escritorio #app-frame {
     animation: none;
   }
 }
+
+/*
+ * Pulso de "encontrado": se dispara sobre una card del carrusel de
+ * Ciclos de Diálogo Estratégico cuando se llega a ella desde la búsqueda
+ * rápida, para confirmar visualmente que es la correcta.
+ */
+@keyframes pulso-resaltado {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--primary) 0%, transparent);
+  }
+}
+
+.resaltado-pulso {
+  animation: pulso-resaltado 0.7s ease-out 2;
+  border-radius: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resaltado-pulso {
+    animation: none;
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}

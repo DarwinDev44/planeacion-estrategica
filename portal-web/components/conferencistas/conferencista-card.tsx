@@ -30,9 +30,14 @@ const ICONO_MODALIDAD: Record<string, typeof MapPin> = {
 export function ConferencistaCard({
   conferencia,
   onSeleccionar,
+  resaltada = false,
+  className,
 }: {
   conferencia: ConferenciaConValoracion;
   onSeleccionar: (conferencia: ConferenciaConValoracion) => void;
+  /** Pulso breve para "esta es la card que buscabas" (ver búsqueda rápida del carrusel). */
+  resaltada?: boolean;
+  className?: string;
 }) {
   const prefiereReducido = useReducedMotion();
   const esGrupo = conferencia.tipo === "Grupo";
@@ -56,14 +61,18 @@ export function ConferencistaCard({
       whileTap={prefiereReducido ? undefined : { scale: 0.985 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       style={{ ["--borde-color" as string]: acento }}
-      className="group relative mb-4 block w-full cursor-pointer overflow-hidden rounded-2xl p-px break-inside-avoid text-left [box-shadow:0_1px_2px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:[box-shadow:0_16px_32px_-12px_rgba(0,0,0,0.18)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-2xl p-px text-left [box-shadow:0_1px_2px_rgba(0,0,0,0.04)] transition-shadow duration-300 hover:[box-shadow:0_16px_32px_-12px_rgba(0,0,0,0.18)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        resaltada && "resaltado-pulso",
+        className
+      )}
     >
       {/* Borde animado: un degradado cónico gigante detrás del contenido que
           gira y sólo asoma por el hueco de 1px que deja el padding del
           wrapper — apagado hasta el hover (ver .borde-animado en globals.css). */}
       <span className="borde-animado absolute inset-[-60%]" aria-hidden />
 
-      <div className="relative rounded-[15px] bg-card ring-1 ring-foreground/10">
+      <div className="relative flex flex-1 flex-col rounded-[15px] bg-card ring-1 ring-foreground/10">
         <div className="flex flex-col gap-2.5 p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
@@ -103,7 +112,7 @@ export function ConferencistaCard({
           </div>
         </div>
 
-        <div className="flex flex-col gap-2.5 px-4 pb-4">
+        <div className="flex flex-1 flex-col gap-2.5 px-4 pb-4">
           <p className="text-[13px] leading-snug font-medium text-foreground">{conferencia.titulo}</p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-muted-foreground">
@@ -130,12 +139,7 @@ export function ConferencistaCard({
             </p>
           ) : null}
 
-          <div
-            className={cn(
-              "flex items-center justify-between gap-2 border-t border-border pt-3",
-              hayPerfilExtendido && "mt-0.5"
-            )}
-          >
+          <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3">
             <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
               {conferencia.asistentesPresenciales != null ? (
                 <span className="inline-flex items-center gap-1" title="Asistentes presenciales">

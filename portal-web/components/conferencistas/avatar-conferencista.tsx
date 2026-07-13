@@ -58,16 +58,46 @@ export function AvatarConferencista({
   tamaño = 96,
   animado = true,
   prioridad = false,
+  sinFloral = false,
 }: {
   conferencia: ConferenciaCard;
   tamaño?: number;
   /** Balanceo idle del aro floral — apagado en contextos con muchas instancias a la vez si se prefiere. */
   animado?: boolean;
   prioridad?: boolean;
+  /** Miniaturas muy pequeñas (buscador rápido del carrusel): el aro floral ilegible a ese tamaño solo agrega ruido. */
+  sinFloral?: boolean;
 }) {
   const color = colorAvatar(conferencia.nombre);
   const esGrupo = conferencia.tipo === "Grupo";
   const tamañoFloral = Math.round(tamaño * 1.7);
+
+  if (sinFloral) {
+    return (
+      <div
+        className="relative shrink-0 overflow-hidden rounded-full shadow-sm ring-2 ring-card"
+        style={{ width: tamaño, height: tamaño }}
+      >
+        {conferencia.fotoUrl ? (
+          <Image
+            src={conferencia.fotoUrl}
+            alt={conferencia.textoAlternativoImagen || conferencia.nombre}
+            fill
+            className="object-cover"
+            style={{ objectPosition: posicionFoto(conferencia.fotoUrl) }}
+            sizes={`${tamaño}px`}
+          />
+        ) : (
+          <span
+            className="flex size-full items-center justify-center font-bold text-white"
+            style={{ backgroundColor: color, fontSize: tamaño * 0.38 }}
+          >
+            {esGrupo ? <Users style={{ width: tamaño * 0.5, height: tamaño * 0.5 }} aria-hidden /> : iniciales(conferencia.nombre)}
+          </span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="relative shrink-0" style={{ width: tamañoFloral, height: tamañoFloral }}>
