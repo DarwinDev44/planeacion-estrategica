@@ -10,6 +10,8 @@ export interface ConferenciaCard {
   nombre: string;
   /** Tema/título de la conferencia o jornada. */
   titulo: string;
+  /** Nombre de la jornada tal como aparece en la columna "jornada" de la hoja Base de Datos. */
+  jornada: string;
   fecha: string;
   ubicacion: string;
   modalidad: string;

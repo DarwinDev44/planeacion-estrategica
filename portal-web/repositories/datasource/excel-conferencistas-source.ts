@@ -71,6 +71,7 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
     const col = (nombre: string) => encabezado.indexOf(nombre);
     const idx = {
       idRegistro: col("id_registro"),
+      jornada: col("jornada"),
       nombreCard: col("nombre_card"),
       tituloCard: col("titulo_card"),
       fechaCard: col("fecha_card"),
@@ -101,6 +102,7 @@ export class ExcelConferencistasDataSource implements ConferencistasDataSource {
           slug,
           nombre: String(f[idx.nombreCard] ?? "").trim(),
           titulo: String(f[idx.tituloCard] ?? "").trim(),
+          jornada: String(f[idx.jornada] ?? "").trim(),
           fecha: String(f[idx.fechaCard] ?? "").trim(),
           ubicacion: String(f[idx.ubicacionCard] ?? "").trim(),
           modalidad: String(f[idx.modalidad] ?? "").trim(),
