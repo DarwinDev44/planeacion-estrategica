@@ -41,7 +41,7 @@ const TEMAS: TemaPlan[] = [
 const VERSION_ASSETS_CAMPANA = "3";
 
 const ENLACE_CONSOLIDACION_APORTES =
-  "https://mailunicundiedu-my.sharepoint.com/:f:/g/personal/ydguzman_ucundinamarca_edu_co/IgDnHm6iOKgzSJOIky7GNXw6AbX-G_HEtNmfVwjPgAApMu8?e=EBm28U";
+  "https://mailunicundiedu-my.sharepoint.com/:f:/g/personal/ydguzman_ucundinamarca_edu_co/IgDnHm6iOKgzSJOIky7GNXw6AT-c2SENCX8VpPRtP-atkyk?e=4lqBFL";
 
 const contenedor: Variants = {
   oculto: {},
