@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Empaqueta un servidor Node mínimo y autocontenido en .next/standalone —
+  // base de la distribución portable (exe). Solo se activa con
+  // BUILD_STANDALONE=1 para no alterar el build normal que usa Vercel.
+  output: process.env.BUILD_STANDALONE === "1" ? "standalone" : undefined,
   // Permite el query param ?v= en imágenes locales de /public (usado como
   // cache-busting manual: el nombre de archivo no cambia entre ediciones de
   // imagen, así que sin esto los navegadores seguirían sirviendo la versión
@@ -22,6 +26,7 @@ const nextConfig: NextConfig = {
       "./data/source-metas/**",
       "./data/source-conferencistas/**",
       "./data/source-valoraciones/**",
+      "./data/source-analitica-momentos/**",
     ],
   },
 };
