@@ -72,7 +72,7 @@ export function ConferencistaCard({
           wrapper — apagado hasta el hover (ver .borde-animado en globals.css). */}
       <span className="borde-animado absolute inset-[-60%]" aria-hidden />
 
-      <div className="relative flex flex-1 flex-col rounded-[15px] bg-card ring-1 ring-foreground/10">
+      <div className="@container/card relative flex flex-1 flex-col rounded-[15px] bg-card ring-1 ring-foreground/10">
         <div className="flex flex-col gap-2.5 p-4 pb-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
@@ -99,9 +99,16 @@ export function ConferencistaCard({
               </span>
             ) : null}
           </div>
-          <div className="flex items-start gap-3.5">
+          {/* La card mide ~25% del carrusel (siempre 4 visibles, ver
+              carousel-conferencistas.tsx) — a ese ancho el nombre completo no
+              cabe junto a la foto de 72px en una fila. Se consulta el ancho
+              real de la card vía container query (`@container/card` arriba)
+              en vez de el tamaño de pantalla del dispositivo: este layout se
+              renderiza igual en teléfono que en monitor (ver app/layout.tsx),
+              así que lo que importa es el espacio disponible, no el device. */}
+          <div className="flex flex-col items-center gap-2 text-center @min-[300px]/card:flex-row @min-[300px]/card:items-start @min-[300px]/card:gap-3.5 @min-[300px]/card:text-left">
             <AvatarConferencista conferencia={conferencia} tamaño={72} />
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5 pt-1">
+            <div className="flex w-full min-w-0 flex-col items-center gap-1.5 @min-[300px]/card:w-auto @min-[300px]/card:flex-1 @min-[300px]/card:items-start @min-[300px]/card:pt-1">
               <h3 className="text-[15.5px] leading-tight font-semibold text-foreground">{conferencia.nombre}</h3>
               {conferencia.tituloProfesional ? (
                 <p className="text-[12px] leading-snug font-medium" style={{ color: acento }}>
