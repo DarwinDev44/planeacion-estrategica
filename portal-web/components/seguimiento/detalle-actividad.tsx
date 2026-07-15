@@ -41,7 +41,7 @@ function ContenidoDetalle({ actividad }: { actividad: Actividad }) {
   const finalizados = filtrados.filter((p) => p.estado === "Finalizado");
 
   return (
-    <DialogContent className="sm:max-w-xl">
+    <DialogContent className="max-w-xl">
       <DialogHeader>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{actividad.etiquetaMomento}</Badge>

@@ -57,7 +57,7 @@ export function OtroPanel({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex flex-row gap-2">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -72,7 +72,7 @@ export function OtroPanel({
           value={categoriaSeleccionada ?? TODAS_LAS_CATEGORIAS}
           onValueChange={(v) => onCambiarCategoria(v === TODAS_LAS_CATEGORIAS ? null : v)}
         >
-          <SelectTrigger className="w-full sm:w-[260px]" aria-label="Filtrar por categoría temática">
+          <SelectTrigger className="w-[260px]" aria-label="Filtrar por categoría temática">
             <SelectValue placeholder="Todas las categorías">
               {(v: string | null) => (
                 <span className="min-w-0 truncate">

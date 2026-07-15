@@ -28,9 +28,9 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
   return (
     <div className="flex flex-col gap-4">
       {/* Header: título + filtros */}
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-row items-end justify-between gap-3">
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Diagnóstico: Tu Voz Fundamental
           </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -44,12 +44,12 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       </div>
 
       {/* KPIs compactos */}
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-2.5">
         <KpiCard compacto etiqueta="Participantes" valor={formatNumero(kpis.totalParticipantes)} icono={Users} />
       </div>
 
       {/* Fila superior: rol, sede */}
-      <div className="grid gap-3 xl:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card className="py-3">
           <CardHeader className="px-3.5 pb-1">
             <CardTitle className="text-[13px]">Tipos de participantes</CardTitle>
@@ -70,7 +70,7 @@ export function ResumenEjecutivoClient({ inicial }: { inicial: ResumenFiltrado }
       </div>
 
       {/* Fila inferior: las 4 preguntas estratégicas */}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         {PREGUNTAS.map((pregunta) => (
           <Card key={pregunta.id} className="py-3">
             <CardHeader className="px-3.5 pb-1">

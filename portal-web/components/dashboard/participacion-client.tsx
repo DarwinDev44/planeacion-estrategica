@@ -40,9 +40,9 @@ export function ParticipacionClient({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-row items-end justify-between gap-3">
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Quién participó — Diagnóstico: Tu Voz Fundamental
           </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -55,7 +55,7 @@ export function ParticipacionClient({
         <FilterBar />
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card className="py-3">
           <CardHeader className="px-3.5 pb-1">
             <CardTitle className="text-[13px]">Distribución por rol (completo)</CardTitle>
@@ -74,7 +74,7 @@ export function ParticipacionClient({
         </Card>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card className="py-3">
           <CardHeader className="px-3.5 pb-1">
             <CardTitle className="text-[13px]">Combinaciones de multi-rol</CardTitle>

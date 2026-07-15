@@ -56,7 +56,7 @@ export function DistribucionValoracion({ pregunta }: { pregunta: PreguntaValorac
   return (
     <div className="flex h-full flex-col gap-3">
       <h3 className="text-[13px] font-semibold leading-snug text-foreground">{pregunta.pregunta}</h3>
-      <div className="flex flex-col items-center gap-4 sm:flex-row">
+      <div className="flex flex-row items-center gap-4">
         <div className="relative mx-auto h-36 w-36 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

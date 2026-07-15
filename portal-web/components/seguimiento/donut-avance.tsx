@@ -31,13 +31,13 @@ export function DonutAvance({
         type="button"
         onClick={onVerDetalle}
         aria-label={`Avance general ${formatPorcentaje(avanceGeneral)}. Ver detalle por actividad`}
-        className="group relative mx-auto block h-64 w-64 cursor-pointer rounded-full outline-none transition-transform hover:scale-[1.02] focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:h-72 sm:w-72 [&_*]:cursor-pointer!"
+        className="group relative mx-auto block h-72 w-72 cursor-pointer rounded-full outline-none transition-transform hover:scale-[1.02] focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_*]:cursor-pointer!"
       >
         {/* Etiqueta flotante: llama la atención hacia el clic y se retira apenas
             el usuario pasa el mouse (ya no hace falta el aviso). */}
         <span
           aria-hidden
-          className="pointer-events-none absolute -top-2 right-2 z-10 inline-flex animate-bounce items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap text-primary-foreground shadow-md transition-opacity duration-200 group-hover:opacity-0 sm:right-4"
+          className="pointer-events-none absolute -top-2 right-4 z-10 inline-flex animate-bounce items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap text-primary-foreground shadow-md transition-opacity duration-200 group-hover:opacity-0"
         >
           <MousePointerClick className="size-3" aria-hidden />
           Clic para ver detalle
@@ -80,7 +80,7 @@ export function DonutAvance({
         </ResponsiveContainer>
         {/* Cifra central */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-heading text-4xl font-bold tabular-nums text-foreground sm:text-5xl">
+          <span className="font-heading text-5xl font-bold tabular-nums text-foreground">
             {formatPorcentaje(avanceGeneral)}
           </span>
           <span className="mt-1 text-xs text-muted-foreground">avance general</span>

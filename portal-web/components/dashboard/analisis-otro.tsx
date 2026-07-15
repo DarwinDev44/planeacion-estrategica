@@ -44,7 +44,7 @@ export function AnalisisOtroCards({
           </p>
         </CardHeader>
         <CardContent className="px-3.5">
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-6">
             <RankedBarChart
               titulo=""
               datos={analisis.categorias.map((c) => ({

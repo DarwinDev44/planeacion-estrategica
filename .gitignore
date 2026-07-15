@@ -4,3 +4,19 @@
 # Vercel (credenciales y configuración local del CLI)
 .vercel
 .env*
+
+# Ejecutable portable compilado — se regenera con Compilar-Portable.bat,
+# no debe versionarse (binario grande, siempre derivable del código fuente).
+PlaneacionEstrategica2027-2037.exe
+launcher-src/portal.zip
+
+# Copias de trabajo sueltas que el equipo deja en el escritorio para
+# actualizar datos — la copia real que usa el sitio vive en
+# portal-web/data/source-*/ (ver README). Nunca se versionan aquí.
+/Participación jornadas.xlsx
+/Valoraciones.xlsx
+/soacha.png
+/fusagasugá.jpg
+/Perfiles de conferencistas/
+/*.backup-antes-correccion.xlsx
+portal-web/data/**/*.backup*.xlsx

@@ -64,10 +64,10 @@ export default async function AnaliticaMomentoDetallePage({ params }: PageProps)
           <ArrowLeft className="size-3.5" />
           Volver a Analítica actividades momentos
         </Link>
-        <h1 className="mt-2 font-heading text-2xl font-bold text-foreground lg:text-3xl">{item.titulo}</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold text-foreground">{item.titulo}</h1>
       </div>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Indicadores principales">
+      <section className="grid grid-cols-4 gap-3" aria-label="Indicadores principales">
         {kpis.map((kpi) => (
           <Card key={kpi.etiqueta} className="gap-0 py-0">
             <CardContent className="flex min-h-24 flex-col justify-center gap-1 px-4 py-4">
@@ -96,7 +96,7 @@ export default async function AnaliticaMomentoDetallePage({ params }: PageProps)
               </>
             )}
           </p>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             {datos.preguntasValoracion.map((pregunta) => (
               <Card key={pregunta.pregunta}>
                 <CardContent>
@@ -109,7 +109,7 @@ export default async function AnaliticaMomentoDetallePage({ params }: PageProps)
       ) : null}
 
       {datos.preguntasAbiertas.length > 0 ? (
-        <section className="grid gap-4 lg:grid-cols-2" aria-label="Respuestas abiertas">
+        <section className="grid grid-cols-2 gap-4" aria-label="Respuestas abiertas">
           {datos.preguntasAbiertas.map((pregunta) => (
             <RespuestasAbiertas key={pregunta.pregunta} pregunta={pregunta} />
           ))}

@@ -40,7 +40,7 @@ export function KpiCard({
       <CardContent className="flex items-start justify-between gap-3 px-5 py-4">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium text-muted-foreground">{etiqueta}</span>
-          <span className="font-heading text-3xl font-bold tabular-nums leading-none lg:text-[2.25rem]">
+          <span className="font-heading text-[2.25rem] font-bold tabular-nums leading-none">
             {valor}
           </span>
           {detalle ? <span className="text-xs text-muted-foreground">{detalle}</span> : null}

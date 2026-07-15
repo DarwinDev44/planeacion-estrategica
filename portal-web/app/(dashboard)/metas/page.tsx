@@ -13,7 +13,7 @@ export default function MetasPage() {
     <div className="flex flex-col gap-4">
       <div>
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">
+          <h1 className="font-heading text-2xl font-bold text-foreground">
             Metas — Diagnóstico: Tu Voz Fundamental
           </h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -23,13 +23,13 @@ export default function MetasPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-3 gap-3">
         <TablaMetaCard tabla={gca} />
         <TablaMetaCard tabla={administrativosContrato} />
         <TablaMetaCard tabla={administrativosSede} />
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <TablaMetaCard tabla={estudiantes} />
         <TablaMetaCard tabla={graduados} />
       </div>
