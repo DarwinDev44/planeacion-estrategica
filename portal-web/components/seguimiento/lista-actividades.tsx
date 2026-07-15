@@ -55,7 +55,7 @@ export function ListaActividades({
                   aria-label={`Ver participantes de ${actividad.nombre}`}
                   className="flex w-full cursor-pointer items-center gap-4 px-4 py-3 text-left outline-none transition-colors hover:bg-secondary/50 focus-visible:bg-secondary/50"
                 >
-                  <Badge variant="secondary" className="hidden shrink-0 sm:inline-flex">
+                  <Badge variant="secondary" className="inline-flex shrink-0">
                     {actividad.etiquetaMomento}
                   </Badge>
                   <span className="min-w-0 flex-1">

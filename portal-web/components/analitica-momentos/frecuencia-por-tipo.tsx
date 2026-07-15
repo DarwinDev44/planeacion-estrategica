@@ -38,7 +38,7 @@ export function FrecuenciaPorTipo({
         <CardTitle className="text-[13px]">Frecuencia de palabras por tipo de pregunta</CardTitle>
       </CardHeader>
       <CardContent className="px-3.5">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <p className="text-[11px] leading-relaxed text-muted-foreground">{RESUMEN_APRENDIZAJES}</p>
             <RankedBarChart

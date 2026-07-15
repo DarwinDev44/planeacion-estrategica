@@ -70,7 +70,7 @@ export function LandingClient() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 py-8 lg:px-12 lg:py-10">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-12 py-10">
         <motion.header
           initial={prefiereReducido ? false : { opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -83,27 +83,27 @@ export function LandingClient() {
             width={230}
             height={55}
             priority
-            className="h-16 w-auto lg:h-20"
+            className="h-20 w-auto"
           />
-          <span className="hidden text-sm font-medium text-white/85 sm:inline">
+          <span className="text-sm font-medium text-white/85">
             Plan Estratégico 2027 – 2037
           </span>
         </motion.header>
 
-        <div className="flex flex-1 flex-col items-center justify-center gap-10 py-10 lg:flex-row lg:items-center lg:gap-16 lg:py-6">
+        <div className="flex flex-1 flex-row items-center justify-center gap-16 py-6">
           {/* Columna izquierda: mensaje + collage */}
-          <div className="flex w-full max-w-xl flex-col items-center gap-8 text-center lg:items-start lg:text-left">
+          <div className="flex w-full max-w-xl flex-col items-start gap-8 text-left">
             <motion.div
               initial={prefiereReducido ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <h1 className="font-heading text-4xl leading-[1.05] font-bold text-white lg:text-5xl">
+              <h1 className="font-heading text-5xl leading-[1.05] font-bold text-white">
                 Plan Estratégico
                 <br />
                 2027 – 2037
               </h1>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80 lg:text-base">
+              <p className="mt-4 max-w-md text-base leading-relaxed text-white/80">
                 Analítica de datos del Plan Estratégico
               </p>
             </motion.div>
@@ -112,7 +112,7 @@ export function LandingClient() {
               initial={prefiereReducido ? false : { opacity: 0, scale: 0.94 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-lg lg:max-w-2xl"
+              className="w-full max-w-2xl"
             >
               <Image
                 src={`/assets/campana/collage-estudiantes.webp?v=${VERSION_ASSETS_CAMPANA}`}
@@ -150,7 +150,7 @@ export function LandingClient() {
           initial={prefiereReducido ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="flex flex-col items-center justify-between gap-2 border-t border-white/15 pt-5 text-xs text-white/70 sm:flex-row"
+          className="flex flex-row items-center justify-between gap-2 border-t border-white/15 pt-5 text-xs text-white/70"
         >
           <span>www.ucundinamarca.edu.co · Vigilada MinEducación</span>
           <span>Elaborado por Dirección de Planeación Institucional</span>

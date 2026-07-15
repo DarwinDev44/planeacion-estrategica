@@ -15,7 +15,7 @@ export default function ConferencistasPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">Ciclos de Diálogo Estratégico</h1>
+        <h1 className="font-heading text-2xl font-bold text-foreground">Ciclos de Diálogo Estratégico</h1>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Jornadas y conversatorios del Plan Estratégico 2027–2037 — {conferencias.length} en total.
         </p>

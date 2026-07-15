@@ -54,9 +54,9 @@ export function PreguntasEstrategicasClient({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-row items-end justify-between gap-3">
         <div>
-          <h1 className="font-heading text-xl font-bold text-foreground lg:text-2xl">{titulo}</h1>
+          <h1 className="font-heading text-2xl font-bold text-foreground">{titulo}</h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {descripcion}
             {isFetching ? (
@@ -67,7 +67,7 @@ export function PreguntasEstrategicasClient({
         <FilterBar />
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         {preguntas.map((pregunta) => (
           <Card key={pregunta.id} className="py-3">
             <CardHeader className="px-3.5 pb-1">

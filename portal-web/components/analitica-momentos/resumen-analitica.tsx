@@ -78,7 +78,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
       </div>
 
       {/* Métricas de valor */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3">
         {tiles.map((t) => {
           const Icono = t.icono;
           return (
@@ -99,7 +99,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
       </div>
 
       {/* Destacados */}
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-3 gap-3">
         {resumen.destacados.mejorValorada ? (
           <Destacado
             slug={resumen.destacados.mejorValorada.slug}
@@ -134,7 +134,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
       </div>
 
       {/* Comparativos por actividad */}
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card>
           <CardContent className="flex flex-col gap-3 py-4">
             <h3 className="text-[13px] font-semibold text-foreground">Participación por actividad</h3>
@@ -213,7 +213,7 @@ export function ResumenAnaliticaMomentos({ resumen }: { resumen: ResumenAnalitic
 
       {/* Conversación */}
       {resumen.conversaciones.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3">
           {resumen.conversaciones.map((c) => (
             <Destacado
               key={c.slug}

@@ -56,7 +56,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-row items-center justify-between gap-3 rounded-xl border border-border/70 bg-card px-4 py-3">
         <div>
           <p className="text-sm font-semibold text-foreground">Corte de información</p>
           <p className="text-xs text-muted-foreground">Selecciona una fecha para explorar sus accesos.</p>
@@ -91,7 +91,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
         </div>
       </div>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Indicadores principales">
+      <section className="grid grid-cols-4 gap-3" aria-label="Indicadores principales">
         <Indicador
           etiqueta="Personas que acceden"
           valor={String(corte.personasUnicas)}
@@ -118,7 +118,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
         />
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[1.45fr_1fr]">
+      <section className="grid grid-cols-[1.45fr_1fr] gap-5">
         <Card>
           <CardHeader>
             <CardTitle>Evolución del promedio por fecha de acceso</CardTitle>
@@ -201,7 +201,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
         </Card>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Comparación entre mediciones">
+      <section className="grid grid-cols-4 gap-3" aria-label="Comparación entre mediciones">
         {datos.cortes.map((item) => (
           <TarjetaCorte key={item.fecha} corte={item} activa={!mostrandoTodos && item.fecha === corte.fecha} />
         ))}

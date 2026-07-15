@@ -56,7 +56,7 @@ function ContenidoDetalle({ conferencia }: { conferencia: ConferenciaConValoraci
   const variants = prefiereReducido ? undefined : seccion;
 
   return (
-    <DialogContent className="gap-0 p-0 sm:max-w-2xl" showCloseButton={false}>
+    <DialogContent className="max-w-2xl gap-0 p-0" showCloseButton={false}>
       <DialogTitle className="sr-only">{conferencia.nombre}</DialogTitle>
       <DialogDescription className="sr-only">{conferencia.titulo}</DialogDescription>
 

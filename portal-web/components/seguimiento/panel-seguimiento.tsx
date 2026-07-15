@@ -20,7 +20,7 @@ export function PanelSeguimiento({ datos }: { datos: CaiData }) {
       {vista === "general" ? (
         <>
           {/* Franja de KPIs */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-4 gap-4">
             <KpiCard etiqueta="Avance general" valor={formatPorcentaje(datos.avanceGeneral)} icono={Percent} />
             <KpiCard
               etiqueta="Actividades"
