@@ -42,7 +42,11 @@ export function DonutAvance({
           <MousePointerClick className="size-3" aria-hidden />
           Clic para ver detalle
         </span>
-        <ResponsiveContainer width="100%" height="100%">
+        {/* initialDimension evita el aviso "width(-1)/height(-1)" de recharts:
+            en el primer render (SSR y antes de que el ResizeObserver mida) el
+            contenedor no tiene tamaño. Coincide con h-72/w-72 = 288px, así que
+            el gráfico se dibuja ya del tamaño final, sin salto. */}
+        <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 288, height: 288 }}>
           <PieChart>
             <Pie
               data={datos}

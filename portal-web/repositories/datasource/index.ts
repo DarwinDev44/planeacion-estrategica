@@ -3,9 +3,25 @@ import { ExcelEncuestaDataSource } from "./excel-data-source";
 import { ExcelMetasDataSource } from "./excel-metas-source";
 import { ExcelConferencistasDataSource } from "./excel-conferencistas-source";
 import { ExcelValoracionesDataSource } from "./excel-valoraciones-source";
-import type { EncuestaDataSource, MetasDataSource, ConferencistasDataSource, ValoracionesDataSource } from "./types";
+import { ExcelCaiDataSource } from "./excel-cai-source";
+import { ExcelAccesosCaiDataSource } from "./excel-accesos-source";
+import type {
+  EncuestaDataSource,
+  MetasDataSource,
+  ConferencistasDataSource,
+  ValoracionesDataSource,
+  CaiDataSource,
+  AccesosCaiDataSource,
+} from "./types";
 
-export type { EncuestaDataSource, MetasDataSource, ConferencistasDataSource, ValoracionesDataSource } from "./types";
+export type {
+  EncuestaDataSource,
+  MetasDataSource,
+  ConferencistasDataSource,
+  ValoracionesDataSource,
+  CaiDataSource,
+  AccesosCaiDataSource,
+} from "./types";
 
 /**
  * Único punto de construcción del origen de datos. Para migrar a otra fuente
@@ -39,4 +55,21 @@ let instanciaValoraciones: ValoracionesDataSource | null = null;
 export function getValoracionesDataSource(): ValoracionesDataSource {
   if (!instanciaValoraciones) instanciaValoraciones = new ExcelValoracionesDataSource();
   return instanciaValoraciones;
+}
+
+let instanciaCai: CaiDataSource | null = null;
+
+export function getCaiDataSource(): CaiDataSource {
+  if (!instanciaCai) instanciaCai = new ExcelCaiDataSource();
+  return instanciaCai;
+}
+
+let instanciaAccesosCai: AccesosCaiDataSource | null = null;
+
+export function getAccesosCaiDataSource(): AccesosCaiDataSource {
+  // El padrón de Accesos sale del Excel de Seguimiento, no de una copia propia.
+  if (!instanciaAccesosCai) {
+    instanciaAccesosCai = new ExcelAccesosCaiDataSource(getCaiDataSource());
+  }
+  return instanciaAccesosCai;
 }

@@ -13,20 +13,25 @@ build portable — ver más abajo).
 
 ## 2. Arquitectura de datos: el Excel es la única fuente de verdad
 
-- Cada módulo lee su Excel en vivo con `fs` desde `portal-web/data/source-*/`
-  (nunca se copian datos a mano a un JSON intermedio, salvo los `data/*.json` que
-  son la salida de un script ETL versionado en `portal-web/scripts/`).
+- **Todos** los módulos leen su Excel en vivo con `fs` desde
+  `portal-web/data/source-*/`. No hay JSON intermedios ni scripts ETL: editar el
+  Excel se refleja en la siguiente petición, sin regenerar nada. No se
+  reintroduzca un `data/*.json` con datos de negocio.
 - Patrón de capas, siempre en este orden: `repositories/datasource/*.ts` (lee el
-  Excel/JSON, sin lógica de negocio) → `repositories/xxxRepository.ts` (única
-  puerta de entrada que los componentes pueden importar) → componentes.
+  Excel, sin lógica de negocio) → `repositories/xxxRepository.ts` (única puerta
+  de entrada que los componentes pueden importar) → componentes.
 - Agregar una fila/persona/actividad nueva debe bastar con editar el Excel (y,
   cuando aplique, soltar un archivo de foto con el slug correcto) — nunca
-  hardcodear datos en componentes o constantes.
-- Los `.xlsx` "crudos" en la raíz del repo (`Accesos a CAI Planeación
-  estratégica/`, `Seguimiento  participación actividades/`) alimentan los
-  scripts de `portal-web/scripts/` (`etl.ts`, `etl-accesos.ts`) que regeneran
-  `portal-web/data/*.json`. No se editan a mano ni se duplican dentro de
-  `portal-web/`.
+  hardcodear datos en componentes, constantes o datasources. Si un dato de
+  negocio falta en el Excel (un nombre, una regla de exclusión), se agrega al
+  Excel — no al código.
+- Las rutas de los Excel son **siempre relativas** a `portal-web/`
+  (`join(process.cwd(), "data", "source-*")`). Nunca una ruta absoluta del
+  escritorio: Vercel corre en Linux y el `.exe` portable debe ser autocontenido,
+  así que una ruta tipo `C:\Users\...` rompe ambos.
+- Todo `data/source-*/` nuevo debe registrarse en `outputFileTracingIncludes`
+  (`portal-web/next.config.ts`) o Vercel no empaqueta los `.xlsx` en el bundle
+  serverless.
 - Los archivos de trabajo sueltos que alguien deja en el escritorio para
   actualizar un Excel (fuera de este repo) nunca se versionan — solo su copia
   dentro de `portal-web/data/source-*/` es la fuente real que usa el sitio.

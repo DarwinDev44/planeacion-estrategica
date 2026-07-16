@@ -8,8 +8,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "etl": "tsx scripts/etl.ts",
-    "etl:accesos": "tsx scripts/etl-accesos.ts",
     "validar:metas": "tsx scripts/validar-metas.ts"
   },
   "dependencies": {

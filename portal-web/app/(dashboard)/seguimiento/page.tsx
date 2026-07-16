@@ -1,10 +1,9 @@
 import { PanelSeguimiento } from "@/components/seguimiento/panel-seguimiento";
-import cai from "@/data/cai.json";
-import type { CaiData } from "@/types/cai";
-
-const datos = cai as unknown as CaiData;
+import { getCaiData } from "@/repositories/caiRepository";
 
 export default function SeguimientoActividadesPage() {
+  const datos = getCaiData();
+
   return (
     <div className="flex flex-col gap-6">
       <div>
