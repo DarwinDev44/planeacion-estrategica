@@ -10,7 +10,22 @@ using System.Threading;
 
 class Launcher
 {
-    const string VersionPaquete = "1";
+    /// <summary>
+    /// Identifica al paquete embebido en ESTE ejecutable. Se usa para decidir
+    /// si hay que volver a extraer el sitio en la carpeta temporal.
+    ///
+    /// Es el ModuleVersionId del propio ensamblado: csc lo regenera en cada
+    /// compilación, así que un .exe recién compilado nunca reutiliza los
+    /// archivos que dejó una versión anterior — y dos copias del mismo .exe
+    /// comparten el valor, que es justo lo que se quiere. Antes era una
+    /// constante que había que subir a mano: al olvidarla, el .exe nuevo
+    /// encontraba el marcador viejo, saltaba la extracción y seguía sirviendo
+    /// el sitio anterior.
+    /// </summary>
+    static string VersionPaquete
+    {
+        get { return Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.ToString("N"); }
+    }
 
     static int Main()
     {
