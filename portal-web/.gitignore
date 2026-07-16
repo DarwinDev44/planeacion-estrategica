@@ -36,9 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# fuente cruda del ETL (contiene datos de encuesta sin agregar) — solo se versiona la salida en /data
-/data-source
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts

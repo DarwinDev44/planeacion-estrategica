@@ -2,6 +2,8 @@ import type { Persona, RolAsignado, RespuestaPregunta } from "@/types/encuesta";
 import type { FilaMeta } from "@/types/metas";
 import type { ConferenciaCard } from "@/types/conferencistas";
 import type { ValoracionConferencista } from "@/types/valoraciones";
+import type { CaiData } from "@/types/cai";
+import type { AccesosCaiData } from "@/types/accesos-cai";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -51,4 +53,31 @@ export interface ConferencistasDataSource {
  */
 export interface ValoracionesDataSource {
   getValoracion(slug: string): ValoracionConferencista | null;
+}
+
+/** Persona del padrón oficial del CAI. */
+export interface ParticipanteCai {
+  nombre: string;
+  correo: string;
+}
+
+/**
+ * Contrato del origen de datos del módulo Seguimiento
+ * ("Seguimiento participación actividades.xlsx"). Una hoja con una fila por
+ * participante y una columna por actividad; la implementación deriva de ahí
+ * los totales y el % de finalización. `getParticipantes` expone el padrón
+ * oficial, que `AccesosCaiDataSource` necesita para filtrar sus registros.
+ */
+export interface CaiDataSource {
+  getCaiData(): CaiData;
+  getParticipantes(): ParticipanteCai[];
+}
+
+/**
+ * Contrato del origen de datos del módulo Accesos
+ * ("Accesos a CAI Planeación estratégica.xlsx"). Depende del padrón del CAI:
+ * solo se reportan accesos de participantes oficiales.
+ */
+export interface AccesosCaiDataSource {
+  getAccesosCaiData(): AccesosCaiData;
 }

@@ -16,6 +16,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   LabelList,
   ReferenceLine,
   ResponsiveContainer,
@@ -43,16 +44,21 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
       ? todosLosCortes
       : (datos.cortes.find((item) => item.fecha === fechaSeleccionada) ?? ultimo);
   const mostrandoTodos = fechaSeleccionada === TODOS_LOS_CORTES;
+  /** Clic en una barra: filtra por su fecha, o quita el filtro si ya estaba activa. */
+  const alternarFecha = (fecha: string) =>
+    setFechaSeleccionada((actual) => (actual === fecha ? TODOS_LOS_CORTES : fecha));
   const requierenAtencion = useMemo(
     () => corte.personas.filter((persona) => persona.dias >= 8),
     [corte]
   );
   const maximoRango = Math.max(...corte.rangos.map((rango) => rango.cantidad), 1);
 
-  const evolucion = datos.cortes.map((item) => ({
-    ...item,
-    etiqueta: fechaCorta(item.fecha),
-  }));
+  // Memoizado: sin esto el array se recrea en cada render y recharts reinicia
+  // la animación completa del gráfico en cada cambio de filtro.
+  const evolucion = useMemo(
+    () => datos.cortes.map((item) => ({ ...item, etiqueta: fechaCorta(item.fecha) })),
+    [datos]
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -101,7 +107,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
         <Indicador
           etiqueta="Promedio desde último acceso"
           valor={`${formatoDecimal.format(corte.promedioDias)} días`}
-          detalle={mostrandoTodos ? "Promedio de todas las mediciones" : fechaLarga(corte.fecha)}
+          detalle={mostrandoTodos ? "Última medición de cada persona" : fechaLarga(corte.fecha)}
           icono={Clock3}
         />
         <Indicador
@@ -124,6 +130,7 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
             <CardTitle>Evolución del promedio por fecha de acceso</CardTitle>
             <p className="text-xs text-muted-foreground">
               Menos días indican una participación más reciente. Referencia global: {formatoDecimal.format(datos.promedioGlobal)} días.
+              {mostrandoTodos ? " Clic en una barra para filtrar por esa fecha." : " Clic en la barra activa para quitar el filtro."}
             </p>
           </CardHeader>
           <CardContent>
@@ -148,7 +155,23 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
                     stroke="var(--brand-accent)"
                     strokeDasharray="5 4"
                   />
-                  <Bar dataKey="promedioDias" fill="var(--primary)" radius={[7, 7, 2, 2]} maxBarSize={64}>
+                  <Bar
+                    dataKey="promedioDias"
+                    fill="var(--primary)"
+                    radius={[7, 7, 2, 2]}
+                    maxBarSize={64}
+                    isAnimationActive={false}
+                    className="cursor-pointer"
+                    onClick={(_, indice) => alternarFecha(evolucion[indice].fecha)}
+                  >
+                    {evolucion.map((item) => (
+                      <Cell
+                        key={item.fecha}
+                        // En "Todas" ninguna barra está seleccionada: todas se ven
+                        // activas. Al filtrar, solo la elegida conserva el color.
+                        fillOpacity={mostrandoTodos || item.fecha === corte.fecha ? 1 : 0.28}
+                      />
+                    ))}
                     <LabelList
                       dataKey="promedioDias"
                       position="top"
@@ -203,7 +226,12 @@ export function PanelAccesosCai({ datos }: { datos: AccesosCaiData }) {
 
       <section className="grid grid-cols-4 gap-3" aria-label="Comparación entre mediciones">
         {datos.cortes.map((item) => (
-          <TarjetaCorte key={item.fecha} corte={item} activa={!mostrandoTodos && item.fecha === corte.fecha} />
+          <TarjetaCorte
+            key={item.fecha}
+            corte={item}
+            activa={!mostrandoTodos && item.fecha === corte.fecha}
+            onSeleccionar={() => alternarFecha(item.fecha)}
+          />
         ))}
       </section>
     </div>
@@ -237,12 +265,35 @@ function Indicador({
   );
 }
 
-function TarjetaCorte({ corte, activa }: { corte: AccesosCaiData["cortes"][number]; activa: boolean }) {
+function TarjetaCorte({
+  corte,
+  activa,
+  onSeleccionar,
+}: {
+  corte: AccesosCaiData["cortes"][number];
+  activa: boolean;
+  onSeleccionar: () => void;
+}) {
   const mejora = corte.variacionDias != null && corte.variacionDias <= 0;
   const Icono = mejora ? TrendingDown : TrendingUp;
 
   return (
-    <Card className={cn("gap-0 border-t-4 py-0", activa ? "border-t-primary ring-2 ring-primary/20" : "border-t-primary/55")}>
+    <Card
+      role="button"
+      tabIndex={0}
+      aria-pressed={activa}
+      onClick={onSeleccionar}
+      onKeyDown={(evento) => {
+        if (evento.key === "Enter" || evento.key === " ") {
+          evento.preventDefault();
+          onSeleccionar();
+        }
+      }}
+      className={cn(
+        "gap-0 border-t-4 py-0 cursor-pointer transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        activa ? "border-t-primary ring-2 ring-primary/20" : "border-t-primary/55"
+      )}
+    >
       <CardContent className="px-4 py-4 text-center">
         <p className="text-xs font-bold uppercase tracking-wide text-primary">{fechaCorta(corte.fecha)}</p>
         <p className="mt-3 font-heading text-3xl font-bold tabular-nums">{formatoDecimal.format(corte.promedioDias)}</p>
@@ -273,6 +324,13 @@ function fechaLarga(iso: string): string {
     .format(new Date(`${iso}T00:00:00Z`));
 }
 
+/**
+ * Vista "Todas": el estado consolidado de cada persona, tomando su medición
+ * más reciente (los cortes vienen ordenados por fecha, así que el último `set`
+ * gana). `promedioDias` es la media real de esas personas — no `promedioGlobal`,
+ * que promedia las 4 mediciones y describiría una población distinta a la que
+ * resumen los rangos de esta misma vista.
+ */
 function crearCorteConsolidado(datos: AccesosCaiData): AccesosCaiData["cortes"][number] {
   const personasPorCorreo = new Map<string, AccesosCaiData["cortes"][number]["personas"][number]>();
   for (const corte of datos.cortes) {
@@ -282,12 +340,15 @@ function crearCorteConsolidado(datos: AccesosCaiData): AccesosCaiData["cortes"][
   const personas = [...personasPorCorreo.values()].sort(
     (a, b) => b.dias - a.dias || a.nombre.localeCompare(b.nombre, "es")
   );
+  const promedioDias = personas.length
+    ? Math.round((personas.reduce((total, p) => total + p.dias, 0) / personas.length) * 100) / 100
+    : 0;
 
   return {
     fecha: TODOS_LOS_CORTES,
     personasUnicas: personas.length,
     registros: datos.cortes.reduce((total, corte) => total + corte.registros, 0),
-    promedioDias: datos.promedioGlobal,
+    promedioDias,
     personas,
     rangos: [
       { etiqueta: "0–1 día", cantidad: personas.filter((persona) => persona.dias <= 1).length },

@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { PanelAccesosCai } from "@/components/accesos/panel-accesos-cai";
-import accesos from "@/data/accesos-cai.json";
-import type { AccesosCaiData } from "@/types/accesos-cai";
+import { getAccesosCaiData } from "@/repositories/accesosCaiRepository";
 
 export const metadata: Metadata = {
   title: "Accesos a CAI Planeación estratégica",
 };
 
 export default function AccesosCaiPage() {
-  const datos = accesos as AccesosCaiData;
+  const datos = getAccesosCaiData();
 
   return (
     <div className="flex flex-col gap-5">

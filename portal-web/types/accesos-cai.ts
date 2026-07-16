@@ -20,10 +20,14 @@ export interface CorteAccesos {
   variacionPorcentaje: number | null;
 }
 
+/**
+ * Contrato de datos — Accesos a CAI Planeación estratégica.
+ * Derivado en vivo de data/source-cai/Accesos a CAI Planeación estratégica.xlsx
+ * (ver repositories/datasource/excel-accesos-source.ts).
+ */
 export interface AccesosCaiData {
+  /** Nombre del archivo fuente */
   fuente: string;
-  correoExcluido: string;
-  correoExcluidoEncontrado: boolean;
   promedioGlobal: number;
   cortes: CorteAccesos[];
 }

@@ -1,7 +1,7 @@
 /**
  * Contrato de datos — Seguimiento participación actividades (CAI).
- * Generado por scripts/etl.ts a partir de
- * "Seguimiento  participación actividades/cai09072026.xlsx" → data/cai.json.
+ * Derivado en vivo de data/source-cai/Seguimiento participación actividades.xlsx
+ * (ver repositories/datasource/excel-cai-source.ts).
  */
 
 export type EstadoActividad = "Finalizado" | "No finalizado";
@@ -32,8 +32,6 @@ export interface Actividad {
 }
 
 export interface CaiData {
-  /** ISO timestamp de la generación del ETL */
-  generadoEl: string;
   /** Nombre del archivo fuente */
   fuente: string;
   totalParticipantes: number;

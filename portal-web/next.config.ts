@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
       "./data/source-conferencistas/**",
       "./data/source-valoraciones/**",
       "./data/source-analitica-momentos/**",
+      "./data/source-cai/**",
     ],
   },
 };
