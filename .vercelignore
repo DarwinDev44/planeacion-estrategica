@@ -1,0 +1,23 @@
+# Qué NO se sube a Vercel al desplegar.
+#
+# Es distinto de .gitignore: lo de aquí sí se versiona (es parte del proyecto),
+# pero no interviene en el build del sitio. Excluirlo hace el despliegue más
+# liviano sin sacarlo del repositorio.
+#
+# Cuidado al añadir reglas: si se excluye algo que el build necesita —una
+# carpeta de data/source-*, un componente, una imagen de public/— el sitio
+# despliega roto. Ante la duda, no lo excluyas.
+
+# Ejecutable portable: solo se compila y usa en Windows, en local.
+launcher-src/
+Compilar-Portable.bat
+iniciar-portal.bat
+PlaneacionEstrategica2027-2037.exe
+
+# Documentación: no participa en el build.
+docs/
+CLAUDE.md
+README.md
+
+# Área de descarte para revisión manual (también fuera de git).
+Borrar/

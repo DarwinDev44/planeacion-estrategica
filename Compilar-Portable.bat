@@ -5,15 +5,16 @@ echo   Compilando PlaneacionEstrategica2027-2037.exe
 echo ============================================
 
 set "RAIZ=%~dp0"
-set "PROYECTO=%RAIZ%portal-web"
+set "PROYECTO=%RAIZ%."
 set "BUILD=%RAIZ%portal-build-portable"
 set "PORTABLE=%RAIZ%portal-portable"
 set "LAUNCHER=%RAIZ%launcher-src"
 set "SALIDA=%RAIZ%PlaneacionEstrategica2027-2037.exe"
 set "CSC=C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 
-if not exist "%PROYECTO%" (
-  echo ERROR: no se encontro la carpeta portal-web junto a este .bat.
+if not exist "%RAIZ%package.json" (
+  echo ERROR: no se encontro package.json junto a este .bat.
+  echo        El .bat debe estar en la raiz del proyecto.
   pause
   exit /b 1
 )
@@ -26,7 +27,11 @@ if not exist "%CSC%" (
 echo.
 echo [1/7] Copiando el proyecto a una carpeta aislada...
 if exist "%BUILD%" rmdir /s /q "%BUILD%"
-robocopy "%PROYECTO%" "%BUILD%" /E /XD node_modules .next .git /XF *.log /NFL /NDL /NJH /NJS /MT:16 >nul
+rem El proyecto vive en la raiz, junto a este .bat, asi que la copia se hace
+rem sobre la propia carpeta: hay que excluir el destino y todo lo que no es el
+rem sitio (launcher, salidas de build, descartes) o robocopy se copiaria a si
+rem mismo en bucle.
+robocopy "%PROYECTO%" "%BUILD%" /E /XD "%BUILD%" "%PORTABLE%" "%LAUNCHER%" "%RAIZ%node_modules" "%RAIZ%.next" "%RAIZ%.git" "%RAIZ%Borrar" /XF *.log *.bat "%SALIDA%" /NFL /NDL /NJH /NJS /MT:16 >nul
 if %ERRORLEVEL% GEQ 8 (
   echo ERROR: fallo al copiar el proyecto.
   pause
