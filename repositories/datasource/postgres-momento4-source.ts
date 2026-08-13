@@ -2,7 +2,12 @@ import "server-only";
 import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
 import type { Momento4DataSource } from "./types";
 import { conexionSql } from "./infrastructure/neon";
-import { consultarDocumentos, consultarRespuestas, guardarDocumento } from "./momento4-almacen";
+import {
+  consultarDocumentos,
+  consultarRespuestas,
+  eliminarRegistros,
+  guardarDocumento,
+} from "./momento4-almacen";
 
 /**
  * Las respuestas del Momento 4, guardadas en Postgres (Neon).
@@ -32,5 +37,9 @@ export class PostgresMomento4DataSource implements Momento4DataSource {
     contenido: Buffer
   ): Promise<ResultadoCargue> {
     return guardarDocumento(conexionSql(), idTransformacion, nombreOriginal, contenido);
+  }
+
+  eliminar(idTransformacion: string | null): Promise<number> {
+    return eliminarRegistros(conexionSql(), idTransformacion);
   }
 }

@@ -135,4 +135,9 @@ export interface Momento4DataSource {
     nombreOriginal: string,
     contenido: Buffer
   ): Promise<ResultadoCargue>;
+  /**
+   * Borra los registros cargados: los de una transformación, o los de todas si
+   * se pasa null. Devuelve cuántas respuestas se eliminaron.
+   */
+  eliminar(idTransformacion: string | null): Promise<number>;
 }

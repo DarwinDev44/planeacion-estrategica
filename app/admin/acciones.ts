@@ -4,9 +4,13 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { COOKIE_ADMIN, DURACION_ACCESO_MINUTOS } from "@/constants/admin";
 import type { ResultadoCargue } from "@/types/momento4";
-import { guardarDocumentoMomento4 } from "@/repositories/momento4Repository";
+import {
+  eliminarRegistrosMomento4,
+  guardarDocumentoMomento4,
+} from "@/repositories/momento4Repository";
+import { TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
 import { publicarSeccion } from "@/repositories/seccionesRepository";
-import { RUTA_POR_SECCION } from "@/constants/secciones";
+import { RUTA_POR_SECCION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { tieneAccesoAdmin } from "./sesion";
 
 /**
@@ -33,6 +37,47 @@ export async function validarPin(pin: string): Promise<boolean> {
     // el PIN ni ningún dato — solo la marca de que ya se validó.
   });
   return true;
+}
+
+/**
+ * Borra los registros del Momento 4: los de una transformación, o los de todas
+ * si se pasa null. Solo se borran filas — las tablas y su estructura se quedan,
+ * para que el siguiente cargue funcione sin volver a migrar.
+ */
+export async function eliminarRegistros(
+  idTransformacion: string | null
+): Promise<{ ok: boolean; eliminadas: number; motivo: string }> {
+  // Igual que el cargue: la sesión se comprueba aquí porque una server action
+  // es un endpoint público. Sin esto, cualquiera podría vaciar la base.
+  if (!(await tieneAccesoAdmin())) {
+    return {
+      ok: false,
+      eliminadas: 0,
+      motivo: "La sesión venció. Vuelve a ingresar el PIN para borrar registros.",
+    };
+  }
+  if (idTransformacion && !TRANSFORMACIONES_MOMENTO4.some((t) => t.id === idTransformacion)) {
+    return { ok: false, eliminadas: 0, motivo: "Esa transformación no existe." };
+  }
+
+  try {
+    const eliminadas = await eliminarRegistrosMomento4(idTransformacion);
+    revalidatePath("/admin");
+    revalidatePath(RUTA_POR_SECCION[SECCION_TRANSFORMACIONES]);
+    return {
+      ok: true,
+      eliminadas,
+      motivo: idTransformacion
+        ? `Se borraron ${eliminadas} respuesta(s) de esa transformación.`
+        : `Se borraron ${eliminadas} respuesta(s) de las cinco transformaciones.`,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      eliminadas: 0,
+      motivo: `No se pudo borrar: ${error instanceof Error ? error.message : "error desconocido"}`,
+    };
+  }
 }
 
 /**

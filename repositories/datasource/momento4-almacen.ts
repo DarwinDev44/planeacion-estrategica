@@ -95,6 +95,37 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
 }
 
 /**
+ * Borra los registros cargados: los de una transformación, o los de todas si
+ * no se indica ninguna.
+ *
+ * Se borran FILAS, nunca tablas: nada de DROP ni TRUNCATE. La estructura debe
+ * seguir en pie para que la siguiente carga funcione sin volver a migrar.
+ *
+ * Las dos tablas se vacían en una transacción para que no quede un documento
+ * registrado sin sus respuestas —o al revés— si algo falla a medias.
+ *
+ * @returns Cuántas respuestas se eliminaron.
+ */
+export async function eliminarRegistros(
+  sql: Sql,
+  idTransformacion: string | null
+): Promise<number> {
+  if (idTransformacion) {
+    const [borradas] = await sql.transaction((txn) => [
+      txn`delete from momento4_respuestas where transformacion = ${idTransformacion} returning id`,
+      txn`delete from momento4_documentos where transformacion = ${idTransformacion}`,
+    ]);
+    return borradas.length;
+  }
+
+  const [borradas] = await sql.transaction((txn) => [
+    txn`delete from momento4_respuestas returning id`,
+    txn`delete from momento4_documentos`,
+  ]);
+  return borradas.length;
+}
+
+/**
  * Valida el Excel y, si cumple el formato, reemplaza las respuestas de esa
  * transformación. Nunca lanza: el motivo del rechazo se muestra tal cual a
  * quien subió el documento.

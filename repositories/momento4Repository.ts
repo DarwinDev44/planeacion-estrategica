@@ -27,3 +27,11 @@ export function guardarDocumentoMomento4(
 ): Promise<ResultadoCargue> {
   return getMomento4DataSource().guardar(idTransformacion, nombreOriginal, contenido);
 }
+
+/**
+ * Borra los registros cargados: los de una transformación, o los de todas si
+ * se pasa null. Devuelve cuántas respuestas se eliminaron.
+ */
+export function eliminarRegistrosMomento4(idTransformacion: string | null): Promise<number> {
+  return getMomento4DataSource().eliminar(idTransformacion);
+}

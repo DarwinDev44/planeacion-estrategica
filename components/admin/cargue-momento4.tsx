@@ -8,6 +8,7 @@ import {
   ChevronDown,
   FileSpreadsheet,
   Loader2,
+  Trash2,
   Upload,
   XCircle,
 } from "lucide-react";
@@ -36,7 +37,7 @@ import {
   TITULO_MOMENTO4,
 } from "@/lib/reglas/momento4";
 import type { DocumentoMomento4, ResultadoCargue } from "@/types/momento4";
-import { subirDocumentoMomento4 } from "@/app/admin/acciones";
+import { eliminarRegistros, subirDocumentoMomento4 } from "@/app/admin/acciones";
 
 const formatoFecha = new Intl.DateTimeFormat("es-CO", {
   dateStyle: "medium",
@@ -53,7 +54,16 @@ export function CargueMomento4({
   // Un resultado por casilla: cada documento se sube por separado, así que el
   // mensaje pertenece a su fila y no a un cargue global.
   const [resultados, setResultados] = useState<Record<string, ResultadoCargue>>({});
+  // Qué se está a punto de borrar. `null` = nada pendiente; `transformacion:
+  // null` dentro del objeto = borrado de las cinco.
+  const [aBorrar, setABorrar] = useState<{
+    transformacion: string | null;
+    etiqueta: string;
+    respuestas: number;
+  } | null>(null);
+  const [avisoBorrado, setAvisoBorrado] = useState<{ ok: boolean; texto: string } | null>(null);
   const cargados = documentos.filter((documento) => documento.archivo).length;
+  const totalRespuestas = documentos.reduce((suma, d) => suma + d.respuestas, 0);
 
   if (error) {
     return (
@@ -97,7 +107,47 @@ export function CargueMomento4({
             <Badge variant={cargados === documentos.length ? "default" : "secondary"}>
               {cargados} de {documentos.length}
             </Badge>
+
+            {/* Solo si hay algo que borrar: un botón que no puede hacer nada
+                confunde más de lo que ayuda. */}
+            {cargados > 0 ? (
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                className="ml-auto"
+                onClick={() =>
+                  setABorrar({
+                    transformacion: null,
+                    etiqueta: "las cinco transformaciones",
+                    respuestas: totalRespuestas,
+                  })
+                }
+              >
+                <Trash2 className="size-3.5" aria-hidden />
+                Borrar todos los registros
+              </Button>
+            ) : null}
           </div>
+
+          {avisoBorrado ? (
+            <p
+              role="status"
+              className={cn(
+                "mb-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-sm",
+                avisoBorrado.ok
+                  ? "border-primary/30 bg-primary/5"
+                  : "border-destructive/30 bg-destructive/5"
+              )}
+            >
+              {avisoBorrado.ok ? (
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              ) : (
+                <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden />
+              )}
+              <span className="text-muted-foreground">{avisoBorrado.texto}</span>
+            </p>
+          ) : null}
 
           <Table>
             <TableHeader>
@@ -106,7 +156,7 @@ export function CargueMomento4({
                 <TableHead>Archivo</TableHead>
                 <TableHead className="text-right">Respuestas</TableHead>
                 <TableHead>Actualizado</TableHead>
-                <TableHead className="text-right">Cargue</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -125,11 +175,27 @@ export function CargueMomento4({
                       return siguientes;
                     })
                   }
+                  onPedirBorrado={() =>
+                    setABorrar({
+                      transformacion: documento.transformacion,
+                      etiqueta: documento.etiqueta,
+                      respuestas: documento.respuestas,
+                    })
+                  }
                 />
               ))}
             </TableBody>
           </Table>
         </div>
+
+        <ConfirmacionBorrado
+          objetivo={aBorrar}
+          onCerrar={() => setABorrar(null)}
+          onHecho={(aviso) => {
+            setABorrar(null);
+            setAvisoBorrado(aviso);
+          }}
+        />
 
         <Collapsible>
           <CollapsibleTrigger className="group flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
@@ -161,15 +227,97 @@ export function CargueMomento4({
   );
 }
 
+/**
+ * Confirmación antes de borrar. Es un paso deliberado y no un `confirm()` del
+ * navegador: hace falta decir exactamente QUÉ se va a borrar —qué
+ * transformación y cuántas respuestas— porque el cargue no se puede deshacer
+ * si el Excel de origen ya no está a mano.
+ */
+function ConfirmacionBorrado({
+  objetivo,
+  onCerrar,
+  onHecho,
+}: {
+  objetivo: { transformacion: string | null; etiqueta: string; respuestas: number } | null;
+  onCerrar: () => void;
+  onHecho: (aviso: { ok: boolean; texto: string }) => void;
+}) {
+  const router = useRouter();
+  const [borrando, iniciarBorrado] = useTransition();
+
+  function confirmar() {
+    if (!objetivo) return;
+    iniciarBorrado(async () => {
+      try {
+        const respuesta = await eliminarRegistros(objetivo.transformacion);
+        onHecho({ ok: respuesta.ok, texto: respuesta.motivo });
+        if (respuesta.ok) router.refresh();
+      } catch {
+        onHecho({
+          ok: false,
+          texto: "No se pudo borrar: el servidor no respondió correctamente.",
+        });
+      }
+    });
+  }
+
+  return (
+    <Dialog
+      open={objetivo !== null}
+      // Mientras borra no se puede cerrar: la operación ya está en marcha y no
+      // hay forma de cancelarla a medias.
+      onOpenChange={(abierto) => {
+        if (!abierto && !borrando) onCerrar();
+      }}
+    >
+      <DialogContent showCloseButton={false} className="max-w-md gap-3">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+            <Trash2 className="size-4" aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle>¿Borrar los registros?</DialogTitle>
+            <DialogDescription className="mt-1">
+              Se borrarán{" "}
+              <strong className="font-medium text-foreground">
+                {objetivo?.respuestas ?? 0} respuesta(s)
+              </strong>{" "}
+              de{" "}
+              <strong className="font-medium text-foreground">{objetivo?.etiqueta}</strong>. Esta
+              acción no se puede deshacer: para recuperarlas habría que volver a subir el Excel.
+            </DialogDescription>
+          </div>
+        </div>
+
+        <div className="mt-1 flex justify-end gap-2">
+          <Button type="button" variant="outline" disabled={borrando} onClick={onCerrar}>
+            Cancelar
+          </Button>
+          <Button type="button" variant="destructive" disabled={borrando} onClick={confirmar}>
+            {borrando ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <Trash2 className="size-4" aria-hidden />
+            )}
+            {borrando ? "Borrando…" : "Sí, borrar"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function FilaDocumento({
   documento,
   resultado,
   onResultado,
+  onPedirBorrado,
 }: {
   documento: DocumentoMomento4;
   resultado: ResultadoCargue | null;
   /** `null` limpia el aviso de esta casilla (al empezar un cargue nuevo). */
   onResultado: (resultado: ResultadoCargue | null) => void;
+  onPedirBorrado: () => void;
 }) {
   const router = useRouter();
   const entrada = useRef<HTMLInputElement>(null);
@@ -267,20 +415,37 @@ function FilaDocumento({
             aria-label={`Subir documento de ${documento.etiqueta}`}
             onChange={alElegirArchivo}
           />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={subiendo}
-            onClick={() => entrada.current?.click()}
-          >
-            {subiendo ? (
-              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-            ) : (
-              <Upload className="size-3.5" aria-hidden />
-            )}
-            {subiendo ? "Procesando…" : documento.archivo ? "Reemplazar" : "Subir"}
-          </Button>
+          <div className="flex items-center justify-end gap-1.5">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={subiendo}
+              onClick={() => entrada.current?.click()}
+            >
+              {subiendo ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <Upload className="size-3.5" aria-hidden />
+              )}
+              {subiendo ? "Procesando…" : documento.archivo ? "Reemplazar" : "Subir"}
+            </Button>
+
+            {/* Solo si esta casilla tiene algo cargado. */}
+            {documento.archivo ? (
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon-sm"
+                disabled={subiendo}
+                onClick={onPedirBorrado}
+                title={`Borrar los registros de ${documento.etiqueta}`}
+                aria-label={`Borrar los registros de ${documento.etiqueta}`}
+              >
+                <Trash2 className="size-3.5" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
         </TableCell>
       </TableRow>
 
