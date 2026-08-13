@@ -40,6 +40,28 @@ build portable — ver más abajo).
   actualizar un Excel (fuera de este repo) nunca se versionan — solo su copia
   dentro de `data/source-*/` es la fuente real que usa el sitio.
 
+### Única excepción: Momento 4 vive en Postgres (Neon)
+
+Las respuestas del Momento 4 ("Transformaciones que nos conectan") **no** se
+leen de un Excel en vivo: se guardan en Postgres. El motivo es que ese módulo se
+actualiza **desde el sitio publicado** (`/admin`), y en Vercel —como en
+cualquier entorno serverless— el sistema de archivos es de solo lectura, así que
+un `.xlsx` en disco no se podría reemplazar.
+
+Lo que **no** cambia: el `.xlsx` sigue siendo el formato de entrada y se valida
+columna por columna contra `lib/reglas/momento4.ts` antes de guardar nada; los
+datos siguen sin estar hardcodeados en el código. Lo que cambia es dónde quedan
+las filas.
+
+- Esquema: `pnpm migrar:momento4` (idempotente). Carga inicial desde los Excel
+  de `data/source-momento4-planeacion-territorial/`: `pnpm cargar:momento4`.
+- La conexión se construye solo en `datasource/infrastructure/neon.ts`, igual
+  que `excel.ts` es la única puerta a los .xlsx.
+- Requiere `DATABASE_URL` en el entorno (`.env` local y portable; variables de
+  entorno en Vercel). Ver `.env.example`.
+- **Esto no abre la puerta a migrar otros módulos**: el resto sigue leyendo su
+  Excel en vivo, y esa sigue siendo la regla por defecto para un módulo nuevo.
+
 ## 2.1 Capas: quién puede llamar a quién
 
 El flujo de datos va **siempre en una dirección** y sin saltarse escalones:

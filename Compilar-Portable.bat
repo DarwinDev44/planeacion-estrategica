@@ -75,6 +75,12 @@ if exist "%PORTABLE%\public" rmdir /s /q "%PORTABLE%\public"
 robocopy "%BUILD%\public" "%PORTABLE%\public" /E /NFL /NDL /NJH /NJS /MT:16 >nul
 robocopy "%BUILD%\.next\static" "%PORTABLE%\.next\static" /E /NFL /NDL /NJH /NJS /MT:16 >nul
 
+rem El .env se lee en tiempo de ejecucion (ADMIN_PIN es solo de servidor, no se
+rem incrusta en el build), y la salida standalone no lo incluye por su cuenta:
+rem hay que dejarlo junto a server.js o el .exe arranca sin PIN y nadie puede
+rem entrar a /admin.
+if exist "%BUILD%\.env" copy /y "%BUILD%\.env" "%PORTABLE%\.env" >nul
+
 where node >nul 2>nul
 if errorlevel 1 (
   echo ERROR: no se encontro node.exe instalado en esta maquina para copiarlo al paquete.

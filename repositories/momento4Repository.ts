@@ -1,0 +1,29 @@
+import "server-only";
+import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import { getMomento4DataSource } from "./datasource";
+
+/**
+ * Única capa de acceso a los documentos del Momento 4
+ * ("Transformaciones que nos conectan"): el estado de las 5 casillas y el
+ * cargue de un documento nuevo.
+ */
+export function getDocumentosMomento4(): Promise<DocumentoMomento4[]> {
+  return getMomento4DataSource().getDocumentos();
+}
+
+/** Todas las respuestas publicadas, para la sección del Momento 4. */
+export function getRespuestasMomento4(): Promise<RespuestaMomento4[]> {
+  return getMomento4DataSource().getRespuestas();
+}
+
+/**
+ * Valida y guarda el documento de una transformación. El resultado dice si se
+ * aceptó y por qué, para mostrárselo a quien lo subió.
+ */
+export function guardarDocumentoMomento4(
+  idTransformacion: string,
+  nombreOriginal: string,
+  contenido: Buffer
+): Promise<ResultadoCargue> {
+  return getMomento4DataSource().guardar(idTransformacion, nombreOriginal, contenido);
+}

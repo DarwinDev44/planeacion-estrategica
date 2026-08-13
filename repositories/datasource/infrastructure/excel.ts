@@ -26,6 +26,17 @@ export function leerLibro(ruta: string, opciones: { cellDates?: boolean } = {}):
 }
 
 /**
+ * Abre un .xlsx que aún no está en disco (el contenido de un archivo que el
+ * usuario acaba de subir). Pasa por aquí, y no por XLSX directamente, para que
+ * un archivo se valide leyéndolo con las mismas opciones con que después se
+ * leerá desde la carpeta: si difirieran, podría aceptarse un archivo que luego
+ * el sitio interpreta distinto.
+ */
+export function leerLibroDesdeBuffer(contenido: Buffer): XLSX.WorkBook {
+  return XLSX.read(contenido, { type: "buffer", cellDates: false });
+}
+
+/**
  * Convierte una hoja del libro en matriz de filas. Devuelve null si la hoja no
  * existe, para que quien la pida pueda decidir si es opcional o un error.
  */

@@ -1,6 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      // El cargue del Momento 4 no impone un tope de tamaño propio: cualquier
+      // export del formulario debe poder subirse. Pero las server actions
+      // rechazan cuerpos de más de 1 MB por defecto, y ese rechazo ocurre ANTES
+      // de que corra el código del cargue —un archivo de 2 MB devolvía un 500
+      // sin explicación—, así que se sube a un valor holgado. No existe un
+      // "sin límite": el cuerpo se recibe entero en memoria.
+      //
+      // Medido en este equipo: 30.000 respuestas (29 MB) se cargan en 35 s. Con
+      // 100 MB el margen llega a unas 100.000 respuestas, muy por encima de
+      // cualquier export previsible del formulario. Ojo: en Vercel manda su
+      // propio tope de ~4,5 MB por petición, que esta opción no puede levantar.
+      bodySizeLimit: "100mb",
+    },
+  },
   // Empaqueta un servidor Node mínimo y autocontenido en .next/standalone —
   // base de la distribución portable (exe). Solo se activa con
   // BUILD_STANDALONE=1 para no alterar el build normal que usa Vercel.

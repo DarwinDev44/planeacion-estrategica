@@ -8,10 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "validar:metas": "tsx scripts/validar-metas.ts"
+    "validar:metas": "tsx scripts/validar-metas.ts",
+    "migrar:momento4": "tsx scripts/migrar-momento4.ts",
+    "cargar:momento4": "tsx scripts/cargar-momento4.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@tanstack/react-query": "^5.101.2",
     "@visx/responsive": "^4.0.0",
     "@visx/scale": "^4.0.0",

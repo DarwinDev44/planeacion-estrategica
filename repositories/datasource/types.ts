@@ -9,6 +9,7 @@ import type {
   ArchivoAnaliticaMomentos,
   ResumenAnaliticaMomentos,
 } from "@/types/analitica-momentos";
+import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -99,4 +100,27 @@ export interface AnaliticaMomentosDataSource {
   getArchivos(): ArchivoAnaliticaMomentos[];
   getDetalle(archivo: string): AnaliticaMomentoDetalle | null;
   getResumen(): ResumenAnaliticaMomentos;
+}
+
+/**
+ * Contrato del origen de los documentos del Momento 4. Es el único con
+ * escritura: la vista de administración reemplaza cada uno de los 5 documentos
+ * subiéndolo en su casilla. `guardar` valida antes de escribir y no lanza —
+ * informa del rechazo en el resultado, porque el motivo se le muestra a quien
+ * sube.
+ *
+ * Asíncrono, a diferencia del resto: la implementación vigente habla con
+ * Postgres (ver postgres-momento4-source.ts). El contrato no menciona ni Excel
+ * ni SQL a propósito — la entrada sigue siendo un .xlsx y dónde terminan las
+ * filas es cosa de la implementación.
+ */
+export interface Momento4DataSource {
+  getDocumentos(): Promise<DocumentoMomento4[]>;
+  /** Las respuestas publicadas, que alimentan la sección del Momento 4. */
+  getRespuestas(): Promise<RespuestaMomento4[]>;
+  guardar(
+    idTransformacion: string,
+    nombreOriginal: string,
+    contenido: Buffer
+  ): Promise<ResultadoCargue>;
 }

@@ -334,6 +334,31 @@ html.forzar-escritorio #app-frame {
 }
 
 /*
+ * Barra indeterminada del modal de cargue (/admin, Momento 4). Es
+ * indeterminada y no un porcentaje porque el cargue no informa avance parcial:
+ * el archivo viaja entero y se valida de una sola vez, así que un porcentaje
+ * sería inventado. Solo comunica "esto sigue trabajando".
+ */
+@keyframes barra-cargue {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sin desplazamiento: queda una barra fija, que sigue indicando actividad
+     junto al texto del modal sin movimiento continuo. */
+  .animate-\[barra-cargue_1\.2s_ease-in-out_infinite\] {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+
+/*
  * Nube de palabras de Analítica actividades momentos: cada palabra entra con
  * una animación escalonada (--retraso) y lleva un giro/jitter sutil y
  * determinístico (--rot/--jitter, calculados por palabra) para que la nube

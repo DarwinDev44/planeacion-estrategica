@@ -6,6 +6,7 @@ import { ExcelValoracionesDataSource } from "./excel-valoraciones-source";
 import { ExcelCaiDataSource } from "./excel-cai-source";
 import { ExcelAccesosCaiDataSource } from "./excel-accesos-source";
 import { ExcelAnaliticaMomentosDataSource } from "./excel-analitica-momentos-source";
+import { PostgresMomento4DataSource } from "./postgres-momento4-source";
 import { crearSingleton } from "./infrastructure/singleton";
 
 export type {
@@ -16,6 +17,7 @@ export type {
   CaiDataSource,
   AccesosCaiDataSource,
   AnaliticaMomentosDataSource,
+  Momento4DataSource,
 } from "./types";
 
 /**
@@ -47,3 +49,8 @@ export const getAccesosCaiDataSource = crearSingleton(
 export const getAnaliticaMomentosDataSource = crearSingleton(
   () => new ExcelAnaliticaMomentosDataSource()
 );
+
+// Único módulo que no sale de un Excel en vivo: sus respuestas viven en
+// Postgres para poder actualizarse desde el sitio publicado, donde el disco es
+// de solo lectura. El .xlsx sigue siendo el formato de entrada del cargue.
+export const getMomento4DataSource = crearSingleton(() => new PostgresMomento4DataSource());

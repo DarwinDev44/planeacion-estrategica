@@ -15,6 +15,9 @@ next-env.d.ts
 
 # Variables de entorno y credenciales
 .env*
+# Excepción: la plantilla sin valores sí se versiona — documenta qué variables
+# necesita el proyecto sin exponer ninguna.
+!.env.example
 .vercel
 
 # Archivos de bloqueo temporal de Microsoft Office (se crean al tener un .xlsx abierto)
