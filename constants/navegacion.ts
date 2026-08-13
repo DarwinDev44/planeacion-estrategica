@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, BarChart3, Blocks, LayoutDashboard, Network, Users, Compass, Target, Mic2 } from "lucide-react";
+import { Activity, BarChart3, Blocks, LayoutDashboard, MapPinned, Network, Users, Compass, Target, Mic2 } from "lucide-react";
 
 export interface ItemNavegacion {
   href: string;
@@ -62,5 +62,11 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Accesos a CAI",
     descripcion: "Evolución de accesos",
     icono: Network,
+  },
+  {
+    href: "/transformaciones",
+    etiqueta: "Trabajo en territorio con la comunidad universitaria",
+    descripcion: "Experiencia “Transformaciones que nos conectan”",
+    icono: MapPinned,
   },
 ];
