@@ -1,11 +1,18 @@
 import type { LucideIcon } from "lucide-react";
 import { Activity, BarChart3, Blocks, LayoutDashboard, MapPinned, Network, Users, Compass, Target, Mic2 } from "lucide-react";
+import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 
 export interface ItemNavegacion {
   href: string;
   etiqueta: string;
   descripcion: string;
   icono: LucideIcon;
+  /**
+   * Id de la sección cuya publicación se controla desde la vista de
+   * administración. Si está presente, el enlace solo aparece cuando esa sección
+   * está publicada. Los ítems sin este campo se muestran siempre.
+   */
+  seccion?: string;
 }
 
 export const NAVEGACION: ItemNavegacion[] = [
@@ -68,5 +75,6 @@ export const NAVEGACION: ItemNavegacion[] = [
     etiqueta: "Trabajo en territorio con la comunidad universitaria",
     descripcion: "Experiencia “Transformaciones que nos conectan”",
     icono: MapPinned,
+    seccion: SECCION_TRANSFORMACIONES,
   },
 ];

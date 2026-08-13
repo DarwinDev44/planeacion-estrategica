@@ -114,6 +114,18 @@ export interface AnaliticaMomentosDataSource {
  * ni SQL a propósito — la entrada sigue siendo un .xlsx y dónde terminan las
  * filas es cosa de la implementación.
  */
+/**
+ * Contrato del estado de publicación de las secciones. Separado del origen del
+ * Momento 4 aunque hoy solo se aplique a su sección: son dos cosas distintas
+ * —qué respuestas hay y si la sección se muestra— y mezclarlas obligaría a
+ * tocar el módulo de datos cada vez que se quiera publicar o retirar algo.
+ */
+export interface SeccionesDataSource {
+  estaPublicada(seccion: string): Promise<boolean>;
+  /** Publica o retira la sección; devuelve el estado que quedó guardado. */
+  publicar(seccion: string, publicada: boolean): Promise<boolean>;
+}
+
 export interface Momento4DataSource {
   getDocumentos(): Promise<DocumentoMomento4[]>;
   /** Las respuestas publicadas, que alimentan la sección del Momento 4. */

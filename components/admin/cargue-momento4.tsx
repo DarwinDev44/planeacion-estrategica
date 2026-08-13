@@ -53,7 +53,7 @@ export function CargueMomento4({
 
   if (error) {
     return (
-      <Card className="mt-8">
+      <Card>
         <CardHeader>
           <CardTitle>Momento 4 · {TITULO_MOMENTO4}</CardTitle>
         </CardHeader>
@@ -73,7 +73,7 @@ export function CargueMomento4({
   }
 
   return (
-    <Card className="mt-8">
+    <Card>
       <CardHeader>
         <CardTitle>Momento 4 · {TITULO_MOMENTO4}</CardTitle>
         <CardDescription>

@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { COOKIE_ADMIN, DURACION_ACCESO_MINUTOS } from "@/constants/admin";
 import type { ResultadoCargue } from "@/types/momento4";
 import { guardarDocumentoMomento4 } from "@/repositories/momento4Repository";
+import { publicarSeccion } from "@/repositories/seccionesRepository";
+import { RUTA_POR_SECCION } from "@/constants/secciones";
 import { tieneAccesoAdmin } from "./sesion";
 
 /**
@@ -31,6 +33,45 @@ export async function validarPin(pin: string): Promise<boolean> {
     // el PIN ni ningún dato — solo la marca de que ya se validó.
   });
   return true;
+}
+
+/**
+ * Publica o retira una sección del sitio. Devuelve el estado que quedó
+ * guardado, para que la pantalla refleje lo que hay en la base y no lo que
+ * creía tener antes de pulsar.
+ */
+export async function cambiarPublicacionSeccion(
+  seccion: string,
+  publicada: boolean
+): Promise<{ ok: boolean; publicada: boolean; motivo?: string }> {
+  // Igual que el cargue: una server action se puede invocar sin pasar por la
+  // pantalla del PIN, así que la sesión se comprueba aquí también.
+  if (!(await tieneAccesoAdmin())) {
+    return {
+      ok: false,
+      publicada,
+      motivo: "La sesión venció. Vuelve a ingresar el PIN para cambiar la publicación.",
+    };
+  }
+  if (!(seccion in RUTA_POR_SECCION)) {
+    return { ok: false, publicada, motivo: "Esa sección no existe." };
+  }
+
+  try {
+    const estado = await publicarSeccion(seccion, publicada);
+    // La ruta de la sección y el layout del panel: la primera deja de responder
+    // 404 (o vuelve a hacerlo) y el segundo pinta el menú lateral, del que hay
+    // que quitar o devolver el enlace.
+    revalidatePath(RUTA_POR_SECCION[seccion]);
+    revalidatePath("/", "layout");
+    return { ok: true, publicada: estado };
+  } catch (error) {
+    return {
+      ok: false,
+      publicada,
+      motivo: `No se pudo guardar el cambio: ${error instanceof Error ? error.message : "error desconocido"}`,
+    };
+  }
 }
 
 /**

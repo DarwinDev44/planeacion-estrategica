@@ -10,6 +10,7 @@
     "lint": "eslint",
     "validar:metas": "tsx scripts/validar-metas.ts",
     "migrar:momento4": "tsx scripts/migrar-momento4.ts",
+    "migrar:secciones": "tsx scripts/migrar-secciones.ts",
     "cargar:momento4": "tsx scripts/cargar-momento4.ts"
   },
   "dependencies": {

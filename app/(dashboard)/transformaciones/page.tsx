@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, ArrowLeft, Lock } from "lucide-react";
 import { PanelTransformaciones } from "@/components/transformaciones/panel-transformaciones";
 import { getRespuestasMomento4 } from "@/repositories/momento4Repository";
+import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
+import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
 import type { RespuestaMomento4 } from "@/types/momento4";
 
@@ -29,6 +32,15 @@ export const dynamic = "force-dynamic";
  * desde la vista de administración, y aquí solo se leen.
  */
 export default async function TransformacionesPage() {
+  // La puerta real está aquí y no en el menú: deshabilitar el enlace sin cerrar
+  // la ruta dejaría la sección accesible a quien tenga la URL guardada o pulse
+  // "atrás". Se muestra un aviso dentro del panel en vez de un 404: al volver
+  // atrás desde la sección, una pantalla de error parece que algo se rompió,
+  // cuando en realidad la sección se retiró a propósito.
+  if (!(await estaSeccionPublicada(SECCION_TRANSFORMACIONES))) {
+    return <SeccionNoDisponible />;
+  }
+
   let respuestas: RespuestaMomento4[] = [];
   let error: string | null = null;
   try {
@@ -63,6 +75,42 @@ export default async function TransformacionesPage() {
       ) : (
         <PanelTransformaciones respuestas={respuestas} />
       )}
+    </div>
+  );
+}
+
+/**
+ * Lo que se ve si la sección está retirada y aun así se llega a su dirección
+ * —por el botón "atrás", un enlace guardado o un menú que todavía no se ha
+ * refrescado—. Deliberadamente no revela ningún dato: solo dice que la sección
+ * no está disponible y ofrece la salida.
+ */
+function SeccionNoDisponible() {
+  return (
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-1">
+        <h1 className="font-heading text-2xl font-bold text-foreground">{TITULO_MOMENTO4}</h1>
+      </header>
+
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-muted/40 px-6 py-12 text-center">
+        <span className="flex size-11 items-center justify-center rounded-xl bg-background text-muted-foreground">
+          <Lock className="size-5" aria-hidden />
+        </span>
+        <p className="font-heading text-base font-medium text-foreground">
+          Esta sección no está disponible por ahora
+        </p>
+        <p className="max-w-md text-sm text-muted-foreground">
+          Se retiró temporalmente del sitio. La información no se ha perdido: volverá a verse
+          cuando se publique de nuevo.
+        </p>
+        <Link
+          href="/encuesta"
+          className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+        >
+          <ArrowLeft className="size-3.5" aria-hidden />
+          Ir al panel
+        </Link>
+      </div>
     </div>
   );
 }

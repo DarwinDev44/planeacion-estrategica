@@ -1,0 +1,15 @@
+/**
+ * Secciones cuya publicación se activa o desactiva desde la vista de
+ * administración. El identificador es la clave en la tabla `secciones_publicadas`
+ * y no cambia aunque cambie la URL o el título de la sección.
+ */
+export const SECCION_TRANSFORMACIONES = "transformaciones";
+
+/**
+ * Rutas que solo se muestran si su sección está publicada. El menú lateral las
+ * oculta y la propia página responde 404 cuando están desactivadas — ocultar el
+ * enlace sin cerrar la ruta dejaría la sección accesible a quien tenga la URL.
+ */
+export const RUTA_POR_SECCION: Record<string, string> = {
+  [SECCION_TRANSFORMACIONES]: "/transformaciones",
+};
