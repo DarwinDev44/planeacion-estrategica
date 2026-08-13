@@ -187,19 +187,27 @@ export async function guardarDocumento(
     ]);
 
     const anterior = (previo[0]?.archivo as string | undefined) ?? null;
+    const corte = FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO");
     const repetidas =
       lectura.descartadas > 0
         ? ` Se descartaron ${lectura.descartadas} por correo repetido dentro del archivo (se conservó la respuesta más reciente de cada persona).`
         : "";
     const anteriores =
       lectura.descartadasPorFecha > 0
-        ? ` Quedaron fuera ${lectura.descartadasPorFecha} por ser anteriores al ${FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO")}.`
+        ? ` Quedaron fuera ${lectura.descartadasPorFecha} por ser anteriores al ${corte}.`
         : "";
+
+    // Con cero guardadas, "0 respuesta(s) guardadas" suena a fallo cuando en
+    // realidad el archivo se procesó bien: solo no traía nada nuevo.
+    const resumen =
+      lectura.respuestas.length === 0
+        ? `Archivo aceptado en ${transformacion.etiqueta}, sin respuestas nuevas que guardar: las ${lectura.descartadasPorFecha} del archivo son anteriores al ${corte}.`
+        : `Cargado en ${transformacion.etiqueta} · ${lectura.respuestas.length} respuesta(s) guardadas en la base de datos.${anteriores}${repetidas}`;
 
     return {
       archivo: nombreOriginal,
       aceptado: true,
-      motivo: `Cargado en ${transformacion.etiqueta} · ${lectura.respuestas.length} respuesta(s) guardadas en la base de datos.${anteriores}${repetidas}`,
+      motivo: resumen,
       transformacion: transformacion.id,
       etiqueta: transformacion.etiqueta,
       respuestas: lectura.respuestas.length,

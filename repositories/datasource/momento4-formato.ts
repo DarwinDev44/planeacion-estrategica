@@ -158,15 +158,13 @@ export function leerDocumentoMomento4(
   });
   const descartadasPorFecha = respuestas.length - enPlazo.length;
 
-  if (enPlazo.length === 0) {
-    return {
-      ok: false,
-      motivo: `El formato es correcto, pero ninguna de sus ${respuestas.length} respuesta(s) es posterior al ${FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO")}: no hay nada que guardar.`,
-    };
-  }
+  // Que TODAS sean anteriores al corte no es un error del archivo: es un export
+  // que todavía no trae respuestas nuevas. Se acepta igual y se guarda lo que
+  // haya —aunque sea nada—, para que subir el export de siempre no obligue a
+  // interpretar un rechazo cada vez.
 
-  // El documento no se rechaza por traer repetidos: se cargan las respuestas
-  // únicas y se informa cuántas quedaron fuera.
+  // El documento tampoco se rechaza por traer repetidos: se cargan las
+  // respuestas únicas y se informa cuántas quedaron fuera.
   const sinRepetidos = quitarCorreosRepetidos(enPlazo, (r) => r.correo);
 
   return {
