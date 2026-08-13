@@ -92,6 +92,7 @@ export async function subirDocumentoMomento4(datos: FormData): Promise<Resultado
     etiqueta: null,
     respuestas: null,
     descartadas: null,
+    descartadasPorFecha: null,
     reemplazo: null,
   });
 

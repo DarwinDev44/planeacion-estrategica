@@ -77,6 +77,67 @@ export function normalizar(texto: string): string {
 }
 
 /**
+ * Solo se guardan las respuestas de esta fecha en adelante. Las anteriores
+ * quedan fuera aunque vengan en el archivo: los exports arrastran las
+ * respuestas de prueba de la puesta en marcha del formulario, y sumarlas a las
+ * reales distorsionaría cada cifra de la sección.
+ *
+ * El límite es "a partir del 14/08/2026, inclusive". Si hiciera falta mover el
+ * corte —o dejar de aplicarlo— se cambia solo esta línea.
+ */
+export const FECHA_MINIMA_RESPUESTA = new Date("2026-08-14T00:00:00");
+
+/**
+ * Convierte una fecha del export ("8/13/26 9:33:03") a Date. Devuelve null si
+ * no se puede interpretar, para que quien la use decida qué hacer en vez de
+ * quedarse con una fecha inventada.
+ *
+ * @param diaPrimero Si el primer número es el día (13/8) en vez del mes (8/13).
+ *   No se adivina por fila: lo decide `detectarDiaPrimero` mirando el archivo
+ *   entero, porque una fila suelta como "5/8/26" es válida en los dos órdenes.
+ */
+export function interpretarFechaExport(texto: string | null, diaPrimero: boolean): Date | null {
+  if (!texto) return null;
+  const partes = texto
+    .trim()
+    .match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})(?:[ ,]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(a\.?\s?m\.?|p\.?\s?m\.?|AM|PM)?)?/i);
+  if (!partes) return null;
+
+  const primero = Number(partes[1]);
+  const segundo = Number(partes[2]);
+  const dia = diaPrimero ? primero : segundo;
+  const mes = diaPrimero ? segundo : primero;
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+
+  const anioCrudo = Number(partes[3]);
+  const anio = anioCrudo < 100 ? 2000 + anioCrudo : anioCrudo;
+
+  let hora = Number(partes[4] ?? 0);
+  const sufijo = (partes[7] ?? "").toLowerCase().replace(/[.\s]/g, "");
+  if (sufijo === "pm" && hora < 12) hora += 12;
+  if (sufijo === "am" && hora === 12) hora = 0;
+
+  const fecha = new Date(anio, mes - 1, dia, hora, Number(partes[5] ?? 0), Number(partes[6] ?? 0));
+  return Number.isNaN(fecha.getTime()) ? null : fecha;
+}
+
+/**
+ * Si en este archivo las fechas vienen con el día primero. Se decide con todas
+ * las fechas juntas: basta con que una traiga un primer número mayor que 12
+ * para saber que no puede ser el mes. Sin ninguna evidencia se asume mes
+ * primero, que es como exporta Microsoft Forms por defecto.
+ *
+ * Se mira el archivo completo y no cada fila porque interpretar mal el orden
+ * descartaría respuestas válidas por fecha sin que nadie lo note.
+ */
+export function detectarDiaPrimero(fechas: (string | null)[]): boolean {
+  return fechas.some((texto) => {
+    const partes = texto?.trim().match(/^(\d{1,2})[/-](\d{1,2})[/-]/);
+    return partes ? Number(partes[1]) > 12 : false;
+  });
+}
+
+/**
  * Nombre con el que se guarda el documento de una transformación. Se renombra
  * al guardar porque el nombre de origen varía entre exports: con un nombre fijo
  * por casilla, la carpeta siempre dice sin ambigüedad qué documento es cuál.

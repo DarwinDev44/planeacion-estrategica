@@ -30,7 +30,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { COLUMNAS_MOMENTO4, TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
+import {
+  COLUMNAS_MOMENTO4,
+  FECHA_MINIMA_RESPUESTA,
+  TITULO_MOMENTO4,
+} from "@/lib/reglas/momento4";
 import type { DocumentoMomento4, ResultadoCargue } from "@/types/momento4";
 import { subirDocumentoMomento4 } from "@/app/admin/acciones";
 
@@ -192,6 +196,7 @@ function FilaDocumento({
         etiqueta: documento.etiqueta,
         respuestas: null,
         descartadas: null,
+        descartadasPorFecha: null,
         reemplazo: null,
       });
 
@@ -332,8 +337,15 @@ function FilaDocumento({
               <div className="min-w-0">
                 <p className="font-medium text-foreground">{resultado.archivo}</p>
                 <p className="text-muted-foreground">{resultado.motivo}</p>
+                {resultado.descartadasPorFecha ? (
+                  <p className="mt-1 flex w-fit items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-foreground">
+                    <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
+                    {resultado.descartadasPorFecha} respuesta(s) anteriores al{" "}
+                    {FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO")} no se cargaron.
+                  </p>
+                ) : null}
                 {resultado.descartadas ? (
-                  <p className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-foreground">
+                  <p className="mt-1 flex w-fit items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-foreground">
                     <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
                     {resultado.descartadas} respuesta(s) con correo repetido no se cargaron.
                   </p>

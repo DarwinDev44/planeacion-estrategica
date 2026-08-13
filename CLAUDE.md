@@ -55,6 +55,13 @@ las filas.
 
 - Esquema: `pnpm migrar:momento4` (idempotente). Carga inicial desde los Excel
   de `data/source-momento4-planeacion-territorial/`: `pnpm cargar:momento4`.
+- **Corte por fecha**: solo se guardan las respuestas a partir de
+  `FECHA_MINIMA_RESPUESTA` (`lib/reglas/momento4.ts`). Los exports arrastran
+  las respuestas de prueba de la puesta en marcha del formulario, y sumarlas a
+  las reales distorsionaría las cifras. Los .xlsx de
+  `data/source-momento4-planeacion-territorial/` son anteriores a ese corte, así
+  que `pnpm cargar:momento4` ya no carga nada — quedan como muestra del formato,
+  no como semilla.
 - La conexión se construye solo en `datasource/infrastructure/neon.ts`, igual
   que `excel.ts` es la única puerta a los .xlsx.
 - Requiere `DATABASE_URL` en el entorno (`.env` local y portable; variables de

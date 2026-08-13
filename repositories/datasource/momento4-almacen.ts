@@ -1,6 +1,6 @@
 import type { NeonQueryFunction } from "@neondatabase/serverless";
 import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
-import { TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
+import { FECHA_MINIMA_RESPUESTA, TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
 import { leerDocumentoMomento4, type FilaExcelMomento4 } from "./momento4-formato";
 
 /**
@@ -115,6 +115,7 @@ export async function guardarDocumento(
     etiqueta: transformacion?.etiqueta ?? null,
     respuestas: null,
     descartadas: null,
+    descartadasPorFecha: null,
     reemplazo: null,
   });
 
@@ -159,15 +160,20 @@ export async function guardarDocumento(
       lectura.descartadas > 0
         ? ` Se descartaron ${lectura.descartadas} por correo repetido dentro del archivo (se conservó la respuesta más reciente de cada persona).`
         : "";
+    const anteriores =
+      lectura.descartadasPorFecha > 0
+        ? ` Quedaron fuera ${lectura.descartadasPorFecha} por ser anteriores al ${FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO")}.`
+        : "";
 
     return {
       archivo: nombreOriginal,
       aceptado: true,
-      motivo: `Cargado en ${transformacion.etiqueta} · ${lectura.respuestas.length} respuesta(s) guardadas en la base de datos.${repetidas}`,
+      motivo: `Cargado en ${transformacion.etiqueta} · ${lectura.respuestas.length} respuesta(s) guardadas en la base de datos.${anteriores}${repetidas}`,
       transformacion: transformacion.id,
       etiqueta: transformacion.etiqueta,
       respuestas: lectura.respuestas.length,
       descartadas: lectura.descartadas,
+      descartadasPorFecha: lectura.descartadasPorFecha,
       reemplazo: anterior !== nombreOriginal ? anterior : null,
     };
   } catch (error) {

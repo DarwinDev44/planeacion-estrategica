@@ -1,4 +1,10 @@
-import { quitarCorreosRepetidos, validarColumnas } from "@/lib/reglas/momento4";
+import {
+  FECHA_MINIMA_RESPUESTA,
+  detectarDiaPrimero,
+  interpretarFechaExport,
+  quitarCorreosRepetidos,
+  validarColumnas,
+} from "@/lib/reglas/momento4";
 import { hojaAMatriz, leerLibroDesdeBuffer } from "./infrastructure/excel";
 
 /**
@@ -38,6 +44,8 @@ export type LecturaMomento4 =
       /** Cuántas filas se descartaron por venir con un correo ya presente. */
       descartadas: number;
       correosRepetidos: string[];
+      /** Cuántas quedaron fuera por ser anteriores al corte de fecha. */
+      descartadasPorFecha: number;
     }
   | { ok: false; motivo: string };
 
@@ -134,15 +142,39 @@ export function leerDocumentoMomento4(
     };
   }
 
+  // Corte por fecha. El orden día/mes se decide con todas las fechas del
+  // archivo antes de interpretar ninguna (ver detectarDiaPrimero).
+  const diaPrimero = detectarDiaPrimero(
+    respuestas.flatMap((r) => [r.horaFinalizacion, r.horaInicio])
+  );
+  const enPlazo = respuestas.filter((respuesta) => {
+    // Se mira cuándo se envió; si esa celda viniera vacía, cuándo se empezó.
+    const fecha =
+      interpretarFechaExport(respuesta.horaFinalizacion, diaPrimero) ??
+      interpretarFechaExport(respuesta.horaInicio, diaPrimero);
+    // Sin fecha legible no se puede afirmar que sea posterior al corte, y el
+    // corte existe justamente para dejar fuera lo anterior: se descarta.
+    return fecha !== null && fecha >= FECHA_MINIMA_RESPUESTA;
+  });
+  const descartadasPorFecha = respuestas.length - enPlazo.length;
+
+  if (enPlazo.length === 0) {
+    return {
+      ok: false,
+      motivo: `El formato es correcto, pero ninguna de sus ${respuestas.length} respuesta(s) es posterior al ${FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO")}: no hay nada que guardar.`,
+    };
+  }
+
   // El documento no se rechaza por traer repetidos: se cargan las respuestas
   // únicas y se informa cuántas quedaron fuera.
-  const sinRepetidos = quitarCorreosRepetidos(respuestas, (r) => r.correo);
+  const sinRepetidos = quitarCorreosRepetidos(enPlazo, (r) => r.correo);
 
   return {
     ok: true,
     respuestas: sinRepetidos.unicas,
     descartadas: sinRepetidos.descartadas,
     correosRepetidos: sinRepetidos.correosRepetidos,
+    descartadasPorFecha,
   };
 }
 
