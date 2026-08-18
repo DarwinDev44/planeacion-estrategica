@@ -8,6 +8,7 @@ import { ExcelAccesosCaiDataSource } from "./excel-accesos-source";
 import { ExcelAnaliticaMomentosDataSource } from "./excel-analitica-momentos-source";
 import { PostgresMomento4DataSource } from "./postgres-momento4-source";
 import { PostgresSeccionesDataSource } from "./postgres-secciones-source";
+import { PostgresMetricasDataSource } from "./postgres-metricas-source";
 import { crearSingleton } from "./infrastructure/singleton";
 
 export type {
@@ -20,6 +21,7 @@ export type {
   AnaliticaMomentosDataSource,
   Momento4DataSource,
   SeccionesDataSource,
+  MetricasDataSource,
 } from "./types";
 
 /**
@@ -58,3 +60,5 @@ export const getAnaliticaMomentosDataSource = crearSingleton(
 export const getMomento4DataSource = crearSingleton(() => new PostgresMomento4DataSource());
 
 export const getSeccionesDataSource = crearSingleton(() => new PostgresSeccionesDataSource());
+
+export const getMetricasDataSource = crearSingleton(() => new PostgresMetricasDataSource());

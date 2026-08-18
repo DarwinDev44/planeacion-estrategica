@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { RegistroUso } from "@/components/layout/registro-uso";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -24,6 +25,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           {children}
+          {/* Montado aquí, en el layout raíz, para medir todas las páginas sin
+              tocar ninguna. No pinta nada: solo escucha y envía contadores. */}
+          <RegistroUso />
           <Toaster position="bottom-right" richColors />
         </TooltipProvider>
       </QueryClientProvider>

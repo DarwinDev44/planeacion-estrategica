@@ -10,6 +10,7 @@ import type {
   ResumenAnaliticaMomentos,
 } from "@/types/analitica-momentos";
 import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import type { MetricasUso } from "@/types/metricas";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -103,18 +104,6 @@ export interface AnaliticaMomentosDataSource {
 }
 
 /**
- * Contrato del origen de los documentos del Momento 4. Es el único con
- * escritura: la vista de administración reemplaza cada uno de los 5 documentos
- * subiéndolo en su casilla. `guardar` valida antes de escribir y no lanza —
- * informa del rechazo en el resultado, porque el motivo se le muestra a quien
- * sube.
- *
- * Asíncrono, a diferencia del resto: la implementación vigente habla con
- * Postgres (ver postgres-momento4-source.ts). El contrato no menciona ni Excel
- * ni SQL a propósito — la entrada sigue siendo un .xlsx y dónde terminan las
- * filas es cosa de la implementación.
- */
-/**
  * Contrato del estado de publicación de las secciones. Separado del origen del
  * Momento 4 aunque hoy solo se aplique a su sección: son dos cosas distintas
  * —qué respuestas hay y si la sección se muestra— y mezclarlas obligaría a
@@ -126,6 +115,18 @@ export interface SeccionesDataSource {
   publicar(seccion: string, publicada: boolean): Promise<boolean>;
 }
 
+/**
+ * Contrato del origen de los documentos del Momento 4. Es el único con
+ * escritura: la vista de administración reemplaza cada uno de los 5 documentos
+ * subiéndolo en su casilla. `guardar` valida antes de escribir y no lanza —
+ * informa del rechazo en el resultado, porque el motivo se le muestra a quien
+ * sube.
+ *
+ * Asíncrono, a diferencia del resto: la implementación vigente habla con
+ * Postgres (ver postgres-momento4-source.ts). El contrato no menciona ni Excel
+ * ni SQL a propósito — la entrada sigue siendo un .xlsx y dónde terminan las
+ * filas es cosa de la implementación.
+ */
 export interface Momento4DataSource {
   getDocumentos(): Promise<DocumentoMomento4[]>;
   /** Las respuestas publicadas, que alimentan la sección del Momento 4. */
@@ -140,4 +141,19 @@ export interface Momento4DataSource {
    * se pasa null. Devuelve cuántas respuestas se eliminaron.
    */
   eliminar(idTransformacion: string | null): Promise<number>;
+}
+
+/**
+ * Contrato de las métricas de uso del portal. `registrar` suma contadores
+ * sobre una fila agregada por sección y día —no guarda un evento por visita—,
+ * así que la tabla no crece con el tráfico y no contiene dato alguno de quien
+ * navega.
+ */
+export interface MetricasDataSource {
+  registrar(
+    seccion: string,
+    incrementos: { visitas?: number; sesiones?: number; clics?: number }
+  ): Promise<void>;
+  /** Acumulados y serie diaria de los últimos `dias` días. */
+  getMetricas(dias: number): Promise<MetricasUso>;
 }

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { FormularioPin } from "@/components/admin/formulario-pin";
 import { CargueMomento4 } from "@/components/admin/cargue-momento4";
 import { PublicacionSeccion } from "@/components/admin/publicacion-seccion";
+import { PanelUso } from "@/components/admin/panel-uso";
 import { getDocumentosMomento4 } from "@/repositories/momento4Repository";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
+import { getMetricasUso } from "@/repositories/metricasRepository";
 import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
 import type { DocumentoMomento4 } from "@/types/momento4";
@@ -12,6 +14,9 @@ import { tieneAccesoAdmin } from "./sesion";
 export const metadata: Metadata = {
   title: "Administración",
 };
+
+/** Rango que muestra el tablero de uso al abrir la página. */
+const DIAS_INICIALES = 30;
 
 /**
  * Vista administrativa: vive fuera del route group "(dashboard)" a propósito,
@@ -40,6 +45,15 @@ export default async function AdminPage() {
   // interruptor de publicación sigue siendo utilizable.
   const publicada = await estaSeccionPublicada(SECCION_TRANSFORMACIONES);
 
+  // El tablero se resuelve aparte y con su propio try: un fallo midiendo el uso
+  // no debe impedir administrar los documentos, que es lo importante.
+  let metricas = null;
+  try {
+    metricas = await getMetricasUso(DIAS_INICIALES);
+  } catch {
+    metricas = null;
+  }
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-8 py-8">
       <h1 className="font-heading text-2xl font-semibold text-foreground">Administración</h1>
@@ -50,6 +64,7 @@ export default async function AdminPage() {
         publicada={publicada}
       />
       <CargueMomento4 documentos={documentos} error={error} />
+      {metricas ? <PanelUso metricasIniciales={metricas} diasIniciales={DIAS_INICIALES} /> : null}
     </main>
   );
 }

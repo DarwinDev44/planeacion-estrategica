@@ -10,6 +10,8 @@ import {
 } from "@/repositories/momento4Repository";
 import { TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
 import { publicarSeccion } from "@/repositories/seccionesRepository";
+import { getMetricasUso } from "@/repositories/metricasRepository";
+import type { MetricasUso } from "@/types/metricas";
 import { RUTA_POR_SECCION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { tieneAccesoAdmin } from "./sesion";
 
@@ -37,6 +39,18 @@ export async function validarPin(pin: string): Promise<boolean> {
     // el PIN ni ningún dato — solo la marca de que ya se validó.
   });
   return true;
+}
+
+/**
+ * Métricas de uso para el tablero, con el rango que se pida.
+ *
+ * Va por una server action y no por una ruta de API porque estos números solo
+ * los puede ver quien administra: aquí la sesión se comprueba igual que en el
+ * resto de acciones. El registro de actividad sí es público, pero solo escribe.
+ */
+export async function obtenerMetricasUso(dias: number): Promise<MetricasUso | null> {
+  if (!(await tieneAccesoAdmin())) return null;
+  return getMetricasUso(dias);
 }
 
 /**
