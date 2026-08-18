@@ -37,6 +37,16 @@ import type { ClusterComentarios, RespuestaMomento4 } from "@/types/momento4";
 
 const TODAS = "__todas__";
 
+/**
+ * Si se muestran las tarjetas de temas sobre los comentarios.
+ *
+ * Apagado por decisión de presentación, NO porque la función se haya retirado:
+ * la clasificación se sigue calculando y guardando en cada cargue, y el filtro
+ * por tema sigue funcionando. Poner esto en `true` las devuelve a la pantalla
+ * sin ningún otro cambio.
+ */
+const MOSTRAR_CLASIFICACION_TEMAS = false;
+
 interface Filtros {
   transformacion: string;
   tipoActor: string;
@@ -346,12 +356,14 @@ export function PanelTransformaciones({
           <CardTitle>¿Qué ajustarían en esta transformación?</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
-          <ClasificacionComentarios
-            clusters={clusters}
-            seleccionado={filtros.cluster}
-            onSeleccionar={elegirTema}
-            totalComentarios={clusters.reduce((suma, c) => suma + c.total, 0)}
-          />
+          {MOSTRAR_CLASIFICACION_TEMAS ? (
+            <ClasificacionComentarios
+              clusters={clusters}
+              seleccionado={filtros.cluster}
+              onSeleccionar={elegirTema}
+              totalComentarios={clusters.reduce((suma, c) => suma + c.total, 0)}
+            />
+          ) : null}
           {nube.palabras.length > 0 ? (
             <NubePalabras
               palabras={nube.palabras}
