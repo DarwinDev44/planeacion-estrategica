@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft, Lock } from "lucide-react";
 import { PanelTransformaciones } from "@/components/transformaciones/panel-transformaciones";
-import { getRespuestasMomento4 } from "@/repositories/momento4Repository";
+import { getClustersMomento4, getRespuestasMomento4 } from "@/repositories/momento4Repository";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
 import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
-import type { RespuestaMomento4 } from "@/types/momento4";
+import type { ClusterComentarios, RespuestaMomento4 } from "@/types/momento4";
 
 export const metadata: Metadata = {
   title: "Trabajo en territorio con la comunidad universitaria",
@@ -42,9 +42,13 @@ export default async function TransformacionesPage() {
   }
 
   let respuestas: RespuestaMomento4[] = [];
+  let clusters: ClusterComentarios[] = [];
   let error: string | null = null;
   try {
-    respuestas = await getRespuestasMomento4();
+    [respuestas, clusters] = await Promise.all([
+      getRespuestasMomento4(),
+      getClustersMomento4(),
+    ]);
   } catch (fallo) {
     error = fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
   }
@@ -73,7 +77,7 @@ export default async function TransformacionesPage() {
           transformaciones desde la vista de administración.
         </p>
       ) : (
-        <PanelTransformaciones respuestas={respuestas} />
+        <PanelTransformaciones respuestas={respuestas} clusters={clusters} />
       )}
     </div>
   );

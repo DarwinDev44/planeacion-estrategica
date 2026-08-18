@@ -1,5 +1,10 @@
 import "server-only";
-import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import type {
+  ClusterComentarios,
+  DocumentoMomento4,
+  RespuestaMomento4,
+  ResultadoCargue,
+} from "@/types/momento4";
 import { getMomento4DataSource } from "./datasource";
 
 /**
@@ -14,6 +19,11 @@ export function getDocumentosMomento4(): Promise<DocumentoMomento4[]> {
 /** Todas las respuestas publicadas, para la sección del Momento 4. */
 export function getRespuestasMomento4(): Promise<RespuestaMomento4[]> {
   return getMomento4DataSource().getRespuestas();
+}
+
+/** Grupos temáticos vigentes de los comentarios abiertos. */
+export function getClustersMomento4(): Promise<ClusterComentarios[]> {
+  return getMomento4DataSource().getClusters();
 }
 
 /**

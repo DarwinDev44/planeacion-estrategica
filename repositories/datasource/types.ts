@@ -9,7 +9,12 @@ import type {
   ArchivoAnaliticaMomentos,
   ResumenAnaliticaMomentos,
 } from "@/types/analitica-momentos";
-import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import type {
+  ClusterComentarios,
+  DocumentoMomento4,
+  RespuestaMomento4,
+  ResultadoCargue,
+} from "@/types/momento4";
 import type { MetricasUso } from "@/types/metricas";
 
 /**
@@ -131,6 +136,8 @@ export interface Momento4DataSource {
   getDocumentos(): Promise<DocumentoMomento4[]>;
   /** Las respuestas publicadas, que alimentan la sección del Momento 4. */
   getRespuestas(): Promise<RespuestaMomento4[]>;
+  /** Grupos temáticos vigentes de los comentarios abiertos. */
+  getClusters(): Promise<ClusterComentarios[]>;
   guardar(
     idTransformacion: string,
     nombreOriginal: string,

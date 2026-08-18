@@ -21,6 +21,7 @@ import {
   type FilaRespaldo,
 } from "@/components/transformaciones/respaldo-por-transformacion";
 import { AportesAjustes } from "@/components/transformaciones/aportes-ajustes";
+import { ClasificacionComentarios } from "@/components/transformaciones/clasificacion-comentarios";
 import { TablaRespuestas } from "@/components/transformaciones/tabla-respuestas";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
 import {
@@ -30,7 +31,7 @@ import {
   normalizar,
   type OpcionRespaldo,
 } from "@/lib/reglas/momento4";
-import type { RespuestaMomento4 } from "@/types/momento4";
+import type { ClusterComentarios, RespuestaMomento4 } from "@/types/momento4";
 
 const TODAS = "__todas__";
 
@@ -40,6 +41,8 @@ interface Filtros {
   unidadRegional: string;
   respaldo: string;
   busqueda: string;
+  /** Tema del comentario; null = todos. */
+  cluster: number | null;
 }
 
 const SIN_FILTROS: Filtros = {
@@ -48,9 +51,16 @@ const SIN_FILTROS: Filtros = {
   unidadRegional: TODAS,
   respaldo: TODAS,
   busqueda: "",
+  cluster: null,
 };
 
-export function PanelTransformaciones({ respuestas }: { respuestas: RespuestaMomento4[] }) {
+export function PanelTransformaciones({
+  respuestas,
+  clusters,
+}: {
+  respuestas: RespuestaMomento4[];
+  clusters: ClusterComentarios[];
+}) {
   const [filtros, setFiltros] = useState<Filtros>(SIN_FILTROS);
 
   // Las opciones de cada filtro salen de los datos, no de una lista fija: si un
@@ -89,6 +99,7 @@ export function PanelTransformaciones({ respuestas }: { respuestas: RespuestaMom
       if (filtros.respaldo !== TODAS && clasificarRespaldo(r.respondeNecesidad) !== filtros.respaldo) {
         return false;
       }
+      if (filtros.cluster !== null && r.cluster !== filtros.cluster) return false;
       if (busqueda) {
         // Se busca sobre nombre, correo y el aporte abierto: es donde alguien
         // buscaría a una persona concreta o un tema mencionado.
@@ -104,6 +115,10 @@ export function PanelTransformaciones({ respuestas }: { respuestas: RespuestaMom
 
   function actualizar(campo: keyof Filtros, valor: string) {
     setFiltros((previos) => ({ ...previos, [campo]: valor }));
+  }
+
+  function elegirTema(cluster: number | null) {
+    setFiltros((previos) => ({ ...previos, cluster }));
   }
 
   /** Click en una barra: alterna ese valor como filtro. */
@@ -310,7 +325,13 @@ export function PanelTransformaciones({ respuestas }: { respuestas: RespuestaMom
         <CardHeader>
           <CardTitle>¿Qué ajustarían en esta transformación?</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-5">
+          <ClasificacionComentarios
+            clusters={clusters}
+            seleccionado={filtros.cluster}
+            onSeleccionar={elegirTema}
+            totalComentarios={clusters.reduce((suma, c) => suma + c.total, 0)}
+          />
           <AportesAjustes respuestas={filtradas} />
         </CardContent>
       </Card>

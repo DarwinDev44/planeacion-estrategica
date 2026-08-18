@@ -1,8 +1,14 @@
 import "server-only";
-import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import type {
+  ClusterComentarios,
+  DocumentoMomento4,
+  RespuestaMomento4,
+  ResultadoCargue,
+} from "@/types/momento4";
 import type { Momento4DataSource } from "./types";
 import { conexionSql } from "./infrastructure/neon";
 import {
+  consultarClusters,
   consultarDocumentos,
   consultarRespuestas,
   eliminarRegistros,
@@ -29,6 +35,10 @@ export class PostgresMomento4DataSource implements Momento4DataSource {
 
   getRespuestas(): Promise<RespuestaMomento4[]> {
     return consultarRespuestas(conexionSql());
+  }
+
+  getClusters(): Promise<ClusterComentarios[]> {
+    return consultarClusters(conexionSql());
   }
 
   guardar(

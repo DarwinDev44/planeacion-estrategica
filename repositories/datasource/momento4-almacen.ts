@@ -1,7 +1,13 @@
 import type { NeonQueryFunction } from "@neondatabase/serverless";
-import type { DocumentoMomento4, RespuestaMomento4, ResultadoCargue } from "@/types/momento4";
+import type {
+  ClusterComentarios,
+  DocumentoMomento4,
+  RespuestaMomento4,
+  ResultadoCargue,
+} from "@/types/momento4";
 import { FECHA_MINIMA_RESPUESTA, TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
 import { leerDocumentoMomento4, type FilaExcelMomento4 } from "./momento4-formato";
+import { clasificarComentarios } from "@/lib/reglas/clasificacion";
 
 /**
  * Lectura y escritura de los documentos del Momento 4 en Postgres.
@@ -74,7 +80,7 @@ export async function consultarDocumentos(sql: Sql): Promise<DocumentoMomento4[]
 export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]> {
   const filas = await sql`
     select id, transformacion, correo, nombre, tipo_actor, unidad_regional,
-           responde_necesidad, ajustes
+           responde_necesidad, ajustes, cluster
     from momento4_respuestas
     order by transformacion, id
   `;
@@ -91,6 +97,59 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
     unidadRegional: (fila.unidad_regional as string | null) ?? null,
     respondeNecesidad: (fila.responde_necesidad as string | null) ?? null,
     ajustes: (fila.ajustes as string | null) ?? null,
+    cluster: fila.cluster === null || fila.cluster === undefined ? null : Number(fila.cluster),
+  }));
+}
+
+/**
+ * Recalcula la clasificación temática de TODOS los comentarios y la guarda.
+ *
+ * Se rehace entera en vez de clasificar solo lo nuevo porque los grupos salen
+ * del conjunto: al entrar comentarios nuevos cambian los términos que
+ * distinguen a cada grupo, y clasificar contra grupos viejos daría nombres que
+ * ya no describen su contenido.
+ */
+export async function reclasificarComentarios(sql: Sql): Promise<number> {
+  const filas = await sql`
+    select id, ajustes from momento4_respuestas
+    where ajustes is not null and length(trim(ajustes)) > 0
+  `;
+
+  const grupos = clasificarComentarios(
+    filas.map((f) => ({ id: Number(f.id), texto: f.ajustes as string }))
+  );
+
+  const asignaciones = grupos.flatMap((g) => g.ids.map((id) => ({ id, grupo: g.grupo })));
+
+  await sql.transaction((txn) => [
+    // Se limpia primero: un comentario que dejó de existir, o que se quedó sin
+    // grupo, no debe conservar el número de la clasificación anterior.
+    txn`update momento4_respuestas set cluster = null`,
+    txn`delete from momento4_clusters`,
+    ...grupos.map(
+      (g) => txn`
+        insert into momento4_clusters (cluster, nombre, terminos, total, actualizado)
+        values (${g.grupo}, ${g.nombre}, ${g.terminos.join(", ")}, ${g.ids.length}, now())
+      `
+    ),
+    ...asignaciones.map(
+      (a) => txn`update momento4_respuestas set cluster = ${a.grupo} where id = ${a.id}`
+    ),
+  ]);
+
+  return grupos.length;
+}
+
+/** Los grupos vigentes, del más numeroso al menos. */
+export async function consultarClusters(sql: Sql): Promise<ClusterComentarios[]> {
+  const filas = await sql`
+    select cluster, nombre, terminos, total from momento4_clusters order by total desc, cluster
+  `;
+  return filas.map((f) => ({
+    cluster: Number(f.cluster),
+    nombre: f.nombre as string,
+    terminos: String(f.terminos ?? "").split(", ").filter(Boolean),
+    total: Number(f.total),
   }));
 }
 
@@ -115,6 +174,9 @@ export async function eliminarRegistros(
       txn`delete from momento4_respuestas where transformacion = ${idTransformacion} returning id`,
       txn`delete from momento4_documentos where transformacion = ${idTransformacion}`,
     ]);
+    // Al desaparecer comentarios cambian los grupos: se rehacen para que el
+    // tablero no muestre categorías que ya no tienen a quién agrupar.
+    await reclasificarComentarios(sql);
     return borradas.length;
   }
 
@@ -122,6 +184,7 @@ export async function eliminarRegistros(
     txn`delete from momento4_respuestas returning id`,
     txn`delete from momento4_documentos`,
   ]);
+  await reclasificarComentarios(sql);
   return borradas.length;
 }
 
@@ -185,6 +248,10 @@ export async function guardarDocumento(
         txn.query(texto, parametros)
       ),
     ]);
+
+    // Los grupos temáticos se rehacen con el conjunto ya actualizado: si se
+    // calcularan antes, no incluirían lo que se acaba de cargar.
+    await reclasificarComentarios(sql);
 
     const anterior = (previo[0]?.archivo as string | undefined) ?? null;
     const corte = FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO");

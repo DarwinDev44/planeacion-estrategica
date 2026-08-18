@@ -55,6 +55,14 @@ las filas.
 
 - Esquema: `pnpm migrar:momento4` (idempotente). Carga inicial desde los Excel
   de `data/source-momento4-planeacion-territorial/`: `pnpm cargar:momento4`.
+  Otras migraciones, todas idempotentes: `pnpm migrar:secciones` (publicar o
+  retirar una sección), `pnpm migrar:metricas` (tablero de uso) y
+  `pnpm migrar:clusters` (clasificación temática de comentarios).
+- **Clasificación de comentarios**: los aportes abiertos se agrupan por tema con
+  TF-IDF + K-Means (`lib/reglas/clasificacion.ts`), sin servicios externos ni
+  modelos descargados — el `.exe` portable debe seguir siendo autocontenido y
+  los comentarios son de personas identificables. Se recalcula entera en cada
+  cargue y en cada borrado, porque los grupos salen del conjunto.
 - **Corte por fecha**: solo se guardan las respuestas a partir de
   `FECHA_MINIMA_RESPUESTA` (`lib/reglas/momento4.ts`). Los exports arrastran
   las respuestas de prueba de la puesta en marcha del formulario, y sumarlas a

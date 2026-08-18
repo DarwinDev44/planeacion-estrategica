@@ -12,6 +12,7 @@
     "migrar:momento4": "tsx scripts/migrar-momento4.ts",
     "migrar:secciones": "tsx scripts/migrar-secciones.ts",
     "migrar:metricas": "tsx scripts/migrar-metricas.ts",
+    "migrar:clusters": "tsx scripts/migrar-clusters.ts",
     "cargar:momento4": "tsx scripts/cargar-momento4.ts"
   },
   "dependencies": {

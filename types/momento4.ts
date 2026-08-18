@@ -33,6 +33,16 @@ export interface RespuestaMomento4 {
   respondeNecesidad: string | null;
   /** ¿Qué ajustarían en esta transformación? */
   ajustes: string | null;
+  /** Grupo temático al que pertenece su comentario; null si no tiene texto. */
+  cluster: number | null;
+}
+
+/** Un grupo temático de comentarios, con su nombre automático. */
+export interface ClusterComentarios {
+  cluster: number;
+  nombre: string;
+  terminos: string[];
+  total: number;
 }
 
 /** Qué pasó con un archivo concreto del cargue. */
