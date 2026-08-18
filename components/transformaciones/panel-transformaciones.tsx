@@ -22,8 +22,10 @@ import {
 } from "@/components/transformaciones/respaldo-por-transformacion";
 import { AportesAjustes } from "@/components/transformaciones/aportes-ajustes";
 import { ClasificacionComentarios } from "@/components/transformaciones/clasificacion-comentarios";
+import { NubePalabras } from "@/components/charts/nube-palabras";
 import { TablaRespuestas } from "@/components/transformaciones/tabla-respuestas";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
+import { calcularFrecuenciaPalabras } from "@/lib/frecuencia-palabras";
 import {
   OPCIONES_RESPALDO,
   TRANSFORMACIONES_MOMENTO4,
@@ -111,6 +113,24 @@ export function PanelTransformaciones({
   }, [respuestas, filtros]);
 
   const metricas = useMemo(() => calcularMetricas(filtradas), [filtradas]);
+
+  // Se calcula sobre lo FILTRADO: al elegir un tema, una sede o una
+  // transformación, la nube muestra el vocabulario de ese recorte y no el del
+  // total, que es lo que hace útil mirarla junto a los filtros.
+  const nube = useMemo(() => {
+    const textos = filtradas
+      .map((r) => r.ajustes)
+      .filter((t): t is string => Boolean(t && t.trim()));
+    return {
+      // Con pocos comentarios, exigir que una palabra se repita dejaría la nube
+      // vacía; el umbral baja a 1 cuando el recorte es pequeño.
+      palabras: calcularFrecuenciaPalabras(textos, {
+        maxPalabras: 45,
+        frecuenciaMinima: textos.length >= 15 ? 2 : 1,
+      }),
+      total: textos.length,
+    };
+  }, [filtradas]);
   const hayFiltros = JSON.stringify(filtros) !== JSON.stringify(SIN_FILTROS);
 
   function actualizar(campo: keyof Filtros, valor: string) {
@@ -332,6 +352,15 @@ export function PanelTransformaciones({
             onSeleccionar={elegirTema}
             totalComentarios={clusters.reduce((suma, c) => suma + c.total, 0)}
           />
+          {nube.palabras.length > 0 ? (
+            <NubePalabras
+              palabras={nube.palabras}
+              totalRespuestas={nube.total}
+              titulo="Lo que más se repite en los comentarios"
+              descripcion={`Palabras más frecuentes en los ${formatNumero(nube.total)} comentarios del recorte seleccionado.`}
+            />
+          ) : null}
+
           <AportesAjustes respuestas={filtradas} />
         </CardContent>
       </Card>

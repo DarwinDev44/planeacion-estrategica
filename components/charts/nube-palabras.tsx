@@ -68,18 +68,25 @@ function colorPorPeso(t: number): string {
 }
 
 /**
- * Nube de palabras (@visx/wordcloud, sobre d3-cloud) con la frecuencia de
- * las respuestas abiertas de aprendizajes y mejoras de todas las actividades
- * tipo "encuesta" de la sección. El layout se calcula en el cliente
- * (requiere medir texto en canvas); la semilla del generador aleatorio es
- * fija para que la disposición sea estable entre recargas.
+ * Nube de palabras (@visx/wordcloud, sobre d3-cloud) con la frecuencia de un
+ * conjunto de respuestas abiertas. El layout se calcula en el cliente
+ * (requiere medir texto en canvas); la semilla del generador aleatorio es fija
+ * para que la disposición sea estable entre recargas.
+ *
+ * Vive en `components/charts/` y no dentro de un módulo porque la usan dos
+ * secciones distintas: el título y la descripción llegan por props, ya que lo
+ * único que cambia entre una y otra es qué textos se están resumiendo.
  */
 export function NubePalabras({
   palabras,
   totalRespuestas,
+  titulo = "Lo que más se dice: aprendizajes y mejoras",
+  descripcion,
 }: {
   palabras: PalabraFrecuencia[];
   totalRespuestas: number;
+  titulo?: string;
+  descripcion?: string;
 }) {
   const fuente = useFuenteResuelta();
 
@@ -96,17 +103,18 @@ export function NubePalabras({
   return (
     <Card className="py-3">
       <CardHeader className="px-3.5 pb-1">
-        <CardTitle className="text-[13px]">Lo que más se dice: aprendizajes y mejoras</CardTitle>
+        <CardTitle className="text-[13px]">{titulo}</CardTitle>
         <p className="text-[11px] text-muted-foreground">
-          Palabras más frecuentes en las {formatNumero(totalRespuestas)} respuestas abiertas de aprendizajes y
-          mejoras de todas las actividades. El tamaño y el color indican cuántas veces se repite cada palabra.
+          {descripcion ??
+            `Palabras más frecuentes en las ${formatNumero(totalRespuestas)} respuestas abiertas de aprendizajes y mejoras de todas las actividades.`}{" "}
+          El tamaño y el color indican cuántas veces se repite cada palabra.
         </p>
       </CardHeader>
       <CardContent className="px-3.5">
         <div
           className="relative h-80 overflow-hidden rounded-lg"
           role="img"
-          aria-label="Nube de palabras más frecuentes de aprendizajes y mejoras"
+          aria-label={`Nube de palabras: ${titulo}`}
         >
           <div
             className="pointer-events-none absolute inset-0"

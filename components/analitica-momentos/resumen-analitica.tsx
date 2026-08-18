@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, ListChecks, MessagesSquare, MessageSquareText, Star, ThumbsUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { NubePalabras } from "@/components/analitica-momentos/nube-palabras";
+import { NubePalabras } from "@/components/charts/nube-palabras";
 import { FrecuenciaPorTipo } from "@/components/analitica-momentos/frecuencia-por-tipo";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
 import type { ResumenAnaliticaMomentos } from "@/types/analitica-momentos";

@@ -110,9 +110,14 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
  * ya no describen su contenido.
  */
 export async function reclasificarComentarios(sql: Sql): Promise<number> {
+  // `order by id` no es cosmético: K-Means arranca eligiendo un primer centro
+  // por posición, así que sin un orden estable los mismos comentarios producen
+  // agrupaciones distintas en cada ejecución —y los temas cambiarían de nombre
+  // y de tamaño sin que nadie tocara nada—. La semilla fija sola no basta.
   const filas = await sql`
     select id, ajustes from momento4_respuestas
     where ajustes is not null and length(trim(ajustes)) > 0
+    order by id
   `;
 
   const grupos = clasificarComentarios(
