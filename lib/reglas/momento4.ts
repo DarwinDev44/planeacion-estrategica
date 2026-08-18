@@ -7,7 +7,7 @@
  */
 
 export const TITULO_MOMENTO4 =
-  'Trabajo en territorio con la comunidad universitaria: Experiencia "Transformaciones que nos conectan"';
+  'Trabajo en territorio con la comunidad universitaria: Experiencia "Transformaciones que nos conectan" — Resultados de encuestas';
 
 /**
  * Las 5 transformaciones, una por documento.
