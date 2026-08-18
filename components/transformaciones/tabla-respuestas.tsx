@@ -87,10 +87,18 @@ export function TablaRespuestas({ respuestas }: { respuestas: RespuestaMomento4[
                     "—"
                   )}
                 </TableCell>
-                {/* El único campo de texto libre: se deja envolver en varias
-                    líneas, porque recortarlo esconde justamente el aporte. */}
+                {/* El único campo de texto libre. Se muestra completo al pasar
+                    el cursor, pero acotado a tres líneas en la tabla: con los
+                    aportes reales —párrafos de varias frases— una sola fila
+                    llegaba a ocupar media pantalla y dejaba la tabla ilegible. */}
                 <TableCell className="whitespace-normal text-muted-foreground">
-                  {respuesta.ajustes ?? "—"}
+                  {respuesta.ajustes ? (
+                    <span className="line-clamp-3" title={respuesta.ajustes}>
+                      {respuesta.ajustes}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </TableCell>
               </TableRow>
             );
