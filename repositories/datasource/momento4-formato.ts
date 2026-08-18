@@ -1,5 +1,6 @@
 import {
   FECHA_MINIMA_RESPUESTA,
+  canonizarColumna,
   detectarDiaPrimero,
   interpretarFechaExport,
   quitarCorreosRepetidos,
@@ -122,7 +123,10 @@ export function leerDocumentoMomento4(
     return { ok: false, motivo: `El formato no es compatible. ${errorColumnas}` };
   }
 
-  const indice = new Map(encabezados.map((encabezado, i) => [encabezado, i]));
+  // El índice se arma con el nombre CANÓNICO de cada encabezado: así una
+  // redacción alterna del formulario (ver VARIANTES_COLUMNA) alimenta el mismo
+  // campo, y la lectura no puede discrepar de lo que aceptó la validación.
+  const indice = new Map(encabezados.map((encabezado, i) => [canonizarColumna(encabezado), i]));
   const respuestas = filas
     .slice(1)
     // Un export con filas en blanco al final es común y no son respuestas.
@@ -130,7 +134,7 @@ export function leerDocumentoMomento4(
     .map((fila) => {
       const respuesta = {} as FilaExcelMomento4;
       for (const { columna, campo } of CAMPOS) {
-        respuesta[campo] = texto(fila[indice.get(columna) ?? -1]);
+        respuesta[campo] = texto(fila[indice.get(canonizarColumna(columna)) ?? -1]);
       }
       return respuesta;
     });

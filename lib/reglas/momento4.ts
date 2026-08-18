@@ -63,6 +63,28 @@ export const COLUMNAS_MOMENTO4: readonly string[] = [
 ];
 
 /**
+ * Redacciones alternas admitidas para una misma columna, indexadas por la
+ * columna canónica (la de `COLUMNAS_MOMENTO4`).
+ *
+ * El formulario se editó después de los primeros exports y la pregunta pasó de
+ * "¿Qué ajustarían…?" a "¿Qué ajustaría…?" —singular en vez de plural—. Es la
+ * misma pregunta y el mismo dato, así que rechazar el archivo por esa letra
+ * sería tratar una corrección de redacción como un cambio de formato. Se
+ * aceptan las dos y se guardan en la misma columna.
+ *
+ * Cualquier variante futura se agrega aquí, no en el código que valida.
+ */
+const VARIANTES_COLUMNA: Record<string, string[]> = {
+  "¿Qué ajustarían en esta transformación?": ["¿Qué ajustaría en esta transformación?"],
+  "Puntos: ¿Qué ajustarían en esta transformación?": [
+    "Puntos: ¿Qué ajustaría en esta transformación?",
+  ],
+  "Comentarios: ¿Qué ajustarían en esta transformación?": [
+    "Comentarios: ¿Qué ajustaría en esta transformación?",
+  ],
+};
+
+/**
  * Normaliza para comparar nombres y encabezados: sin tildes, en mayúsculas y
  * con los espacios colapsados. Así un archivo renombrado a minúsculas, o un
  * encabezado con doble espacio, no se rechaza por una diferencia cosmética.
@@ -74,6 +96,24 @@ export function normalizar(texto: string): string {
     .toUpperCase()
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/** Índice variante normalizada → columna canónica normalizada. */
+const CANONICA_POR_VARIANTE = new Map(
+  Object.entries(VARIANTES_COLUMNA).flatMap(([canonica, variantes]) =>
+    variantes.map((variante) => [normalizar(variante), normalizar(canonica)] as const)
+  )
+);
+
+/**
+ * Nombre canónico (normalizado) de un encabezado recibido. Si es una redacción
+ * alterna conocida devuelve la columna a la que equivale; si no, el encabezado
+ * normalizado tal cual. Es el único punto donde se resuelven las variantes:
+ * validación y lectura pasan por aquí, así que no pueden discrepar.
+ */
+export function canonizarColumna(encabezado: string): string {
+  const normalizado = normalizar(encabezado);
+  return CANONICA_POR_VARIANTE.get(normalizado) ?? normalizado;
 }
 
 /**
@@ -257,7 +297,7 @@ export function quitarCorreosRepetidos<T>(
  * cuando el formato es correcto.
  */
 export function validarColumnas(encabezados: string[]): string | null {
-  const recibidas = encabezados.map(normalizar).filter((c) => c.length > 0);
+  const recibidas = encabezados.map(canonizarColumna).filter((c) => c.length > 0);
   const esperadas = COLUMNAS_MOMENTO4.map(normalizar);
 
   // Ni una sola columna en común: no es un export de este formulario con algún
