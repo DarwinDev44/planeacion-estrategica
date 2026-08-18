@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, BarChart3, Blocks, LayoutDashboard, MapPinned, Network, Users, Compass, Target, Mic2 } from "lucide-react";
-import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
+import { Activity, BarChart3, Blocks, LayoutDashboard, MapPinned, Network, Users, UserCheck, Compass, Target, Mic2 } from "lucide-react";
+import { SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 
 export interface ItemNavegacion {
   href: string;
@@ -73,8 +73,15 @@ export const NAVEGACION: ItemNavegacion[] = [
   {
     href: "/transformaciones",
     etiqueta: "Trabajo en territorio con la comunidad universitaria",
-    descripcion: "Experiencia “Transformaciones que nos conectan”",
+    descripcion: "Experiencia “Transformaciones que nos conectan” — Resultados de encuestas",
     icono: MapPinned,
     seccion: SECCION_TRANSFORMACIONES,
+  },
+  {
+    href: "/transformaciones-participacion",
+    etiqueta: "Trabajo en territorio con la comunidad universitaria",
+    descripcion: "Experiencia “Transformaciones que nos conectan” - Participación",
+    icono: UserCheck,
+    seccion: SECCION_PARTICIPACION,
   },
 ];

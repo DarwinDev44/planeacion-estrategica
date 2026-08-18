@@ -5,6 +5,9 @@
  */
 export const SECCION_TRANSFORMACIONES = "transformaciones";
 
+/** Participación (asistencia a las actividades en territorio) — sección aparte del Momento 4. */
+export const SECCION_PARTICIPACION = "transformaciones-participacion";
+
 /**
  * Rutas que solo se muestran si su sección está publicada. El menú lateral las
  * oculta y la propia página responde 404 cuando están desactivadas — ocultar el
@@ -12,4 +15,5 @@ export const SECCION_TRANSFORMACIONES = "transformaciones";
  */
 export const RUTA_POR_SECCION: Record<string, string> = {
   [SECCION_TRANSFORMACIONES]: "/transformaciones",
+  [SECCION_PARTICIPACION]: "/transformaciones-participacion",
 };

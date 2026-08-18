@@ -13,6 +13,7 @@
     "migrar:secciones": "tsx scripts/migrar-secciones.ts",
     "migrar:metricas": "tsx scripts/migrar-metricas.ts",
     "migrar:clusters": "tsx scripts/migrar-clusters.ts",
+    "migrar:participacion": "tsx scripts/migrar-participacion.ts",
     "cargar:momento4": "tsx scripts/cargar-momento4.ts"
   },
   "dependencies": {

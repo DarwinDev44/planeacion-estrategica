@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { FormularioPin } from "@/components/admin/formulario-pin";
 import { CargueMomento4 } from "@/components/admin/cargue-momento4";
+import { CargueParticipacion } from "@/components/admin/cargue-participacion";
 import { PublicacionSeccion } from "@/components/admin/publicacion-seccion";
 import { PanelUso } from "@/components/admin/panel-uso";
 import { getDocumentosMomento4 } from "@/repositories/momento4Repository";
+import { getDocumentosParticipacion } from "@/repositories/participacionRepository";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
 import { getMetricasUso } from "@/repositories/metricasRepository";
-import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
+import { SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
+import { TITULO_PARTICIPACION } from "@/lib/reglas/participacion";
 import type { DocumentoMomento4 } from "@/types/momento4";
+import type { DocumentoParticipacion } from "@/types/participacion";
 import { tieneAccesoAdmin } from "./sesion";
 
 export const metadata: Metadata = {
@@ -41,9 +45,19 @@ export default async function AdminPage() {
     error = fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
   }
 
+  let documentosParticipacion: DocumentoParticipacion[] = [];
+  let errorParticipacion: string | null = null;
+  try {
+    documentosParticipacion = await getDocumentosParticipacion();
+  } catch (fallo) {
+    errorParticipacion =
+      fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
+  }
+
   // No se envuelve en el try anterior: si fallara la consulta de documentos, el
   // interruptor de publicación sigue siendo utilizable.
   const publicada = await estaSeccionPublicada(SECCION_TRANSFORMACIONES);
+  const publicadaParticipacion = await estaSeccionPublicada(SECCION_PARTICIPACION);
 
   // El tablero se resuelve aparte y con su propio try: un fallo midiendo el uso
   // no debe impedir administrar los documentos, que es lo importante.
@@ -64,6 +78,15 @@ export default async function AdminPage() {
         publicada={publicada}
       />
       <CargueMomento4 documentos={documentos} error={error} />
+
+      <PublicacionSeccion
+        seccion={SECCION_PARTICIPACION}
+        titulo={TITULO_PARTICIPACION}
+        descripcion="Sección con el seguimiento de asistencia a las actividades en territorio."
+        publicada={publicadaParticipacion}
+      />
+      <CargueParticipacion documentos={documentosParticipacion} error={errorParticipacion} />
+
       {metricas ? <PanelUso metricasIniciales={metricas} diasIniciales={DIAS_INICIALES} /> : null}
     </main>
   );

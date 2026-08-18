@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
-import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
+import { SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 
 /**
  * Qué secciones condicionales están publicadas. Lo consulta el menú lateral,
@@ -17,5 +17,6 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return NextResponse.json({
     [SECCION_TRANSFORMACIONES]: await estaSeccionPublicada(SECCION_TRANSFORMACIONES),
+    [SECCION_PARTICIPACION]: await estaSeccionPublicada(SECCION_PARTICIPACION),
   });
 }

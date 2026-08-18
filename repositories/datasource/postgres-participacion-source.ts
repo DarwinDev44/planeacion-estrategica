@@ -1,0 +1,38 @@
+import "server-only";
+import type {
+  DocumentoParticipacion,
+  RegistroParticipacion,
+  ResultadoCargueParticipacion,
+} from "@/types/participacion";
+import type { ParticipacionDataSource } from "./types";
+import { conexionSql } from "./infrastructure/neon";
+import {
+  consultarDocumentos,
+  consultarRegistros,
+  eliminarRegistros,
+  guardarDocumento,
+} from "./participacion-almacen";
+
+/**
+ * Las tandas de asistencia de Participación, guardadas en Postgres (Neon).
+ * Fachada delgada, igual que `postgres-momento4-source.ts`: la lógica vive en
+ * `participacion-almacen.ts` para que el script de migración pueda escribir
+ * por el mismo camino sin pasar por "server-only".
+ */
+export class PostgresParticipacionDataSource implements ParticipacionDataSource {
+  getDocumentos(): Promise<DocumentoParticipacion[]> {
+    return consultarDocumentos(conexionSql());
+  }
+
+  getRegistros(): Promise<RegistroParticipacion[]> {
+    return consultarRegistros(conexionSql());
+  }
+
+  guardar(nombreOriginal: string, contenido: Buffer): Promise<ResultadoCargueParticipacion> {
+    return guardarDocumento(conexionSql(), nombreOriginal, contenido);
+  }
+
+  eliminar(documentoId: number | null): Promise<number> {
+    return eliminarRegistros(conexionSql(), documentoId);
+  }
+}

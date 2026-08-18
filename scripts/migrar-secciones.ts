@@ -13,7 +13,7 @@
  * correos sin querer.
  */
 import { conexionSql } from "@/repositories/datasource/infrastructure/neon";
-import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
+import { SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { cargarEntorno } from "./entorno";
 
 async function main() {
@@ -31,6 +31,14 @@ async function main() {
   await sql`
     insert into secciones_publicadas (seccion, publicada)
     values (${SECCION_TRANSFORMACIONES}, true)
+    on conflict (seccion) do nothing
+  `;
+
+  // Sección nueva: se inserta oculta a propósito, para que quien administra
+  // decida cuándo activarla en vez de que aparezca publicada sola.
+  await sql`
+    insert into secciones_publicadas (seccion, publicada)
+    values (${SECCION_PARTICIPACION}, false)
     on conflict (seccion) do nothing
   `;
 

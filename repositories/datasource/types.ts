@@ -16,6 +16,11 @@ import type {
   ResultadoCargue,
 } from "@/types/momento4";
 import type { MetricasUso } from "@/types/metricas";
+import type {
+  DocumentoParticipacion,
+  RegistroParticipacion,
+  ResultadoCargueParticipacion,
+} from "@/types/participacion";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -163,4 +168,19 @@ export interface MetricasDataSource {
   ): Promise<void>;
   /** Acumulados y serie diaria de los últimos `dias` días. */
   getMetricas(dias: number): Promise<MetricasUso>;
+}
+
+/**
+ * Contrato del origen de datos de Participación (asistencia a las
+ * actividades en territorio). Igual que el Momento 4, vive en Postgres
+ * porque se actualiza desde el sitio publicado; a diferencia de aquel, cada
+ * cargue SUMA una tanda nueva en vez de reemplazar una casilla fija — el
+ * objetivo es el seguimiento a través de varios eventos.
+ */
+export interface ParticipacionDataSource {
+  getDocumentos(): Promise<DocumentoParticipacion[]>;
+  getRegistros(): Promise<RegistroParticipacion[]>;
+  guardar(nombreOriginal: string, contenido: Buffer): Promise<ResultadoCargueParticipacion>;
+  /** Borra una tanda, o todas si se pasa null. Devuelve cuántos registros se eliminaron. */
+  eliminar(documentoId: number | null): Promise<number>;
 }

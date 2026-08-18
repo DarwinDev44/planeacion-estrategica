@@ -40,13 +40,14 @@ build portable — ver más abajo).
   actualizar un Excel (fuera de este repo) nunca se versionan — solo su copia
   dentro de `data/source-*/` es la fuente real que usa el sitio.
 
-### Única excepción: Momento 4 vive en Postgres (Neon)
+### Única excepción: lo que se sube desde `/admin` vive en Postgres (Neon)
 
-Las respuestas del Momento 4 ("Transformaciones que nos conectan") **no** se
-leen de un Excel en vivo: se guardan en Postgres. El motivo es que ese módulo se
-actualiza **desde el sitio publicado** (`/admin`), y en Vercel —como en
-cualquier entorno serverless— el sistema de archivos es de solo lectura, así que
-un `.xlsx` en disco no se podría reemplazar.
+Los dos módulos del Momento 4 —las respuestas de "Transformaciones que nos
+conectan" y la asistencia de su sección de **Participación**— **no** se leen de
+un Excel en vivo: se guardan en Postgres. El motivo es que ambos se actualizan
+**desde el sitio publicado** (`/admin`), y en Vercel —como en cualquier entorno
+serverless— el sistema de archivos es de solo lectura, así que un `.xlsx` en
+disco no se podría reemplazar.
 
 Lo que **no** cambia: el `.xlsx` sigue siendo el formato de entrada y se valida
 columna por columna contra `lib/reglas/momento4.ts` antes de guardar nada; los
@@ -56,8 +57,21 @@ las filas.
 - Esquema: `pnpm migrar:momento4` (idempotente). Carga inicial desde los Excel
   de `data/source-momento4-planeacion-territorial/`: `pnpm cargar:momento4`.
   Otras migraciones, todas idempotentes: `pnpm migrar:secciones` (publicar o
-  retirar una sección), `pnpm migrar:metricas` (tablero de uso) y
-  `pnpm migrar:clusters` (clasificación temática de comentarios).
+  retirar una sección), `pnpm migrar:metricas` (tablero de uso),
+  `pnpm migrar:clusters` (clasificación temática de comentarios) y
+  `pnpm migrar:participacion` (asistencia en territorio).
+- **Participación** (`/transformaciones-participacion`) es la sección de
+  asistencia a las actividades en territorio, y se diferencia del resto en dos
+  cosas deliberadas:
+  · **Cada cargue SUMA una tanda**, no reemplaza una casilla fija: el objetivo
+    es el seguimiento a través de varios eventos, así que subir el Excel del
+    siguiente evento agrega filas en vez de sustituir las anteriores.
+  · **El formato se reconoce por nombre de columna, no por posición ni orden**
+    (`lib/reglas/participacion.ts`), y **solo se guardan los campos de esa
+    lista**. Todo lo demás que traiga el archivo —cédula, correo, nombres y
+    apellidos por separado, creador de la sesión— se descarta al leerlo y nunca
+    llega a la base: esa es la anonimización. Para admitir una columna nueva se
+    agrega su variante ahí, no en el código que lee.
 - **Clasificación de comentarios**: los aportes abiertos se agrupan por tema con
   TF-IDF + K-Means (`lib/reglas/clasificacion.ts`), sin servicios externos ni
   modelos descargados — el `.exe` portable debe seguir siendo autocontenido y

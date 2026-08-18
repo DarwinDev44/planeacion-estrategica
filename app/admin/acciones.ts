@@ -4,15 +4,20 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { COOKIE_ADMIN, DURACION_ACCESO_MINUTOS } from "@/constants/admin";
 import type { ResultadoCargue } from "@/types/momento4";
+import type { ResultadoCargueParticipacion } from "@/types/participacion";
 import {
   eliminarRegistrosMomento4,
   guardarDocumentoMomento4,
 } from "@/repositories/momento4Repository";
+import {
+  eliminarRegistrosParticipacion,
+  guardarDocumentoParticipacion,
+} from "@/repositories/participacionRepository";
 import { TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
 import { publicarSeccion } from "@/repositories/seccionesRepository";
 import { getMetricasUso } from "@/repositories/metricasRepository";
 import type { MetricasUso } from "@/types/metricas";
-import { RUTA_POR_SECCION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
+import { RUTA_POR_SECCION, SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { tieneAccesoAdmin } from "./sesion";
 
 /**
@@ -173,4 +178,73 @@ export async function subirDocumentoMomento4(datos: FormData): Promise<Resultado
   if (resultado.aceptado) revalidatePath("/admin");
 
   return resultado;
+}
+
+/**
+ * Carga una tanda de asistencia nueva de Participación. A diferencia del
+ * Momento 4 no hay casilla de destino: cada archivo se suma a las tandas
+ * anteriores, así que solo hace falta el archivo.
+ */
+export async function subirDocumentoParticipacion(
+  datos: FormData
+): Promise<ResultadoCargueParticipacion> {
+  const archivo = datos.get("documento");
+  const nombre = archivo instanceof File ? archivo.name : "—";
+
+  const fallo = (motivo: string): ResultadoCargueParticipacion => ({
+    archivo: nombre,
+    aceptado: false,
+    motivo,
+    filas: null,
+    columnasReconocidas: null,
+  });
+
+  if (!(await tieneAccesoAdmin())) {
+    return fallo("La sesión venció. Vuelve a ingresar el PIN para cargar tandas de asistencia.");
+  }
+  if (!(archivo instanceof File)) {
+    return fallo("No se recibió ningún archivo.");
+  }
+
+  const contenido = Buffer.from(await archivo.arrayBuffer());
+  const resultado = await guardarDocumentoParticipacion(archivo.name, contenido);
+
+  if (resultado.aceptado) {
+    revalidatePath("/admin");
+    revalidatePath(RUTA_POR_SECCION[SECCION_PARTICIPACION]);
+  }
+
+  return resultado;
+}
+
+/** Borra una tanda de asistencia de Participación, o todas si se pasa null. */
+export async function eliminarTandaParticipacion(
+  documentoId: number | null
+): Promise<{ ok: boolean; eliminados: number; motivo: string }> {
+  if (!(await tieneAccesoAdmin())) {
+    return {
+      ok: false,
+      eliminados: 0,
+      motivo: "La sesión venció. Vuelve a ingresar el PIN para borrar registros.",
+    };
+  }
+
+  try {
+    const eliminados = await eliminarRegistrosParticipacion(documentoId);
+    revalidatePath("/admin");
+    revalidatePath(RUTA_POR_SECCION[SECCION_PARTICIPACION]);
+    return {
+      ok: true,
+      eliminados,
+      motivo: documentoId
+        ? `Se borraron ${eliminados} registro(s) de esa tanda.`
+        : `Se borraron ${eliminados} registro(s) de todas las tandas.`,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      eliminados: 0,
+      motivo: `No se pudo borrar: ${error instanceof Error ? error.message : "error desconocido"}`,
+    };
+  }
 }
