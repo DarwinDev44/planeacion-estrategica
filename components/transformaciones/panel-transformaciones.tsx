@@ -40,6 +40,37 @@ import type { ClusterComentarios, RespuestaMomento4 } from "@/types/momento4";
 const TODAS = "__todas__";
 
 /**
+ * Etiqueta para las respuestas que dejaron en blanco un campo de clasificación
+ * (tipo de actor, unidad regional).
+ *
+ * Existe por el mismo motivo que "Sin responder u otra" en la escala de
+ * respaldo: quien no contestó igual respondió el formulario, y omitirlo del
+ * gráfico dejaba las barras sumando 289 mientras la tarjeta decía 290, sin
+ * nada que explicara la diferencia. Preferimos que se vea que ese caso existe
+ * a que desaparezca del conteo.
+ */
+const SIN_ESPECIFICAR = "Sin especificar";
+
+/** El valor del campo, o `SIN_ESPECIFICAR` si viene vacío. */
+function valorOSinEspecificar(valor: string | null): string {
+  return valor?.trim() || SIN_ESPECIFICAR;
+}
+
+/**
+ * El programa de una respuesta de graduado, o null si la pregunta no le
+ * aplicaba.
+ *
+ * La distinción importa: de las 290 respuestas, solo las de graduados debían
+ * contestar el programa. Marcar como "Sin especificar" a las otras 236 —que
+ * hicieron bien en dejarlo vacío— mezclaría "no respondió" con "no le
+ * preguntaron". Así el gráfico suma el total de graduados y no otra cifra.
+ */
+function programaDeGraduado(respuesta: RespuestaMomento4): string | null {
+  if (!normalizar(respuesta.tipoActor ?? "").includes("GRADUAD")) return null;
+  return estandarizarPrograma(respuesta.programaGraduado) ?? SIN_ESPECIFICAR;
+}
+
+/**
  * Si se muestran las tarjetas de temas sobre los comentarios.
  *
  * Apagado por decisión de presentación, NO porque la función se haya retirado:
@@ -84,14 +115,17 @@ export function PanelTransformaciones({
   // export trae una unidad regional nueva, aparece sola en el desplegable.
   const opciones = useMemo(
     () => ({
-      tiposActor: valoresUnicos(respuestas.map((r) => r.tipoActor)),
-      unidadesRegionales: valoresUnicos(respuestas.map((r) => r.unidadRegional)),
+      // Con `valorOSinEspecificar`, las respuestas que dejaron el campo en
+      // blanco quedan agrupadas bajo una opción propia en vez de no ser
+      // filtrables por ningún valor.
+      tiposActor: valoresUnicos(respuestas.map((r) => valorOSinEspecificar(r.tipoActor))),
+      unidadesRegionales: valoresUnicos(
+        respuestas.map((r) => valorOSinEspecificar(r.unidadRegional))
+      ),
       // Ya unificados: en el Excel el mismo programa viene escrito de varias
       // formas, y sin estandarizar el desplegable ofrecería la misma carrera
       // repetida tres o cuatro veces.
-      programasGraduado: valoresUnicos(
-        respuestas.map((r) => estandarizarPrograma(r.programaGraduado))
-      ),
+      programasGraduado: valoresUnicos(respuestas.map(programaDeGraduado)),
       // Las tres opciones del formulario van siempre, aunque alguna tenga cero:
       // son una escala fija y quitarlas haría parecer que no existen. La cuarta
       // ("Sin responder u otra") es un cajón de sastre para valores
@@ -115,13 +149,18 @@ export function PanelTransformaciones({
       if (filtros.transformacion !== TODAS && r.transformacion !== filtros.transformacion) {
         return false;
       }
-      if (filtros.tipoActor !== TODAS && r.tipoActor !== filtros.tipoActor) return false;
-      if (filtros.unidadRegional !== TODAS && r.unidadRegional !== filtros.unidadRegional) {
+      if (filtros.tipoActor !== TODAS && valorOSinEspecificar(r.tipoActor) !== filtros.tipoActor) {
+        return false;
+      }
+      if (
+        filtros.unidadRegional !== TODAS &&
+        valorOSinEspecificar(r.unidadRegional) !== filtros.unidadRegional
+      ) {
         return false;
       }
       if (
         filtros.programaGraduado !== TODAS &&
-        estandarizarPrograma(r.programaGraduado) !== filtros.programaGraduado
+        programaDeGraduado(r) !== filtros.programaGraduado
       ) {
         return false;
       }
@@ -518,16 +557,17 @@ function calcularMetricas(respuestas: RespuestaMomento4[]) {
     fila.conteos[respaldo] += 1;
     porTransformacion.set(respuesta.transformacion, fila);
 
-    if (respuesta.tipoActor) {
-      porTipoActor.set(respuesta.tipoActor, (porTipoActor.get(respuesta.tipoActor) ?? 0) + 1);
-    }
-    if (respuesta.unidadRegional) {
-      porUnidadRegional.set(
-        respuesta.unidadRegional,
-        (porUnidadRegional.get(respuesta.unidadRegional) ?? 0) + 1
-      );
-    }
-    const programa = estandarizarPrograma(respuesta.programaGraduado);
+    // Se cuentan TODAS las respuestas, también las que dejaron el campo en
+    // blanco: si se saltaran, las barras sumarían menos que el total y nadie
+    // sabría a qué se debe la diferencia.
+    const actor = valorOSinEspecificar(respuesta.tipoActor);
+    porTipoActor.set(actor, (porTipoActor.get(actor) ?? 0) + 1);
+
+    const unidad = valorOSinEspecificar(respuesta.unidadRegional);
+    porUnidadRegional.set(unidad, (porUnidadRegional.get(unidad) ?? 0) + 1);
+    // Solo las respuestas de graduados entran aquí: para el resto la pregunta
+    // no aplicaba (ver programaDeGraduado).
+    const programa = programaDeGraduado(respuesta);
     if (programa) porProgramaGraduado.set(programa, (porProgramaGraduado.get(programa) ?? 0) + 1);
 
     // Las respuestas anónimas no traen un correo que las distinga (Forms
