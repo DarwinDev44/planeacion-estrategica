@@ -417,10 +417,17 @@ function calcularMetricas(registros: RegistroParticipacion[]) {
       valor,
     }));
 
+  // Las tarjetas cuentan solo lo que existe de verdad: "Sin especificar"
+  // agrupa a quienes no lo dijeron, y sumarlo daría una sede o una dependencia
+  // de más de las que hay. En los gráficos sí aparece, porque ahí lo que
+  // importa es que las barras sumen el total de asistentes.
+  const cuantosReales = (mapa: Map<string, number>) =>
+    mapa.size - (mapa.has(SIN_ESPECIFICAR) ? 1 : 0);
+
   return {
     jornadas: porFechaMapa.size,
-    unidadesRegionales: porUnidadMapa.size,
-    adscripciones: porAdscripcionMapa.size,
+    unidadesRegionales: cuantosReales(porUnidadMapa),
+    adscripciones: cuantosReales(porAdscripcionMapa),
     rolMayoritario,
     serieFechas,
     porRol,
