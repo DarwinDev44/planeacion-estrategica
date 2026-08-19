@@ -1,6 +1,7 @@
 import "server-only";
 import type {
   DocumentoParticipacion,
+  ModoCargueParticipacion,
   RegistroParticipacion,
   ResultadoCargueParticipacion,
 } from "@/types/participacion";
@@ -28,8 +29,12 @@ export class PostgresParticipacionDataSource implements ParticipacionDataSource 
     return consultarRegistros(conexionSql());
   }
 
-  guardar(nombreOriginal: string, contenido: Buffer): Promise<ResultadoCargueParticipacion> {
-    return guardarDocumento(conexionSql(), nombreOriginal, contenido);
+  guardar(
+    nombreOriginal: string,
+    contenido: Buffer,
+    modo: ModoCargueParticipacion
+  ): Promise<ResultadoCargueParticipacion> {
+    return guardarDocumento(conexionSql(), nombreOriginal, contenido, modo);
   }
 
   eliminar(documentoId: number | null): Promise<number> {

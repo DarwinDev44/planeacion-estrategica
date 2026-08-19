@@ -36,6 +36,15 @@ export interface RegistroParticipacion {
   unidadTrabajador: string | null;
 }
 
+/**
+ * Qué hacer con lo que ya está cargado al subir un archivo nuevo. Lo elige
+ * quien sube y no el código, porque las dos operaciones son legítimas y solo
+ * esa persona sabe cuál necesita: "anexar" agrega el evento a los que ya hay,
+ * y "reemplazar" deja el archivo nuevo como único contenido —lo que se usa
+ * para corregir un cargue equivocado sin duplicar registros—.
+ */
+export type ModoCargueParticipacion = "anexar" | "reemplazar";
+
 /** Qué pasó con un archivo concreto del cargue de participación. */
 export interface ResultadoCargueParticipacion {
   archivo: string;

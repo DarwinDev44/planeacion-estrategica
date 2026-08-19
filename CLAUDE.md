@@ -63,9 +63,12 @@ las filas.
 - **Participación** (`/transformaciones-participacion`) es la sección de
   asistencia a las actividades en territorio, y se diferencia del resto en dos
   cosas deliberadas:
-  · **Cada cargue SUMA una tanda**, no reemplaza una casilla fija: el objetivo
-    es el seguimiento a través de varios eventos, así que subir el Excel del
-    siguiente evento agrega filas en vez de sustituir las anteriores.
+  · **No hay casillas fijas**: al subir se elige entre *anexar* —el archivo se
+    agrega a las tandas ya cargadas, que es lo normal cuando ocurre un evento
+    nuevo— y *reemplazar todo*, que lo deja como único contenido y sirve para
+    corregir un cargue sin duplicar registros. Lo decide quien sube, no el
+    código; el modo viaja en el formulario y **se valida en la server action**,
+    porque "reemplazar" borra datos y una server action es un endpoint público.
   · **El formato se reconoce por nombre de columna, no por posición ni orden**
     (`lib/reglas/participacion.ts`), y **solo se guardan los campos de esa
     lista**. Todo lo demás que traiga el archivo —cédula, correo, nombres y

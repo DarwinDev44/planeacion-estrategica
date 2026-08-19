@@ -1,6 +1,7 @@
 import type { NeonQueryFunction } from "@neondatabase/serverless";
 import type {
   DocumentoParticipacion,
+  ModoCargueParticipacion,
   RegistroParticipacion,
   ResultadoCargueParticipacion,
 } from "@/types/participacion";
@@ -99,15 +100,21 @@ function aFechaISO(valor: unknown): string | null {
 }
 
 /**
- * Valida el Excel y, si trae al menos un campo reconocido, lo guarda como una
- * tanda nueva. A diferencia del Momento 4 no reemplaza nada: cada tanda se
- * SUMA a las anteriores, porque el objetivo es el seguimiento de la
- * participación a través de varios eventos, no el estado de una sola casilla.
+ * Valida el Excel y lo guarda, con lo anterior o en su lugar según `modo`.
+ *
+ * - `anexar`: el archivo entra como una tanda más y se suma a las que ya
+ *   estaban. Es lo que se usa cuando ocurre un evento nuevo.
+ * - `reemplazar`: el archivo queda como único contenido de la sección. Es la
+ *   salida cuando hay que corregir un cargue —resubir el mismo archivo sin
+ *   duplicar registros— o rehacer el acumulado desde cero.
+ *
+ * Cuál de los dos aplica no lo decide el código: lo elige quien sube.
  */
 export async function guardarDocumento(
   sql: Sql,
   nombreOriginal: string,
-  contenido: Buffer
+  contenido: Buffer,
+  modo: ModoCargueParticipacion = "anexar"
 ): Promise<ResultadoCargueParticipacion> {
   const rechazo = (motivo: string): ResultadoCargueParticipacion => ({
     archivo: nombreOriginal,
@@ -130,16 +137,36 @@ export async function guardarDocumento(
     `;
     const documentoId = Number(documento.id);
 
-    await sql.transaction((txn) =>
-      sentenciasDeInsercion(registros, documentoId).map(({ texto, parametros }) =>
-        txn.query(texto, parametros)
-      )
-    );
+    try {
+      await sql.transaction((txn) => [
+        ...sentenciasDeInsercion(registros, documentoId).map(({ texto, parametros }) =>
+          txn.query(texto, parametros)
+        ),
+        // Al reemplazar, el borrado de lo anterior va DESPUÉS de insertar lo
+        // nuevo y dentro de la misma transacción: si algo falla, no se ha
+        // perdido nada y la sección sigue mostrando lo que ya tenía. Borrar
+        // primero la dejaría vacía ante cualquier error de la base.
+        // Los registros se van solos con su documento (on delete cascade).
+        ...(modo === "reemplazar"
+          ? [txn`delete from participacion_documentos where id <> ${documentoId}`]
+          : []),
+      ]);
+    } catch (error) {
+      // La fila del documento se insertó fuera de la transacción, así que un
+      // fallo aquí dejaría una tanda anunciando registros que no existen.
+      await sql`delete from participacion_documentos where id = ${documentoId}`;
+      throw error;
+    }
+
+    const efecto =
+      modo === "reemplazar"
+        ? " Reemplaza todo lo que hubiera antes en la sección."
+        : " Se suma a lo que ya estaba cargado.";
 
     return {
       archivo: nombreOriginal,
       aceptado: true,
-      motivo: `Tanda cargada · ${registros.length} registro(s) guardados, con ${lectura.columnasReconocidas} de las ${CAMPOS_PARTICIPACION.length} columnas del formato reconocidas.`,
+      motivo: `Cargado · ${registros.length} registro(s) guardados, con ${lectura.columnasReconocidas} de las ${CAMPOS_PARTICIPACION.length} columnas del formato reconocidas.${efecto}`,
       filas: registros.length,
       columnasReconocidas: lectura.columnasReconocidas,
     };

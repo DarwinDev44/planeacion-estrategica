@@ -18,6 +18,7 @@ import type {
 import type { MetricasUso } from "@/types/metricas";
 import type {
   DocumentoParticipacion,
+  ModoCargueParticipacion,
   RegistroParticipacion,
   ResultadoCargueParticipacion,
 } from "@/types/participacion";
@@ -173,14 +174,18 @@ export interface MetricasDataSource {
 /**
  * Contrato del origen de datos de Participación (asistencia a las
  * actividades en territorio). Igual que el Momento 4, vive en Postgres
- * porque se actualiza desde el sitio publicado; a diferencia de aquel, cada
- * cargue SUMA una tanda nueva en vez de reemplazar una casilla fija — el
- * objetivo es el seguimiento a través de varios eventos.
+ * porque se actualiza desde el sitio publicado; a diferencia de aquel, no
+ * tiene casillas fijas: el cargue agrega una tanda o reemplaza todo, según lo
+ * que elija quien sube (ver `ModoCargueParticipacion`).
  */
 export interface ParticipacionDataSource {
   getDocumentos(): Promise<DocumentoParticipacion[]>;
   getRegistros(): Promise<RegistroParticipacion[]>;
-  guardar(nombreOriginal: string, contenido: Buffer): Promise<ResultadoCargueParticipacion>;
+  guardar(
+    nombreOriginal: string,
+    contenido: Buffer,
+    modo: ModoCargueParticipacion
+  ): Promise<ResultadoCargueParticipacion>;
   /** Borra una tanda, o todas si se pasa null. Devuelve cuántos registros se eliminaron. */
   eliminar(documentoId: number | null): Promise<number>;
 }

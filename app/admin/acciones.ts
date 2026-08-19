@@ -190,6 +190,7 @@ export async function subirDocumentoParticipacion(
 ): Promise<ResultadoCargueParticipacion> {
   const archivo = datos.get("documento");
   const nombre = archivo instanceof File ? archivo.name : "—";
+  const modoRecibido = String(datos.get("modo") ?? "");
 
   const fallo = (motivo: string): ResultadoCargueParticipacion => ({
     archivo: nombre,
@@ -205,9 +206,16 @@ export async function subirDocumentoParticipacion(
   if (!(archivo instanceof File)) {
     return fallo("No se recibió ningún archivo.");
   }
+  // El modo se valida en vez de confiar en lo que llegue: "reemplazar" borra
+  // todo lo cargado, y una server action se puede invocar sin pasar por la
+  // pantalla. Ante cualquier valor inesperado se anexa, que es lo que no
+  // destruye nada.
+  if (modoRecibido !== "anexar" && modoRecibido !== "reemplazar") {
+    return fallo("No se indicó si el archivo se anexa o reemplaza lo ya cargado.");
+  }
 
   const contenido = Buffer.from(await archivo.arrayBuffer());
-  const resultado = await guardarDocumentoParticipacion(archivo.name, contenido);
+  const resultado = await guardarDocumentoParticipacion(archivo.name, contenido, modoRecibido);
 
   if (resultado.aceptado) {
     revalidatePath("/admin");

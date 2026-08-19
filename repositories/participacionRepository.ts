@@ -1,6 +1,7 @@
 import "server-only";
 import type {
   DocumentoParticipacion,
+  ModoCargueParticipacion,
   RegistroParticipacion,
   ResultadoCargueParticipacion,
 } from "@/types/participacion";
@@ -19,12 +20,16 @@ export function getRegistrosParticipacion(): Promise<RegistroParticipacion[]> {
   return getParticipacionDataSource().getRegistros();
 }
 
-/** Valida y guarda una tanda de asistencia nueva; se suma a las anteriores. */
+/**
+ * Valida y guarda un archivo de asistencia. Según `modo`, se suma a lo que ya
+ * había o lo reemplaza por completo.
+ */
 export function guardarDocumentoParticipacion(
   nombreOriginal: string,
-  contenido: Buffer
+  contenido: Buffer,
+  modo: ModoCargueParticipacion
 ): Promise<ResultadoCargueParticipacion> {
-  return getParticipacionDataSource().guardar(nombreOriginal, contenido);
+  return getParticipacionDataSource().guardar(nombreOriginal, contenido, modo);
 }
 
 /** Borra una tanda de asistencia, o todas si se pasa null. */

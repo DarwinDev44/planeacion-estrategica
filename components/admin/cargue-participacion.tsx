@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   FileSpreadsheet,
   Loader2,
+  RefreshCw,
   Trash2,
   Upload,
   XCircle,
@@ -29,7 +30,11 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { CAMPOS_PARTICIPACION, TITULO_PARTICIPACION } from "@/lib/reglas/participacion";
-import type { DocumentoParticipacion, ResultadoCargueParticipacion } from "@/types/participacion";
+import type {
+  DocumentoParticipacion,
+  ModoCargueParticipacion,
+  ResultadoCargueParticipacion,
+} from "@/types/participacion";
 import { eliminarTandaParticipacion, subirDocumentoParticipacion } from "@/app/admin/acciones";
 
 const formatoFecha = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" });
@@ -53,7 +58,15 @@ export function CargueParticipacion({
   const [enCurso, setEnCurso] = useState<{ nombre: string; mb: string } | null>(null);
   const [resultado, setResultado] = useState<ResultadoCargueParticipacion | null>(null);
   const [aBorrar, setABorrar] = useState<{ id: number | null; etiqueta: string } | null>(null);
+  // Qué botón abrió el selector de archivo. Se guarda porque el input es uno
+  // solo y su "change" no sabe desde cuál se llegó.
+  const [modo, setModo] = useState<ModoCargueParticipacion>("anexar");
   const totalRegistros = documentos.reduce((suma, d) => suma + d.filas, 0);
+
+  function abrirSelector(siguiente: ModoCargueParticipacion) {
+    setModo(siguiente);
+    entrada.current?.click();
+  }
 
   if (error) {
     return (
@@ -81,6 +94,7 @@ export function CargueParticipacion({
 
     const datos = new FormData();
     datos.set("documento", archivo);
+    datos.set("modo", modo);
 
     setResultado(null);
     setEnCurso({ nombre: archivo.name, mb: (archivo.size / 1024 / 1024).toFixed(1) });
@@ -110,12 +124,14 @@ export function CargueParticipacion({
       <CardHeader>
         <CardTitle>{TITULO_PARTICIPACION}</CardTitle>
         <CardDescription>
-          Cada archivo que se suba es una tanda de asistencia nueva y se SUMA a las anteriores: no
-          reemplaza nada. El objetivo es el seguimiento en el tiempo, así que aquí se van
-          acumulando los eventos de territorio a medida que ocurren. El formato de columnas se
-          reconoce por nombre y no por posición — cualquier otra columna que traiga el Excel se
-          descarta sin guardarse, como forma de anonimizar lo que no es relevante para el
-          seguimiento.
+          Al subir un archivo se elige qué hacer con lo que ya está cargado.{" "}
+          <strong className="font-medium text-foreground">Anexar</strong> lo agrega a las tandas
+          anteriores —es lo normal cuando ocurre un evento nuevo— y{" "}
+          <strong className="font-medium text-foreground">reemplazar todo</strong> deja el archivo
+          como único contenido, que es la salida para corregir un cargue sin duplicar registros. El
+          formato de columnas se reconoce por nombre y no por posición, y cualquier otra columna que
+          traiga el Excel se descarta sin guardarse, como forma de anonimizar lo que no es relevante
+          para el seguimiento.
         </CardDescription>
       </CardHeader>
 
@@ -128,28 +144,50 @@ export function CargueParticipacion({
             </Badge>
             <Badge variant="secondary">{totalRegistros} registro(s) en total</Badge>
 
+            {/* Un solo input para los dos botones: cuál se pulsó queda en
+                `modo`, y es lo que decide si el cargue anexa o reemplaza. */}
             <input
               ref={entrada}
               type="file"
               accept=".xlsx"
               className="hidden"
-              aria-label="Subir tanda de asistencia"
+              aria-label="Archivo de asistencia"
               onChange={alElegirArchivo}
             />
+
             <Button
               type="button"
               size="sm"
               className="ml-auto"
               disabled={subiendo}
-              onClick={() => entrada.current?.click()}
+              onClick={() => abrirSelector("anexar")}
             >
-              {subiendo ? (
+              {subiendo && modo === "anexar" ? (
                 <Loader2 className="size-3.5 animate-spin" aria-hidden />
               ) : (
                 <Upload className="size-3.5" aria-hidden />
               )}
-              {subiendo ? "Procesando…" : "Subir tanda de asistencia"}
+              Anexar tanda
             </Button>
+
+            {/* Solo si hay algo que reemplazar: sin nada cargado hace lo mismo
+                que anexar, y ofrecer dos botones idénticos confunde. */}
+            {documentos.length > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={subiendo}
+                onClick={() => abrirSelector("reemplazar")}
+              >
+                {subiendo && modo === "reemplazar" ? (
+                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                ) : (
+                  <RefreshCw className="size-3.5" aria-hidden />
+                )}
+                Reemplazar todo
+              </Button>
+            ) : null}
 
             {documentos.length > 0 ? (
               <Button
@@ -261,10 +299,17 @@ export function CargueParticipacion({
       <Dialog open={subiendo && enCurso !== null} modal>
         <DialogContent showCloseButton={false} className="max-w-md items-center gap-3 text-center">
           <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
-          <DialogTitle>Procesando tanda de asistencia</DialogTitle>
+          <DialogTitle>
+            {modo === "reemplazar" ? "Reemplazando la asistencia" : "Anexando tanda de asistencia"}
+          </DialogTitle>
           <DialogDescription className="flex flex-col gap-1">
             <span className="truncate font-medium text-foreground">{enCurso?.nombre}</span>
             <span>Subiendo y validando el archivo ({enCurso?.mb} MB).</span>
+            {modo === "reemplazar" ? (
+              <span className="font-medium text-foreground">
+                Al terminar, este archivo será lo único que quede en la sección.
+              </span>
+            ) : null}
             <span>Un archivo con muchos registros puede tardar. No cierres esta página.</span>
           </DialogDescription>
           <div className="h-1 w-full overflow-hidden rounded-full bg-primary/15">
