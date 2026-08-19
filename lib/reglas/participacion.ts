@@ -112,24 +112,58 @@ export const CAMPOS_UNIDAD_REGIONAL: CampoTextoParticipacion[] = [
 
 /**
  * Los campos que agrupa el desplegable unificado de "programa, facultad,
- * coordinación, área o código".
+ * coordinación o área".
  *
- * Van juntos en un solo filtro y no en cinco porque son la misma pregunta
- * —a qué pertenece quien asistió— formulada distinto según el rol: de un
- * estudiante se sabe su programa y su código, de un docente su facultad o su
- * coordinación, y de un trabajador su área. Cinco desplegables obligarían a
- * saber de antemano el rol de quien se busca, y cuatro de ellos estarían
- * siempre vacíos.
+ * Van juntos en un solo filtro y no en cuatro porque son la misma pregunta
+ * —a qué dependencia pertenece quien asistió— formulada distinto según el
+ * rol: de un estudiante se sabe su programa, de un docente su facultad o su
+ * coordinación, y de un trabajador su área. Cuatro desplegables obligarían a
+ * saber de antemano el rol de quien se busca, y tres estarían siempre vacíos.
  *
- * La unidad regional queda fuera a propósito: tiene su propio desplegable.
+ * **El código de estudiante queda fuera a propósito**, aunque sea una de las
+ * columnas del archivo: identifica a una persona, no a una dependencia. Al
+ * incluirlo, el desplegable listaba 350 códigos sueltos entre los programas y
+ * la tarjeta de "dependencias representadas" contaba 413 donde hay unas
+ * cincuenta. Agrupar por él es contar personas, no unidades.
+ *
+ * La unidad regional también queda fuera: tiene su propio desplegable.
  */
 export const CAMPOS_FILTRO_UNIFICADO: CampoTextoParticipacion[] = [
   "programaEstudiante",
-  "codigoEstudiante",
   "facultadDocente",
   "coordinacionDocente",
   "areaTrabajador",
 ];
+
+/**
+ * Nombre estandarizado de una dependencia (programa, facultad, coordinación o
+ * área).
+ *
+ * Los programas llegan con la promoción y la sede pegadas al nombre
+ * —"CONTADURIA PUBLICA 2024" y "CONTADURIA PUBLICA 2008", "ZOOTECNIA 2020 -
+ * SEC. UBATE"—, así que un mismo programa aparecía como varias barras y varias
+ * opciones del desplegable. Se corta en el año: lo que va después es la
+ * promoción o la sede, y la sede ya tiene su propio filtro.
+ *
+ * Se comparan sin tildes y en mayúsculas porque la misma dependencia llega
+ * escrita de las dos formas ("ADMINISTRACIÓN" y "ADMINISTRACION"), y contarlas
+ * por separado partiría el grupo en dos.
+ */
+export function estandarizarDependencia(texto: string | null): string | null {
+  const limpio = (texto ?? "").trim();
+  if (!limpio) return null;
+
+  const sinPromocion = limpio.split(/\b(?:19|20)\d{2}\b/)[0];
+  const normalizado = normalizar(sinPromocion)
+    // Restos del corte y puntuación final: separadores, abreviaturas de sede
+    // que quedaban colgando ("ZOOTECNIA -", "… - SEC.") y el punto con que
+    // algunas filas cierran el nombre —"ADMINISTRACION AGROPECUARIA." y
+    // "ADMINISTRACION AGROPECUARIA" son la misma dependencia—.
+    .replace(/[\s,.\-–]*(?:SEC\.?)?[\s,.\-–]*$/, "")
+    .trim();
+
+  return normalizado || normalizar(limpio);
+}
 
 /**
  * Interpreta una fecha del Excel, que puede llegar como número de serie de

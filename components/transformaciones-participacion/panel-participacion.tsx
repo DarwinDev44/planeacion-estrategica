@@ -16,15 +16,29 @@ import { KpiCard } from "@/components/kpi/kpi-card";
 import { RankedBarChart } from "@/components/charts/ranked-bar-chart";
 import { SerieTemporal, type PuntoSerie } from "@/components/charts/serie-temporal";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
-import { CAMPOS_FILTRO_UNIFICADO, CAMPOS_UNIDAD_REGIONAL } from "@/lib/reglas/participacion";
+import {
+  CAMPOS_FILTRO_UNIFICADO,
+  CAMPOS_UNIDAD_REGIONAL,
+  estandarizarDependencia,
+} from "@/lib/reglas/participacion";
 import type { RegistroParticipacion } from "@/types/participacion";
 
 const TODAS = "__todas__";
 
+/**
+ * Etiqueta para las filas que no traen rol, unidad o dependencia.
+ *
+ * Sin ella esas filas desaparecían de los gráficos y de los desplegables: las
+ * barras de unidad regional sumaban 470 sobre 478 asistentes, sin nada que
+ * explicara los 8 que faltaban. Es el mismo criterio que sigue la sección de
+ * resultados de encuestas.
+ */
+const SIN_ESPECIFICAR = "Sin especificar";
+
 interface Filtros {
   rol: string;
   unidadRegional: string;
-  /** Programa, facultad, coordinación, área o código: un solo valor entre los cinco. */
+  /** Programa, facultad, coordinación o área: un solo valor entre los cuatro. */
   adscripcion: string;
 }
 
@@ -43,22 +57,27 @@ const formatoDiaLargo = new Intl.DateTimeFormat("es-CO", { dateStyle: "long" });
  * del gráfico la recortaba por la izquierda. Se recorta solo si está: un valor
  * que no lo traiga se deja tal cual.
  */
-function unidadRegionalDe(r: RegistroParticipacion): string | null {
+function unidadRegionalDe(r: RegistroParticipacion): string {
   for (const campo of CAMPOS_UNIDAD_REGIONAL) {
     const valor = r[campo];
     if (valor && valor.trim()) return valor.trim().replace(/^UNIDAD\s+REGIONAL\s*,?\s*/i, "");
   }
-  return null;
+  return SIN_ESPECIFICAR;
 }
 
 /**
- * A qué pertenece el asistente (programa, facultad, coordinación, área o
- * código), en el mismo orden en que se declara el filtro unificado.
+ * A qué dependencia pertenece el asistente (programa, facultad, coordinación o
+ * área), ya estandarizada: sin la promoción ni la sede pegadas al nombre, que
+ * es lo que hacía aparecer un mismo programa como varias entradas distintas.
  */
 function adscripcionesDe(r: RegistroParticipacion): string[] {
-  return CAMPOS_FILTRO_UNIFICADO.map((campo) => r[campo]).filter(
-    (v): v is string => Boolean(v && v.trim())
-  );
+  const valores = CAMPOS_FILTRO_UNIFICADO.map((campo) => estandarizarDependencia(r[campo]));
+  // Un docente puede traer facultad y coordinación con el mismo nombre; sin
+  // quitar repetidos, esa fila contaría dos veces en su propia barra.
+  const unicas = [...new Set(valores.filter((v): v is string => Boolean(v)))];
+  // Quien no trae ninguna sigue siendo un asistente: se le agrupa en vez de
+  // dejarlo fuera de todo filtro.
+  return unicas.length > 0 ? unicas : [SIN_ESPECIFICAR];
 }
 
 export function PanelParticipacion({ registros }: { registros: RegistroParticipacion[] }) {
@@ -69,7 +88,7 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
   // demás del desplegable.
   const opciones = useMemo(
     () => ({
-      roles: valoresUnicos(registros.map((r) => r.rol)),
+      roles: valoresUnicos(registros.map((r) => r.rol?.trim() || SIN_ESPECIFICAR)),
       unidadesRegionales: valoresUnicos(registros.map(unidadRegionalDe)),
       adscripciones: valoresUnicos(registros.flatMap(adscripcionesDe)),
     }),
@@ -78,7 +97,7 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
 
   const filtrados = useMemo(() => {
     return registros.filter((r) => {
-      if (filtros.rol !== TODAS && r.rol !== filtros.rol) return false;
+      if (filtros.rol !== TODAS && (r.rol?.trim() || SIN_ESPECIFICAR) !== filtros.rol) return false;
       if (filtros.unidadRegional !== TODAS && unidadRegionalDe(r) !== filtros.unidadRegional) {
         return false;
       }
@@ -151,7 +170,7 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
             </Select>
           </Campo>
 
-          <Campo etiqueta="Programa, facultad, coordinación, área o código">
+          <Campo etiqueta="Programa, facultad, coordinación o área">
             <Select
               value={filtros.adscripcion}
               onValueChange={(v) => actualizar("adscripcion", v ?? TODAS)}
@@ -308,7 +327,7 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
               con el valor justo, la primera palabra se recortaba y "FACULTAD"
               se leía "JLTAD". */}
           <RankedBarChart
-            titulo="Participación por programa, facultad, coordinación, área o código"
+            titulo="Participación por programa, facultad, coordinación o área"
             datos={metricas.porAdscripcion}
             onSeleccionarBarra={(etiqueta) => alternar("adscripcion", etiqueta)}
             etiquetaSeleccionada={filtros.adscripcion === TODAS ? null : filtros.adscripcion}
@@ -360,10 +379,14 @@ function calcularMetricas(registros: RegistroParticipacion[]) {
   let conEdad = 0;
 
   for (const r of registros) {
-    if (r.rol) porRolMapa.set(r.rol, (porRolMapa.get(r.rol) ?? 0) + 1);
+    // Se cuentan TODAS las filas, también las que no traen el dato: si se
+    // saltaran, las barras sumarían menos que los asistentes registrados y
+    // nadie sabría a qué se debe la diferencia.
+    const rol = r.rol?.trim() || SIN_ESPECIFICAR;
+    porRolMapa.set(rol, (porRolMapa.get(rol) ?? 0) + 1);
 
     const unidad = unidadRegionalDe(r);
-    if (unidad) porUnidadMapa.set(unidad, (porUnidadMapa.get(unidad) ?? 0) + 1);
+    porUnidadMapa.set(unidad, (porUnidadMapa.get(unidad) ?? 0) + 1);
 
     // Una persona puede aportar a varias (un docente trae facultad Y
     // coordinación), así que estos conteos suman más que el total de filas:
