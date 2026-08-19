@@ -32,9 +32,14 @@ export const TRANSFORMACIONES_MOMENTO4 = [
 export type TransformacionMomento4 = (typeof TRANSFORMACIONES_MOMENTO4)[number]["id"];
 
 /**
- * Las 23 columnas del export de Microsoft Forms, en orden. Se exige
+ * Las 26 columnas del export de Microsoft Forms, en orden. Se exige
  * coincidencia exacta: es lo que garantiza que un archivo subido hoy se pueda
  * leer con el mismo código que los que ya están en la carpeta.
+ *
+ * El formulario cambió después de los primeros exports y agregó la pregunta
+ * "De que programa eres graduado" —con sus dos columnas de calificación—, que
+ * solo responde quien se identifica como graduado. Por eso son 26 y no las 23
+ * originales.
  */
 export const COLUMNAS_MOMENTO4: readonly string[] = [
   "ID",
@@ -48,6 +53,9 @@ export const COLUMNAS_MOMENTO4: readonly string[] = [
   "Tipo de actor",
   "Puntos: Tipo de actor",
   "Comentarios: Tipo de actor",
+  "De que programa eres graduado",
+  "Puntos: De que programa eres graduado",
+  "Comentarios: De que programa eres graduado",
   "Unidad Regional",
   "Puntos: Unidad Regional",
   "Comentarios: Unidad Regional",
@@ -242,8 +250,83 @@ export function clasificarRespaldo(texto: string | null): OpcionRespaldo {
 }
 
 /**
- * Deja una sola respuesta por correo DENTRO de un mismo documento: una persona
- * no puede figurar dos veces en el formulario de una transformación.
+ * Nombre estandarizado del programa del que alguien es graduado.
+ *
+ * La pregunta del formulario es de texto libre, así que un mismo programa
+ * llega escrito de muchas formas: en los documentos reales hay 21 redacciones
+ * distintas para 6 programas —"Administración de empresas", "Adm empresas",
+ * "Administrador de empresas", "Administración  de Empresas" con doble
+ * espacio—. Sin unificarlas, cada variante sería una categoría propia y el
+ * gráfico mostraría seis veces el mismo programa con una respuesta cada uno.
+ *
+ * Se reconoce por las palabras clave que contiene y no con una lista de
+ * equivalencias exactas, porque la lista habría que ampliarla con cada export
+ * nuevo: mientras alguien escriba "adm" o "contadur", su respuesta cae en el
+ * programa correcto aunque lo escriba distinto a como lo escribió nadie antes.
+ *
+ * Lo que no reconoce se devuelve tal cual (solo con los espacios colapsados):
+ * es preferible mostrar un programa suelto sin agrupar a inventar a cuál
+ * pertenece.
+ */
+export function estandarizarPrograma(texto: string | null): string | null {
+  const original = (texto ?? "").trim().replace(/\s+/g, " ");
+  if (!original) return null;
+
+  const clave = normalizar(original);
+  const tiene = (patron: RegExp) => patron.test(clave);
+
+  if (tiene(/GERENCIA|DESARROLLO ORGANIZACIONAL/)) {
+    return "Gerencia para el Desarrollo Organizacional";
+  }
+
+  // "ADM" cubre administración, administrador y la abreviatura "Adm empresas".
+  const administracion = tiene(/\bADM/);
+  const contaduria = tiene(/CONTADUR/);
+  const zootecnia = tiene(/ZOOTECNIA/);
+  const sistemas = tiene(/SISTEMAS/);
+
+  if (administracion && contaduria) return "Administración de Empresas y Contaduría Pública";
+  if (administracion && zootecnia) return "Administración de Empresas y Zootecnia";
+  if (administracion) return "Administración de Empresas";
+  if (contaduria) return "Contaduría Pública";
+  if (sistemas) return "Ingeniería de Sistemas";
+
+  return original;
+}
+
+/**
+ * Valores de la columna de correo que NO identifican a una persona.
+ *
+ * Cuando el formulario admite respuestas anónimas, Microsoft Forms no deja la
+ * celda vacía: escribe literalmente "anonymous" en todas. Tratarlo como un
+ * correo cualquiera hace que la deduplicación considere a todos los anónimos
+ * la misma persona y conserve solo uno por documento. En los documentos
+ * reales eso borraba 42 de 47 respuestas anónimas —y hundía el conteo de
+ * graduados de 54 a 15—, porque casi todos los graduados respondieron sin
+ * identificarse.
+ *
+ * Se comparan en minúsculas, igual que los correos.
+ */
+const CORREOS_SIN_IDENTIDAD = new Set(["anonymous", "anónimo", "anonimo"]);
+
+/**
+ * Si ese valor de correo identifica a una persona concreta. Lo usan tanto la
+ * deduplicación como el conteo de participantes únicos: si discreparan, la
+ * sección diría que hay menos participantes de los que muestra en la tabla.
+ */
+export function correoIdentifica(correo: string | null): boolean {
+  const valor = correo?.trim().toLowerCase() ?? "";
+  return valor.length > 0 && !CORREOS_SIN_IDENTIDAD.has(valor);
+}
+
+/**
+ * Deja una sola respuesta por correo **y rol** DENTRO de un mismo documento.
+ *
+ * La identidad no es el correo solo: una misma persona puede tener varios
+ * roles en la universidad —ser graduada y además administrativa— y responder
+ * el formulario una vez por cada uno. Esas dos filas son respuestas legítimas
+ * y distintas. Lo que no puede haber es el mismo correo dos veces con el mismo
+ * rol: eso sí es la misma persona respondiendo dos veces.
  *
  * El alcance es el documento y no el conjunto de los cinco a propósito. Las 5
  * transformaciones son formularios distintos y una misma persona puede opinar
@@ -251,7 +334,7 @@ export function clasificarRespaldo(texto: string | null): OpcionRespaldo {
  * Estadística de Planeación aparece en cuatro de ellos. Deduplicar entre
  * documentos borraría respuestas legítimas.
  *
- * De cada correo repetido se conserva **la última** aparición: el export viene
+ * De cada repetición se conserva **la última** aparición: el export viene
  * ordenado por ID de respuesta ascendente, así que la última fila es la
  * respuesta más reciente de esa persona. Se prefiere ese criterio a leer la
  * columna de fecha porque el export la trae como texto en formato ambiguo
@@ -263,24 +346,36 @@ export function clasificarRespaldo(texto: string | null): OpcionRespaldo {
  */
 export function quitarCorreosRepetidos<T>(
   filas: T[],
-  correoDe: (fila: T) => string | null
+  correoDe: (fila: T) => string | null,
+  rolDe: (fila: T) => string | null
 ): { unicas: T[]; descartadas: number; correosRepetidos: string[] } {
   // Se compara en minúsculas: los correos no distinguen mayúsculas, y el mismo
-  // buzón escrito de dos formas es la misma persona.
-  const clave = (fila: T) => correoDe(fila)?.trim().toLowerCase() || null;
+  // buzón escrito de dos formas es la misma persona. Los valores que no
+  // identifican a nadie (ver CORREOS_SIN_IDENTIDAD) cuentan como "sin correo".
+  //
+  // El rol entra en la clave normalizado y separado por " ", un carácter
+  // que no aparece en un correo ni en un rol: sin un separador imposible,
+  // "a@x.com" + "BC" y "a@x.comB" + "C" darían la misma clave.
+  const clave = (fila: T) => {
+    const correo = correoDe(fila)?.trim().toLowerCase() || null;
+    if (!correo || CORREOS_SIN_IDENTIDAD.has(correo)) return null;
+    return `${correo} ${normalizar(rolDe(fila) ?? "")}`;
+  };
 
   const ultimaPosicion = new Map<string, number>();
   filas.forEach((fila, indice) => {
-    const correo = clave(fila);
-    if (correo) ultimaPosicion.set(correo, indice);
+    const identidad = clave(fila);
+    if (identidad) ultimaPosicion.set(identidad, indice);
   });
 
+  // Se reporta solo el correo y no la clave completa: el aviso lo lee una
+  // persona, y "alguien@ucundinamarca.edu.co GRADUADOS" no se entiende.
   const repetidos = new Set<string>();
   const unicas = filas.filter((fila, indice) => {
-    const correo = clave(fila);
-    if (!correo) return true;
-    const esLaUltima = ultimaPosicion.get(correo) === indice;
-    if (!esLaUltima) repetidos.add(correo);
+    const identidad = clave(fila);
+    if (!identidad) return true;
+    const esLaUltima = ultimaPosicion.get(identidad) === indice;
+    if (!esLaUltima) repetidos.add(correoDe(fila)!.trim().toLowerCase());
     return esLaUltima;
   });
 

@@ -28,6 +28,14 @@ export interface RespuestaMomento4 {
   correo: string | null;
   nombre: string | null;
   tipoActor: string | null;
+  /**
+   * Programa del que es graduado, tal como lo escribió la persona. Solo lo
+   * responde quien se identifica como graduado, así que viene vacío en la
+   * mayoría de las filas. Se guarda sin tocar y se unifica al mostrarlo, con
+   * `estandarizarPrograma` — igual que `respondeNecesidad` se guarda crudo y
+   * se clasifica en la vista.
+   */
+  programaGraduado: string | null;
   unidadRegional: string | null;
   /** ¿Consideran que esta transformación responde a lo que se necesita? */
   respondeNecesidad: string | null;

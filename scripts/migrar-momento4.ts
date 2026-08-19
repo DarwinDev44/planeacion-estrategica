@@ -43,12 +43,22 @@ async function main() {
       comentarios_cuestionario text,
       hora_ultima_modificacion text,
       tipo_actor text,
+      programa_graduado text,
       unidad_regional text,
       transformacion_declarada text,
       responde_necesidad text,
       ajustes text,
       actualizado timestamptz not null default now()
     )
+  `;
+
+  // La tabla ya existía sin esta columna cuando el formulario agregó la
+  // pregunta "De que programa eres graduado", así que el CREATE de arriba no
+  // basta: en una base ya creada no se ejecuta. Se agrega aparte para que la
+  // migración sirva igual en una base nueva y en una que viene del formato
+  // anterior.
+  await sql`
+    alter table momento4_respuestas add column if not exists programa_graduado text
   `;
 
   // Toda consulta de respuestas filtra por transformación (es la casilla a la

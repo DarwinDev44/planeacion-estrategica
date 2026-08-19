@@ -29,6 +29,8 @@ export interface FilaExcelMomento4 {
   comentariosCuestionario: string | null;
   horaUltimaModificacion: string | null;
   tipoActor: string | null;
+  /** Solo lo responde quien es graduado; en el resto de filas viene vacío. */
+  programaGraduado: string | null;
   unidadRegional: string | null;
   /** La columna "Transformación" del propio archivo, que no es de fiar como
    *  identificador (ver lib/reglas/momento4) pero sí vale como dato. */
@@ -68,6 +70,7 @@ const CAMPOS: { columna: string; campo: keyof FilaExcelMomento4 }[] = [
   { columna: "Comentarios del cuestionario", campo: "comentariosCuestionario" },
   { columna: "Hora de la última modificación", campo: "horaUltimaModificacion" },
   { columna: "Tipo de actor", campo: "tipoActor" },
+  { columna: "De que programa eres graduado", campo: "programaGraduado" },
   { columna: "Unidad Regional", campo: "unidadRegional" },
   { columna: "Transformación", campo: "transformacionDeclarada" },
   {
@@ -169,7 +172,14 @@ export function leerDocumentoMomento4(
 
   // El documento tampoco se rechaza por traer repetidos: se cargan las
   // respuestas únicas y se informa cuántas quedaron fuera.
-  const sinRepetidos = quitarCorreosRepetidos(enPlazo, (r) => r.correo);
+  // La identidad es correo + rol: la misma persona puede responder una vez por
+  // cada rol que tenga (graduada y administrativa, por ejemplo), y esas filas
+  // no son duplicados.
+  const sinRepetidos = quitarCorreosRepetidos(
+    enPlazo,
+    (r) => r.correo,
+    (r) => r.tipoActor
+  );
 
   return {
     ok: true,

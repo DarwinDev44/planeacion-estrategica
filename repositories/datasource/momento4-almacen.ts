@@ -34,6 +34,7 @@ const COLUMNAS: { sql: string; campo: keyof FilaExcelMomento4 }[] = [
   { sql: "comentarios_cuestionario", campo: "comentariosCuestionario" },
   { sql: "hora_ultima_modificacion", campo: "horaUltimaModificacion" },
   { sql: "tipo_actor", campo: "tipoActor" },
+  { sql: "programa_graduado", campo: "programaGraduado" },
   { sql: "unidad_regional", campo: "unidadRegional" },
   { sql: "transformacion_declarada", campo: "transformacionDeclarada" },
   { sql: "responde_necesidad", campo: "respondeNecesidad" },
@@ -79,8 +80,8 @@ export async function consultarDocumentos(sql: Sql): Promise<DocumentoMomento4[]
  */
 export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]> {
   const filas = await sql`
-    select id, transformacion, correo, nombre, tipo_actor, unidad_regional,
-           responde_necesidad, ajustes, cluster
+    select id, transformacion, correo, nombre, tipo_actor, programa_graduado,
+           unidad_regional, responde_necesidad, ajustes, cluster
     from momento4_respuestas
     order by transformacion, id
   `;
@@ -94,6 +95,7 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
     correo: (fila.correo as string | null) ?? null,
     nombre: (fila.nombre as string | null) ?? null,
     tipoActor: (fila.tipo_actor as string | null) ?? null,
+    programaGraduado: (fila.programa_graduado as string | null) ?? null,
     unidadRegional: (fila.unidad_regional as string | null) ?? null,
     respondeNecesidad: (fila.responde_necesidad as string | null) ?? null,
     ajustes: (fila.ajustes as string | null) ?? null,
@@ -262,7 +264,7 @@ export async function guardarDocumento(
     const corte = FECHA_MINIMA_RESPUESTA.toLocaleDateString("es-CO");
     const repetidas =
       lectura.descartadas > 0
-        ? ` Se descartaron ${lectura.descartadas} por correo repetido dentro del archivo (se conservó la respuesta más reciente de cada persona).`
+        ? ` Se descartaron ${lectura.descartadas} por repetir correo y rol dentro del archivo (se conservó la más reciente de cada persona en cada rol; quien tiene varios roles cuenta una vez por cada uno).`
         : "";
     const anteriores =
       lectura.descartadasPorFecha > 0

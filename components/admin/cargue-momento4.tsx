@@ -512,7 +512,7 @@ function FilaDocumento({
                 {resultado.descartadas ? (
                   <p className="mt-1 flex w-fit items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs text-foreground">
                     <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
-                    {resultado.descartadas} respuesta(s) con correo repetido no se cargaron.
+                    {resultado.descartadas} respuesta(s) que repetían correo y rol no se cargaron.
                   </p>
                 ) : null}
                 {resultado.reemplazo ? (

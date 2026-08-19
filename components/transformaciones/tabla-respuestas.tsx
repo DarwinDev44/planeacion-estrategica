@@ -11,13 +11,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatNumero } from "@/lib/formatters";
-import { OPCIONES_RESPALDO, clasificarRespaldo } from "@/lib/reglas/momento4";
+import {
+  OPCIONES_RESPALDO,
+  clasificarRespaldo,
+  estandarizarPrograma,
+} from "@/lib/reglas/momento4";
 import type { RespuestaMomento4 } from "@/types/momento4";
 
 /** Cuántas filas se muestran antes de pedir "ver más". */
 const PASO = 25;
 
 const COLOR_POR_RESPALDO = new Map(OPCIONES_RESPALDO.map((o) => [o.id, o.color]));
+
+/** El programa unificado, o null si esta respuesta no es de un graduado. */
+const programa = (respuesta: RespuestaMomento4) =>
+  estandarizarPrograma(respuesta.programaGraduado);
 
 /**
  * Detalle fila por fila. Se pagina por bloques en vez de volcar todo de una:
@@ -68,6 +76,14 @@ export function TablaRespuestas({ respuestas }: { respuestas: RespuestaMomento4[
                 </TableCell>
                 <TableCell className="whitespace-normal text-muted-foreground">
                   {respuesta.tipoActor ?? "—"}
+                  {/* El programa cuelga del tipo de actor y no ocupa columna
+                      propia: solo lo traen los graduados, así que una columna
+                      entera estaría vacía en la mayoría de las filas. */}
+                  {programa(respuesta) ? (
+                    <span className="mt-0.5 block text-xs text-muted-foreground/80">
+                      {programa(respuesta)}
+                    </span>
+                  ) : null}
                 </TableCell>
                 <TableCell className="whitespace-normal text-muted-foreground">
                   {respuesta.unidadRegional ?? "—"}

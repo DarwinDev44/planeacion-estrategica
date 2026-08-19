@@ -30,6 +30,8 @@ import {
   OPCIONES_RESPALDO,
   TRANSFORMACIONES_MOMENTO4,
   clasificarRespaldo,
+  correoIdentifica,
+  estandarizarPrograma,
   normalizar,
   type OpcionRespaldo,
 } from "@/lib/reglas/momento4";
@@ -51,6 +53,8 @@ interface Filtros {
   transformacion: string;
   tipoActor: string;
   unidadRegional: string;
+  /** Programa del graduado, ya estandarizado. */
+  programaGraduado: string;
   respaldo: string;
   busqueda: string;
   /** Tema del comentario; null = todos. */
@@ -61,6 +65,7 @@ const SIN_FILTROS: Filtros = {
   transformacion: TODAS,
   tipoActor: TODAS,
   unidadRegional: TODAS,
+  programaGraduado: TODAS,
   respaldo: TODAS,
   busqueda: "",
   cluster: null,
@@ -81,6 +86,12 @@ export function PanelTransformaciones({
     () => ({
       tiposActor: valoresUnicos(respuestas.map((r) => r.tipoActor)),
       unidadesRegionales: valoresUnicos(respuestas.map((r) => r.unidadRegional)),
+      // Ya unificados: en el Excel el mismo programa viene escrito de varias
+      // formas, y sin estandarizar el desplegable ofrecería la misma carrera
+      // repetida tres o cuatro veces.
+      programasGraduado: valoresUnicos(
+        respuestas.map((r) => estandarizarPrograma(r.programaGraduado))
+      ),
       // Las tres opciones del formulario van siempre, aunque alguna tenga cero:
       // son una escala fija y quitarlas haría parecer que no existen. La cuarta
       // ("Sin responder u otra") es un cajón de sastre para valores
@@ -106,6 +117,12 @@ export function PanelTransformaciones({
       }
       if (filtros.tipoActor !== TODAS && r.tipoActor !== filtros.tipoActor) return false;
       if (filtros.unidadRegional !== TODAS && r.unidadRegional !== filtros.unidadRegional) {
+        return false;
+      }
+      if (
+        filtros.programaGraduado !== TODAS &&
+        estandarizarPrograma(r.programaGraduado) !== filtros.programaGraduado
+      ) {
         return false;
       }
       if (filtros.respaldo !== TODAS && clasificarRespaldo(r.respondeNecesidad) !== filtros.respaldo) {
@@ -236,6 +253,34 @@ export function PanelTransformaciones({
             </Select>
           </Campo>
 
+          {/* Solo si alguien respondió la pregunta: la contestan únicamente
+              los graduados, y en un recorte sin ninguno el desplegable
+              quedaría vacío ofreciendo un filtro que no filtra nada. */}
+          {opciones.programasGraduado.length > 0 ? (
+            <Campo etiqueta="Programa del graduado">
+              <Select
+                value={filtros.programaGraduado}
+                onValueChange={(v) => actualizar("programaGraduado", v ?? TODAS)}
+              >
+                <SelectTrigger className="w-64">
+                  <SelectValue placeholder="Todos">
+                    {(v: string | null) => (
+                      <span className="min-w-0 truncate">{textoSeleccion(v, "Todos")}</span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TODAS}>Todos</SelectItem>
+                  {opciones.programasGraduado.map((valor) => (
+                    <SelectItem key={valor} value={valor}>
+                      {valor}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Campo>
+          ) : null}
+
           <Campo etiqueta="¿Responde a lo que se necesita?">
             <Select
               value={filtros.respaldo}
@@ -288,7 +333,11 @@ export function PanelTransformaciones({
         <KpiCard
           etiqueta="Participantes únicos"
           valor={formatNumero(metricas.participantes)}
-          detalle="Correos distintos"
+          detalle={
+            metricas.anonimos > 0
+              ? `Correos distintos y ${formatNumero(metricas.anonimos)} anónimas`
+              : "Correos distintos"
+          }
           icono={Users2}
         />
         <KpiCard
@@ -350,6 +399,25 @@ export function PanelTransformaciones({
           </CardContent>
         </Card>
       </div>
+
+      {/* Solo cuando hay graduados en el recorte: la pregunta es exclusiva
+          suya, y una tarjeta vacía en el resto de recortes daría a entender
+          que falta un dato que nunca se pidió. */}
+      {metricas.porProgramaGraduado.length > 0 ? (
+        <Card className="border-border/70">
+          <CardContent>
+            <RankedBarChart
+              titulo="Programa de los graduados que participaron"
+              datos={metricas.porProgramaGraduado}
+              onSeleccionarBarra={(etiqueta) => alternar("programaGraduado", etiqueta)}
+              etiquetaSeleccionada={
+                filtros.programaGraduado === TODAS ? null : filtros.programaGraduado
+              }
+              truncarEn={54}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="border-border/70">
         <CardHeader>
@@ -431,7 +499,9 @@ function calcularMetricas(respuestas: RespuestaMomento4[]) {
   const porTransformacion = new Map<string, FilaRespaldo>();
   const porTipoActor = new Map<string, number>();
   const porUnidadRegional = new Map<string, number>();
+  const porProgramaGraduado = new Map<string, number>();
   const correos = new Set<string>();
+  let anonimos = 0;
   let conAporte = 0;
 
   for (const respuesta of respuestas) {
@@ -457,7 +527,15 @@ function calcularMetricas(respuestas: RespuestaMomento4[]) {
         (porUnidadRegional.get(respuesta.unidadRegional) ?? 0) + 1
       );
     }
-    if (respuesta.correo) correos.add(respuesta.correo.toLowerCase());
+    const programa = estandarizarPrograma(respuesta.programaGraduado);
+    if (programa) porProgramaGraduado.set(programa, (porProgramaGraduado.get(programa) ?? 0) + 1);
+
+    // Las respuestas anónimas no traen un correo que las distinga (Forms
+    // escribe "anonymous" en todas), así que cada una cuenta como un
+    // participante en vez de fundirse en uno solo: es lo mismo que hace la
+    // deduplicación al cargar, y de lo contrario 47 personas figurarían como 1.
+    if (correoIdentifica(respuesta.correo)) correos.add(respuesta.correo!.toLowerCase());
+    else anonimos += 1;
     if (respuesta.ajustes && respuesta.ajustes.trim()) conAporte += 1;
   }
 
@@ -467,7 +545,8 @@ function calcularMetricas(respuestas: RespuestaMomento4[]) {
     total,
     conteos,
     conAporte,
-    participantes: correos.size,
+    participantes: correos.size + anonimos,
+    anonimos,
     porcentajeSi: total > 0 ? (conteos.si / total) * 100 : 0,
     // El orden de las 5 transformaciones es fijo (el de las reglas) y no por
     // tamaño: así una barra no cambia de sitio al mover un filtro.
@@ -482,6 +561,14 @@ function calcularMetricas(respuestas: RespuestaMomento4[]) {
     ).filter((fila) => fila.total > 0),
     porTipoActor: aDatosBarra(porTipoActor, total),
     porUnidadRegional: aDatosBarra(porUnidadRegional, total),
+    // El porcentaje se calcula sobre quienes SÍ respondieron el programa y no
+    // sobre el total: la pregunta es solo para graduados, y dividir entre
+    // todas las respuestas daría porcentajes diminutos que no dicen nada del
+    // peso de cada carrera entre los graduados.
+    porProgramaGraduado: aDatosBarra(
+      porProgramaGraduado,
+      [...porProgramaGraduado.values()].reduce((suma, n) => suma + n, 0)
+    ),
   };
 }
 
