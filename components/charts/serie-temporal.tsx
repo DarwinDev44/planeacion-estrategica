@@ -44,11 +44,14 @@ export function SerieTemporal({
             minTickGap={24}
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
           />
+          {/* 48 px y no menos: el eje recorta la etiqueta por la izquierda si
+              no cabe, y con marcas de tres cifras ("100", "200") se veía solo
+              el último carácter — una columna de ceros donde había centenas. */}
           <YAxis
             allowDecimals={false}
             tickLine={false}
             axisLine={false}
-            width={36}
+            width={48}
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
           />
           <Tooltip
