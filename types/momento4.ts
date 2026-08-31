@@ -27,6 +27,13 @@ export interface RespuestaMomento4 {
   etiqueta: string;
   correo: string | null;
   nombre: string | null;
+  /**
+   * Día en que se respondió, en ISO ("aaaa-mm-dd"). Sale de la hora de inicio
+   * del export, que llega como texto ambiguo ("8/18/26 9:48:32"): la fecha ya
+   * interpretada se expone aquí para que la vista no tenga que volver a
+   * decidir si el primer número es el día o el mes.
+   */
+  fechaInicio: string | null;
   tipoActor: string | null;
   /**
    * Programa del que es graduado, tal como lo escribió la persona. Solo lo

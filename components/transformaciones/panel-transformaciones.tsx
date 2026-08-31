@@ -51,6 +51,17 @@ const TODAS = "__todas__";
  */
 const SIN_ESPECIFICAR = "Sin especificar";
 
+const formatoDiaLargo = new Intl.DateTimeFormat("es-CO", { dateStyle: "long" });
+
+/**
+ * Una fecha ISO como texto legible. Se le pega el mediodía antes de
+ * construir el Date: `new Date("2026-08-18")` se interpreta en UTC y en
+ * Colombia caería el día anterior.
+ */
+function formatoFecha(iso: string): string {
+  return formatoDiaLargo.format(new Date(`${iso}T12:00:00`));
+}
+
 /** El valor del campo, o `SIN_ESPECIFICAR` si viene vacío. */
 function valorOSinEspecificar(valor: string | null): string {
   return valor?.trim() || SIN_ESPECIFICAR;
@@ -82,6 +93,8 @@ const MOSTRAR_CLASIFICACION_TEMAS = false;
 
 interface Filtros {
   transformacion: string;
+  /** Día de la respuesta, en ISO; TODAS = cualquiera. */
+  fecha: string;
   tipoActor: string;
   unidadRegional: string;
   /** Programa del graduado, ya estandarizado. */
@@ -94,6 +107,7 @@ interface Filtros {
 
 const SIN_FILTROS: Filtros = {
   transformacion: TODAS,
+  fecha: TODAS,
   tipoActor: TODAS,
   unidadRegional: TODAS,
   programaGraduado: TODAS,
@@ -118,6 +132,11 @@ export function PanelTransformaciones({
       // Con `valorOSinEspecificar`, las respuestas que dejaron el campo en
       // blanco quedan agrupadas bajo una opción propia en vez de no ser
       // filtrables por ningún valor.
+      // De más reciente a más antigua: al filtrar por día se busca casi
+      // siempre la última jornada, no la primera.
+      fechas: [
+        ...new Set(respuestas.map((r) => r.fechaInicio).filter((f): f is string => Boolean(f))),
+      ].sort((a, b) => b.localeCompare(a)),
       tiposActor: valoresUnicos(respuestas.map((r) => valorOSinEspecificar(r.tipoActor))),
       unidadesRegionales: valoresUnicos(
         respuestas.map((r) => valorOSinEspecificar(r.unidadRegional))
@@ -149,6 +168,7 @@ export function PanelTransformaciones({
       if (filtros.transformacion !== TODAS && r.transformacion !== filtros.transformacion) {
         return false;
       }
+      if (filtros.fecha !== TODAS && r.fechaInicio !== filtros.fecha) return false;
       if (filtros.tipoActor !== TODAS && valorOSinEspecificar(r.tipoActor) !== filtros.tipoActor) {
         return false;
       }
@@ -245,6 +265,32 @@ export function PanelTransformaciones({
               </SelectContent>
             </Select>
           </Campo>
+
+          {/* Solo si hay más de un día: con una sola jornada, el desplegable
+              ofrecería una opción que no recorta nada. */}
+          {opciones.fechas.length > 1 ? (
+            <Campo etiqueta="Fecha">
+              <Select value={filtros.fecha} onValueChange={(v) => actualizar("fecha", v ?? TODAS)}>
+                <SelectTrigger className="w-44">
+                  <SelectValue placeholder="Todas">
+                    {(v: string | null) => (
+                      <span className="min-w-0 truncate">
+                        {!v || v === TODAS ? "Todas" : formatoFecha(v)}
+                      </span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TODAS}>Todas</SelectItem>
+                  {opciones.fechas.map((valor) => (
+                    <SelectItem key={valor} value={valor}>
+                      {formatoFecha(valor)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Campo>
+          ) : null}
 
           <Campo etiqueta="Tipo de actor">
             <Select

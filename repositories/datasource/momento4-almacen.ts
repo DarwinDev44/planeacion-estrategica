@@ -5,7 +5,12 @@ import type {
   RespuestaMomento4,
   ResultadoCargue,
 } from "@/types/momento4";
-import { FECHA_MINIMA_RESPUESTA, TRANSFORMACIONES_MOMENTO4 } from "@/lib/reglas/momento4";
+import {
+  FECHA_MINIMA_RESPUESTA,
+  TRANSFORMACIONES_MOMENTO4,
+  detectarDiaPrimero,
+  interpretarFechaExport,
+} from "@/lib/reglas/momento4";
 import { leerDocumentoMomento4, type FilaExcelMomento4 } from "./momento4-formato";
 import { clasificarComentarios } from "@/lib/reglas/clasificacion";
 
@@ -80,13 +85,19 @@ export async function consultarDocumentos(sql: Sql): Promise<DocumentoMomento4[]
  */
 export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]> {
   const filas = await sql`
-    select id, transformacion, correo, nombre, tipo_actor, programa_graduado,
-           unidad_regional, responde_necesidad, ajustes, cluster
+    select id, transformacion, correo, nombre, hora_inicio, tipo_actor,
+           programa_graduado, unidad_regional, responde_necesidad, ajustes, cluster
     from momento4_respuestas
     order by transformacion, id
   `;
 
   const etiquetas = new Map(TRANSFORMACIONES_MOMENTO4.map((t) => [t.id as string, t.etiqueta]));
+
+  // El orden día/mes se decide mirando TODAS las horas juntas y no fila por
+  // fila: "5/8/26" es válido en los dos órdenes, y equivocarse cambiaría la
+  // fecha de esa respuesta sin que nadie lo note. Es el mismo criterio con que
+  // se leen los .xlsx al cargarlos.
+  const diaPrimero = detectarDiaPrimero(filas.map((f) => (f.hora_inicio as string | null) ?? null));
 
   return filas.map((fila) => ({
     id: Number(fila.id),
@@ -94,6 +105,7 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
     etiqueta: etiquetas.get(fila.transformacion as string) ?? (fila.transformacion as string),
     correo: (fila.correo as string | null) ?? null,
     nombre: (fila.nombre as string | null) ?? null,
+    fechaInicio: soloFecha(interpretarFechaExport((fila.hora_inicio as string | null) ?? null, diaPrimero)),
     tipoActor: (fila.tipo_actor as string | null) ?? null,
     programaGraduado: (fila.programa_graduado as string | null) ?? null,
     unidadRegional: (fila.unidad_regional as string | null) ?? null,
@@ -101,6 +113,18 @@ export async function consultarRespuestas(sql: Sql): Promise<RespuestaMomento4[]
     ajustes: (fila.ajustes as string | null) ?? null,
     cluster: fila.cluster === null || fila.cluster === undefined ? null : Number(fila.cluster),
   }));
+}
+
+/**
+ * La parte de fecha de un Date, en "aaaa-mm-dd" y con los componentes
+ * locales: `toISOString` daría el día anterior en cualquier zona al oeste de
+ * UTC, porque la hora interpretada es local.
+ */
+function soloFecha(fecha: Date | null): string | null {
+  if (!fecha) return null;
+  const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+  const dia = String(fecha.getDate()).padStart(2, "0");
+  return `${fecha.getFullYear()}-${mes}-${dia}`;
 }
 
 /**
