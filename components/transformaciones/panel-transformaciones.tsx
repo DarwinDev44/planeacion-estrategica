@@ -23,7 +23,6 @@ import {
 import { AportesAjustes } from "@/components/transformaciones/aportes-ajustes";
 import { ClasificacionComentarios } from "@/components/transformaciones/clasificacion-comentarios";
 import { NubePalabras } from "@/components/charts/nube-palabras";
-import { TablaRespuestas } from "@/components/transformaciones/tabla-respuestas";
 import { formatNumero, formatPorcentaje } from "@/lib/formatters";
 import { calcularFrecuenciaPalabras } from "@/lib/frecuencia-palabras";
 import {
@@ -553,14 +552,6 @@ export function PanelTransformaciones({
         </CardContent>
       </Card>
 
-      <Card className="border-border/70">
-        <CardHeader>
-          <CardTitle>Detalle de respuestas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TablaRespuestas respuestas={filtradas} />
-        </CardContent>
-      </Card>
     </div>
   );
 }
