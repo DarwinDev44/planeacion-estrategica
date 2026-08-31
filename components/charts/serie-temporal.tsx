@@ -71,13 +71,19 @@ export function SerieTemporal({
               );
             }}
           />
+          {/* `linear` y no `monotone`: la curva suave sobrepasa los datos para
+              redondear los giros, y con jornadas de 67, 411 y 28 asistentes
+              dibujaba un máximo de ~430 que nunca ocurrió. El punto marca los
+              días que sí se midieron, porque entre una jornada y la siguiente
+              pueden pasar semanas sin ninguna. */}
           <Area
-            type="monotone"
+            type="linear"
             dataKey="valor"
             stroke="var(--primary)"
             strokeWidth={2}
             fill="url(#degradado-serie-temporal)"
             isAnimationActive={false}
+            dot={{ r: 3, fill: "var(--primary)", strokeWidth: 0 }}
           />
         </AreaChart>
       </ResponsiveContainer>
