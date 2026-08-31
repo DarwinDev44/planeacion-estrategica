@@ -62,6 +62,17 @@ function formatoFecha(iso: string): string {
   return formatoDiaLargo.format(new Date(`${iso}T12:00:00`));
 }
 
+/**
+ * Lo que muestra el selector de fechas cerrado. Con dos o más no cabe la
+ * lista —"18 de agosto de 2026" ya ocupa el ancho entero—, así que se dice
+ * cuántas hay; el detalle está en el desplegable, con sus marcas.
+ */
+function textoFechas(fechas: string[]): string {
+  if (fechas.length === 0) return "Todas";
+  if (fechas.length === 1) return formatoFecha(fechas[0]);
+  return `${fechas.length} fechas`;
+}
+
 /** El valor del campo, o `SIN_ESPECIFICAR` si viene vacío. */
 function valorOSinEspecificar(valor: string | null): string {
   return valor?.trim() || SIN_ESPECIFICAR;
@@ -93,8 +104,12 @@ const MOSTRAR_CLASIFICACION_TEMAS = false;
 
 interface Filtros {
   transformacion: string;
-  /** Día de la respuesta, en ISO; TODAS = cualquiera. */
-  fecha: string;
+  /**
+   * Días de la respuesta, en ISO. Lista vacía = todos: se prefiere a una
+   * opción "Todas" dentro del desplegable porque, pudiendo elegir varias,
+   * "Todas" junto a dos fechas marcadas no querría decir nada.
+   */
+  fechas: string[];
   tipoActor: string;
   unidadRegional: string;
   /** Programa del graduado, ya estandarizado. */
@@ -107,7 +122,7 @@ interface Filtros {
 
 const SIN_FILTROS: Filtros = {
   transformacion: TODAS,
-  fecha: TODAS,
+  fechas: [],
   tipoActor: TODAS,
   unidadRegional: TODAS,
   programaGraduado: TODAS,
@@ -168,7 +183,12 @@ export function PanelTransformaciones({
       if (filtros.transformacion !== TODAS && r.transformacion !== filtros.transformacion) {
         return false;
       }
-      if (filtros.fecha !== TODAS && r.fechaInicio !== filtros.fecha) return false;
+      if (
+        filtros.fechas.length > 0 &&
+        (r.fechaInicio === null || !filtros.fechas.includes(r.fechaInicio))
+      ) {
+        return false;
+      }
       if (filtros.tipoActor !== TODAS && valorOSinEspecificar(r.tipoActor) !== filtros.tipoActor) {
         return false;
       }
@@ -270,18 +290,21 @@ export function PanelTransformaciones({
               ofrecería una opción que no recorta nada. */}
           {opciones.fechas.length > 1 ? (
             <Campo etiqueta="Fecha">
-              <Select value={filtros.fecha} onValueChange={(v) => actualizar("fecha", v ?? TODAS)}>
-                <SelectTrigger className="w-44">
+              {/* Admite varias: es normal querer ver dos jornadas juntas sin
+                  tener que mirarlas de a una o pasar al total. */}
+              <Select
+                multiple
+                value={filtros.fechas}
+                onValueChange={(v) => setFiltros((previos) => ({ ...previos, fechas: v ?? [] }))}
+              >
+                <SelectTrigger className="w-52">
                   <SelectValue placeholder="Todas">
-                    {(v: string | null) => (
-                      <span className="min-w-0 truncate">
-                        {!v || v === TODAS ? "Todas" : formatoFecha(v)}
-                      </span>
+                    {(v: string[] | null) => (
+                      <span className="min-w-0 truncate">{textoFechas(v ?? [])}</span>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TODAS}>Todas</SelectItem>
                   {opciones.fechas.map((valor) => (
                     <SelectItem key={valor} value={valor}>
                       {formatoFecha(valor)}
