@@ -36,13 +36,24 @@ const TODAS = "__todas__";
 const SIN_ESPECIFICAR = "Sin especificar";
 
 interface Filtros {
+  /**
+   * Jornadas elegidas, en ISO. Lista vacía = todas: se prefiere a una opción
+   * "Todas" dentro del desplegable porque, pudiendo marcar varias, "Todas"
+   * junto a dos fechas señaladas no querría decir nada.
+   */
+  fechas: string[];
   rol: string;
   unidadRegional: string;
   /** Programa, facultad, coordinación o área: un solo valor entre los cuatro. */
   adscripcion: string;
 }
 
-const SIN_FILTROS: Filtros = { rol: TODAS, unidadRegional: TODAS, adscripcion: TODAS };
+const SIN_FILTROS: Filtros = {
+  fechas: [],
+  rol: TODAS,
+  unidadRegional: TODAS,
+  adscripcion: TODAS,
+};
 
 const formatoDiaCorto = new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "short" });
 const formatoDiaLargo = new Intl.DateTimeFormat("es-CO", { dateStyle: "long" });
@@ -88,6 +99,11 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
   // demás del desplegable.
   const opciones = useMemo(
     () => ({
+      // De más reciente a más antigua: al filtrar por jornada se busca casi
+      // siempre la última, no la primera.
+      fechas: [
+        ...new Set(registros.map((r) => r.fechaInicio).filter((f): f is string => Boolean(f))),
+      ].sort((a, b) => b.localeCompare(a)),
       roles: valoresUnicos(registros.map((r) => r.rol?.trim() || SIN_ESPECIFICAR)),
       unidadesRegionales: valoresUnicos(registros.map(unidadRegionalDe)),
       adscripciones: valoresUnicos(registros.flatMap(adscripcionesDe)),
@@ -97,6 +113,12 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
 
   const filtrados = useMemo(() => {
     return registros.filter((r) => {
+      if (
+        filtros.fechas.length > 0 &&
+        (r.fechaInicio === null || !filtros.fechas.includes(r.fechaInicio))
+      ) {
+        return false;
+      }
       if (filtros.rol !== TODAS && (r.rol?.trim() || SIN_ESPECIFICAR) !== filtros.rol) return false;
       if (filtros.unidadRegional !== TODAS && unidadRegionalDe(r) !== filtros.unidadRegional) {
         return false;
@@ -111,12 +133,17 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
   const metricas = useMemo(() => calcularMetricas(filtrados), [filtrados]);
   const hayFiltros = JSON.stringify(filtros) !== JSON.stringify(SIN_FILTROS);
 
-  function actualizar(campo: keyof Filtros, valor: string) {
+  // Los filtros de un solo valor. `fechas` queda fuera a propósito: guarda una
+  // lista, y con la clave suelta se le podría asignar un texto sin que el tipo
+  // lo impidiera.
+  type CampoSimple = Exclude<keyof Filtros, "fechas">;
+
+  function actualizar(campo: CampoSimple, valor: string) {
     setFiltros((previos) => ({ ...previos, [campo]: valor }));
   }
 
   /** Click en una barra: alterna ese valor como filtro. */
-  function alternar(campo: keyof Filtros, valor: string) {
+  function alternar(campo: CampoSimple, valor: string) {
     setFiltros((previos) => ({
       ...previos,
       [campo]: previos[campo] === valor ? TODAS : valor,
@@ -127,6 +154,35 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
     <div className="flex flex-col gap-6">
       <Card className="gap-0 border-border/70 py-3">
         <CardContent className="flex flex-wrap items-end gap-3">
+          {/* Solo si hay más de una jornada: con una sola, el desplegable
+              ofrecería una opción que no recorta nada. */}
+          {opciones.fechas.length > 1 ? (
+            <Campo etiqueta="Fecha">
+              {/* Admite varias: comparar dos jornadas es lo natural aquí, y con
+                  selección simple habría que mirarlas de a una o ir al total. */}
+              <Select
+                multiple
+                value={filtros.fechas}
+                onValueChange={(v) => setFiltros((previos) => ({ ...previos, fechas: v ?? [] }))}
+              >
+                <SelectTrigger className="w-52">
+                  <SelectValue placeholder="Todas">
+                    {(v: string[] | null) => (
+                      <span className="min-w-0 truncate">{textoFechas(v ?? [])}</span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {opciones.fechas.map((valor) => (
+                    <SelectItem key={valor} value={valor}>
+                      {formatoDiaLargo.format(new Date(`${valor}T12:00:00`))}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Campo>
+          ) : null}
+
           <Campo etiqueta="Rol">
             <Select value={filtros.rol} onValueChange={(v) => actualizar("rol", v ?? TODAS)}>
               <SelectTrigger className="w-52">
@@ -350,6 +406,17 @@ function Campo({ etiqueta, children }: { etiqueta: string; children: React.React
 
 function textoSeleccion(valor: string | null, siTodas: string): string {
   return !valor || valor === TODAS ? siTodas : valor;
+}
+
+/**
+ * Lo que muestra el selector de fechas cerrado. Con dos o más no cabe la
+ * lista —"31 de agosto de 2026" ya ocupa el ancho del campo—, así que se dice
+ * cuántas hay; cuáles están marcadas se ve al abrirlo.
+ */
+function textoFechas(fechas: string[]): string {
+  if (fechas.length === 0) return "Todas";
+  if (fechas.length === 1) return formatoDiaLargo.format(new Date(`${fechas[0]}T12:00:00`));
+  return `${fechas.length} fechas`;
 }
 
 function valoresUnicos(valores: (string | null)[]): string[] {
