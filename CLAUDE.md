@@ -58,8 +58,19 @@ las filas.
   de `data/source-momento4-planeacion-territorial/`: `pnpm cargar:momento4`.
   Otras migraciones, todas idempotentes: `pnpm migrar:secciones` (publicar o
   retirar una sección), `pnpm migrar:metricas` (tablero de uso),
-  `pnpm migrar:clusters` (clasificación temática de comentarios) y
-  `pnpm migrar:participacion` (asistencia en territorio).
+  `pnpm migrar:clusters` (clasificación temática de comentarios),
+  `pnpm migrar:participacion` (asistencia en territorio) y
+  `pnpm migrar:aportes` (formulario general del Plan).
+- **Aportes generales** (`aportes_documento` / `aportes_respuestas`) son las
+  respuestas al formulario abierto de UCUNDINAMARCA. Tiene **tabla y módulo
+  propios, no una sexta casilla del Momento 4**, porque es otro cuestionario:
+  comparte las 17 primeras columnas y cambia las tres preguntas sobre la
+  transformación —cuál es, si responde a lo que se necesita y qué ajustaría—
+  por una sola abierta. Sus respuestas no pueden entrar en el respaldo ni en
+  los porcentajes de las cinco transformaciones, porque nunca contestaron esa
+  pregunta; por eso se muestran en su propia tarjeta dentro de la misma
+  sección. Solo se guarda el último archivo: el export de Forms es acumulativo
+  y anexarlo duplicaría lo anterior.
 - **Participación** (`/transformaciones-participacion`) es la sección de
   asistencia a las actividades en territorio, y se diferencia del resto en dos
   cosas deliberadas:

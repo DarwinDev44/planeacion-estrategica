@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { FormularioPin } from "@/components/admin/formulario-pin";
 import { CargueMomento4 } from "@/components/admin/cargue-momento4";
 import { CargueParticipacion } from "@/components/admin/cargue-participacion";
+import { CargueAportes } from "@/components/admin/cargue-aportes";
 import { PublicacionSeccion } from "@/components/admin/publicacion-seccion";
 import { PanelUso } from "@/components/admin/panel-uso";
 import { getDocumentosMomento4 } from "@/repositories/momento4Repository";
 import { getDocumentosParticipacion } from "@/repositories/participacionRepository";
+import { getDocumentoAportes } from "@/repositories/aportesRepository";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
 import { getMetricasUso } from "@/repositories/metricasRepository";
 import { SECCION_PARTICIPACION, SECCION_TRANSFORMACIONES } from "@/constants/secciones";
@@ -13,6 +15,7 @@ import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
 import { TITULO_PARTICIPACION } from "@/lib/reglas/participacion";
 import type { DocumentoMomento4 } from "@/types/momento4";
 import type { DocumentoParticipacion } from "@/types/participacion";
+import type { DocumentoAportes } from "@/types/aportes";
 import { tieneAccesoAdmin } from "./sesion";
 
 export const metadata: Metadata = {
@@ -43,6 +46,14 @@ export default async function AdminPage() {
     documentos = await getDocumentosMomento4();
   } catch (fallo) {
     error = fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
+  }
+
+  let documentoAportes: DocumentoAportes | null = null;
+  let errorAportes: string | null = null;
+  try {
+    documentoAportes = await getDocumentoAportes();
+  } catch (fallo) {
+    errorAportes = fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
   }
 
   let documentosParticipacion: DocumentoParticipacion[] = [];
@@ -78,6 +89,7 @@ export default async function AdminPage() {
         publicada={publicada}
       />
       <CargueMomento4 documentos={documentos} error={error} />
+      <CargueAportes documento={documentoAportes} error={errorAportes} />
 
       <PublicacionSeccion
         seccion={SECCION_PARTICIPACION}

@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { COOKIE_ADMIN, DURACION_ACCESO_MINUTOS } from "@/constants/admin";
 import type { ResultadoCargue } from "@/types/momento4";
 import type { ResultadoCargueParticipacion } from "@/types/participacion";
+import type { ResultadoCargueAportes } from "@/types/aportes";
+import { eliminarAportes, guardarDocumentoAportes } from "@/repositories/aportesRepository";
 import {
   eliminarRegistrosMomento4,
   guardarDocumentoMomento4,
@@ -223,6 +225,69 @@ export async function subirDocumentoParticipacion(
   }
 
   return resultado;
+}
+
+/**
+ * Carga el Excel del formulario general del Plan. Reemplaza los aportes
+ * anteriores: el export de Forms es acumulativo y sumarlos los duplicaría.
+ */
+export async function subirDocumentoAportes(datos: FormData): Promise<ResultadoCargueAportes> {
+  const archivo = datos.get("documento");
+  const nombre = archivo instanceof File ? archivo.name : "—";
+
+  const fallo = (motivo: string): ResultadoCargueAportes => ({
+    archivo: nombre,
+    aceptado: false,
+    motivo,
+    respuestas: null,
+    sinAporte: null,
+    descartadasPorFecha: null,
+  });
+
+  if (!(await tieneAccesoAdmin())) {
+    return fallo("La sesión venció. Vuelve a ingresar el PIN para cargar documentos.");
+  }
+  if (!(archivo instanceof File)) {
+    return fallo("No se recibió ningún archivo.");
+  }
+
+  const contenido = Buffer.from(await archivo.arrayBuffer());
+  const resultado = await guardarDocumentoAportes(archivo.name, contenido);
+
+  if (resultado.aceptado) {
+    revalidatePath("/admin");
+    revalidatePath(RUTA_POR_SECCION[SECCION_TRANSFORMACIONES]);
+  }
+
+  return resultado;
+}
+
+/** Borra los aportes generales cargados. */
+export async function eliminarRegistrosAportes(): Promise<{
+  ok: boolean;
+  eliminados: number;
+  motivo: string;
+}> {
+  if (!(await tieneAccesoAdmin())) {
+    return {
+      ok: false,
+      eliminados: 0,
+      motivo: "La sesión venció. Vuelve a ingresar el PIN para borrar registros.",
+    };
+  }
+
+  try {
+    const eliminados = await eliminarAportes();
+    revalidatePath("/admin");
+    revalidatePath(RUTA_POR_SECCION[SECCION_TRANSFORMACIONES]);
+    return { ok: true, eliminados, motivo: `Se borraron ${eliminados} aporte(s).` };
+  } catch (error) {
+    return {
+      ok: false,
+      eliminados: 0,
+      motivo: `No se pudo borrar: ${error instanceof Error ? error.message : "error desconocido"}`,
+    };
+  }
 }
 
 /** Borra una tanda de asistencia de Participación, o todas si se pasa null. */

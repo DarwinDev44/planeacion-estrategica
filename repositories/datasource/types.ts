@@ -22,6 +22,11 @@ import type {
   RegistroParticipacion,
   ResultadoCargueParticipacion,
 } from "@/types/participacion";
+import type {
+  DocumentoAportes,
+  RespuestaAporte,
+  ResultadoCargueAportes,
+} from "@/types/aportes";
 
 /**
  * Contrato que debe cumplir cualquier origen de datos de la encuesta.
@@ -178,6 +183,20 @@ export interface MetricasDataSource {
  * tiene casillas fijas: el cargue agrega una tanda o reemplaza todo, según lo
  * que elija quien sube (ver `ModoCargueParticipacion`).
  */
+/**
+ * Contrato del origen de los aportes generales al Plan. Es el formulario
+ * abierto de UCUNDINAMARCA, que no valora ninguna transformación y por eso no
+ * cabe entre las cinco casillas del Momento 4. Solo se conserva el último
+ * archivo: el export de Forms es acumulativo.
+ */
+export interface AportesDataSource {
+  getDocumento(): Promise<DocumentoAportes | null>;
+  getAportes(): Promise<RespuestaAporte[]>;
+  guardar(nombreOriginal: string, contenido: Buffer): Promise<ResultadoCargueAportes>;
+  /** Borra los aportes cargados. Devuelve cuántos se eliminaron. */
+  eliminar(): Promise<number>;
+}
+
 export interface ParticipacionDataSource {
   getDocumentos(): Promise<DocumentoParticipacion[]>;
   getRegistros(): Promise<RegistroParticipacion[]>;

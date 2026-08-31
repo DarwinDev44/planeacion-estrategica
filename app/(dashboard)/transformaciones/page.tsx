@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft, Lock } from "lucide-react";
 import { PanelTransformaciones } from "@/components/transformaciones/panel-transformaciones";
+import { AportesGenerales } from "@/components/transformaciones/aportes-generales";
 import { getClustersMomento4, getRespuestasMomento4 } from "@/repositories/momento4Repository";
+import { getAportes } from "@/repositories/aportesRepository";
 import { estaSeccionPublicada } from "@/repositories/seccionesRepository";
 import { SECCION_TRANSFORMACIONES } from "@/constants/secciones";
 import { TITULO_MOMENTO4 } from "@/lib/reglas/momento4";
 import type { ClusterComentarios, RespuestaMomento4 } from "@/types/momento4";
+import type { RespuestaAporte } from "@/types/aportes";
 
 export const metadata: Metadata = {
   title: "Trabajo en territorio con la comunidad universitaria",
@@ -53,6 +56,16 @@ export default async function TransformacionesPage() {
     error = fallo instanceof Error ? fallo.message : "No se pudo consultar la base de datos.";
   }
 
+  // En su propio try: los aportes generales son otro cuestionario y otra tabla,
+  // así que un fallo suyo no debe dejar sin sección a la valoración de las
+  // cinco transformaciones, que es lo principal.
+  let aportes: RespuestaAporte[] = [];
+  try {
+    aportes = await getAportes();
+  } catch {
+    aportes = [];
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
@@ -79,6 +92,10 @@ export default async function TransformacionesPage() {
       ) : (
         <PanelTransformaciones respuestas={respuestas} clusters={clusters} />
       )}
+
+      {/* Fuera del bloque anterior a propósito: si no hay respuestas de las
+          transformaciones pero sí aportes generales, estos deben verse igual. */}
+      {aportes.length > 0 ? <AportesGenerales aportes={aportes} /> : null}
     </div>
   );
 }
