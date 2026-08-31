@@ -130,10 +130,12 @@ export function canonizarColumna(encabezado: string): string {
  * respuestas de prueba de la puesta en marcha del formulario, y sumarlas a las
  * reales distorsionaría cada cifra de la sección.
  *
- * El límite es "a partir del 14/08/2026, inclusive". Si hiciera falta mover el
- * corte —o dejar de aplicarlo— se cambia solo esta línea.
+ * El límite es "a partir del 18/08/2026, inclusive": las jornadas reales
+ * empiezan ese día, y lo anterior —el 17 quedó una sola respuesta suelta— es
+ * de la puesta en marcha. Si hiciera falta mover el corte —o dejar de
+ * aplicarlo— se cambia solo esta línea.
  */
-export const FECHA_MINIMA_RESPUESTA = new Date("2026-08-14T00:00:00");
+export const FECHA_MINIMA_RESPUESTA = new Date("2026-08-18T00:00:00");
 
 /**
  * Convierte una fecha del export ("8/13/26 9:33:03") a Date. Devuelve null si
