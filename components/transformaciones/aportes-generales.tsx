@@ -117,7 +117,10 @@ export function AportesGenerales({ aportes }: { aportes: RespuestaAporte[] }) {
   return (
     <Card className="border-border/70">
       <CardHeader>
-        <CardTitle>{TITULO_APORTES}</CardTitle>
+        {/* Un punto más grande y en negrilla que el resto de tarjetas: este
+            bloque es de otro formulario, y el título es lo que separa sus
+            cifras de las de las cinco transformaciones. */}
+        <CardTitle className="text-lg font-bold">{TITULO_APORTES}</CardTitle>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-5">
