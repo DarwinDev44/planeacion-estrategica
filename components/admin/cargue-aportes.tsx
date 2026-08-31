@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Dialog,
@@ -113,13 +113,6 @@ export function CargueAportes({
     <Card>
       <CardHeader>
         <CardTitle>{TITULO_APORTES}</CardTitle>
-        <CardDescription>
-          Es el formulario abierto del Plan: no pregunta por ninguna de las cinco transformaciones,
-          solo recoge un aporte escrito. Por eso se sube aparte y sus respuestas no entran en el
-          respaldo ni en los porcentajes de las transformaciones. Cada cargue{" "}
-          <strong className="font-medium text-foreground">reemplaza</strong> al anterior, porque el
-          export de Microsoft Forms ya trae acumuladas todas las respuestas recibidas.
-        </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
