@@ -312,8 +312,7 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
           <CardContent>
             {/* Con una sola fecha no hay evolución que dibujar: una curva de un
                 único punto se ve como un gráfico roto, así que se dice el dato
-                en palabras. Aparecerá el gráfico en cuanto haya tandas de
-                fechas distintas, que es el objetivo del seguimiento. */}
+                en palabras. */}
             {metricas.serieFechas.length > 1 ? (
               <SerieTemporal datos={metricas.serieFechas} nombreValor="asistentes" />
             ) : metricas.serieFechas.length === 1 ? (
@@ -324,10 +323,6 @@ export function PanelParticipacion({ registros }: { registros: RegistroParticipa
                 <p className="text-sm text-muted-foreground">
                   asistentes el{" "}
                   {formatoDiaLargo.format(new Date(`${metricas.serieFechas[0].fecha}T12:00:00`))}
-                </p>
-                <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                  Todos los registros son del mismo día. La evolución en el tiempo aparecerá cuando
-                  se carguen tandas de fechas distintas.
                 </p>
               </div>
             ) : (
